@@ -50,6 +50,7 @@
     <uses-permission android:name="android.permission.BLUETOOTH_PRIVILEGED" />
     <uses-permission android:name="android.permission.STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
 
     <uses-feature
         android:name="android.hardware.camera"
@@ -210,6 +211,18 @@
                 <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
             </intent-filter>
         </receiver>
+
+        <service
+            android:name="org.ei.telemedicine.service.CallService"
+            android:enabled="true"
+            android:process=":my_process" />
+
+        <activity
+            android:name="org.ei.telemedicine.view.activity.ActionActivity"
+            android:label="ActionActivity"
+            android:theme="@android:style/Theme.Light.NoTitleBar.Fullscreen" />
+
+        <receiver android:name="org.ei.telemedicine.view.receiver.CallReceiver" />
     </application>
 
 </manifest>

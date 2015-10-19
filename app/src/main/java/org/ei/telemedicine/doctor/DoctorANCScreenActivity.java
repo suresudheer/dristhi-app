@@ -54,6 +54,7 @@ public class DoctorANCScreenActivity extends DoctorPatientDetailSuperActivity {
         et_temp.setText(tempVal);
         et_bloodGlucose.setText(getDatafromJson(formInfo, DoctorFormDataConstants.blood_glucose).equals("") ? "Not captured" : getDatafromJson(formInfo, DoctorFormDataConstants.blood_glucose));
         et_fetal.setText(getDatafromJson(formInfo, DoctorFormDataConstants.fetal_data).equals("") ? "Not captured" : getDatafromJson(formInfo, DoctorFormDataConstants.fetal_data));
+
 //        ib_play_stehoscope.setVisibility(!getDatafromJson(formInfo, DoctorFormDataConstants.stethoscope_data).equals("") ? View.VISIBLE : View.GONE);
 //        tv_stehoscope_title.setVisibility(!getDatafromJson(formInfo, DoctorFormDataConstants.stethoscope_data).equals("") ? View.VISIBLE : View.GONE);
 

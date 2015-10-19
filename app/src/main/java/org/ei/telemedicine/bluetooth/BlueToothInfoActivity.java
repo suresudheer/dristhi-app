@@ -39,6 +39,7 @@ import org.ei.telemedicine.bluetooth.pulse.BluetoothService;
 import org.ei.telemedicine.bluetooth.pulse.CallBack;
 import org.ei.telemedicine.bluetooth.pulse.ICallBack;
 import org.ei.telemedicine.bluetooth.pulse.PulseBuf;
+import org.ei.telemedicine.domain.form.FieldOverrides;
 import org.ei.telemedicine.domain.form.FormSubmission;
 import org.ei.telemedicine.sync.DrishtiSyncScheduler;
 import org.ei.telemedicine.view.activity.NativeANMPlanofCareActivity;
@@ -303,7 +304,7 @@ public class BlueToothInfoActivity extends SecuredActivity implements OnClickLis
             bluetoothAdapter.cancelDiscovery();
         if (formName.equalsIgnoreCase(AllConstants.FormNames.ANC_VISIT) || formName.equalsIgnoreCase(AllConstants.FormNames.ANC_VISIT_EDIT)) {
             this.finish();
-            startFormActivity(AllConstants.FormNames.ANC_VISIT_EDIT, entityId, null);
+            startFormActivity(AllConstants.FormNames.ANC_VISIT_EDIT, entityId, new FieldOverrides(context.anmLocationController().getFormInfoJSON()).getJSONString());
         }
     }
 

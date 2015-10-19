@@ -75,13 +75,11 @@ public class FormSubmissionService {
         context = Context.getInstance();
         allDoctorRepository = context.allDoctorRepository();
         JSONObject formData = new JSONObject();
-
         try {
             if (data != null) {
                 Log.e(TAG, "Data " + data);
                 JSONArray dataArray = new JSONArray(data);
                 for (int i = 0; i < dataArray.length(); i++) {
-
                     JSONObject datajsonObject = dataArray.getJSONObject(i);
                     JSONArray visitsArray = datajsonObject.getJSONArray("riskinfo");
 

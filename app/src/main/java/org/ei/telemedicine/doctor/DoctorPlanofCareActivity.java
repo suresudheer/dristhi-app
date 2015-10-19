@@ -5,6 +5,7 @@ import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.content.ComponentName;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -253,14 +254,18 @@ public class DoctorPlanofCareActivity extends Activity {
                 ib_anm_logo.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        try {
-                            Intent intent = new Intent(Intent.ACTION_MAIN);
-                            intent.setComponent(new ComponentName("org.appspot.apprtc",
-                                    "org.appspot.apprtc.ConnectActivity"));
-                            startActivity(intent);
-                        } catch (Exception e) {
-                            Toast.makeText(DoctorPlanofCareActivity.this, "Please install Apprtc APK", Toast.LENGTH_SHORT).show();
-                        }
+                        String caller_url = String.format("http://202.153.34.169/demos/callerdemo.html?callerid=%s&recepientid=%s", Context.getInstance().allSharedPreferences().fetchRegisteredANM(), getData(formDataJson, DoctorFormDataConstants.anmId));
+                        Uri url = Uri.parse(caller_url);
+                        Intent _broswer = new Intent(Intent.ACTION_VIEW, url);
+                        startActivity(_broswer);
+//                        try {
+//                            Intent intent = new Intent(Intent.ACTION_MAIN);
+//                            intent.setComponent(new ComponentName("org.appspot.apprtc",
+//                                    "org.appspot.apprtc.ConnectActivity"));
+//                            startActivity(intent);
+//                        } catch (Exception e) {
+//                            Toast.makeText(DoctorPlanofCareActivity.this, "Please install Apprtc APK", Toast.LENGTH_SHORT).show();
+//                        }
 
 //                        Dialog chooseDialog = new Dialog(DoctorPlanofCareActivity.this);
 //                        chooseDialog.setContentView(R.layout.dialog_box);
