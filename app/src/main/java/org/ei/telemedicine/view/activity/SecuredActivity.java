@@ -18,12 +18,16 @@ import org.ei.telemedicine.AllConstants;
 import org.ei.telemedicine.Context;
 import org.ei.telemedicine.R;
 import org.ei.telemedicine.bluetooth.BlueToothInfoActivity;
+import org.ei.telemedicine.domain.ANM;
 import org.ei.telemedicine.domain.ProfileImage;
 import org.ei.telemedicine.domain.form.FormSubmission;
 import org.ei.telemedicine.domain.form.SubForm;
+import org.ei.telemedicine.event.CapturedPhotoInformation;
+import org.ei.telemedicine.event.Event;
 import org.ei.telemedicine.event.Listener;
 import org.ei.telemedicine.repository.ImageRepository;
 import org.ei.telemedicine.sync.DrishtiSyncScheduler;
+import org.ei.telemedicine.view.contract.HomeContext;
 import org.ei.telemedicine.view.controller.ANMController;
 import org.ei.telemedicine.view.controller.FormController;
 import org.ei.telemedicine.view.controller.NavigationController;
@@ -56,6 +60,7 @@ import static org.ei.telemedicine.util.Log.logInfo;
 public abstract class SecuredActivity extends Activity {
     protected Context context;
     protected Listener<Boolean> logoutListener;
+    protected Listener<CapturedPhotoInformation> photoCaptureListener;
     protected FormController formController;
     protected ANMController anmController;
     protected NavigationController navigationController;
@@ -67,6 +72,7 @@ public abstract class SecuredActivity extends Activity {
         super.onCreate(savedInstanceState);
 
         context = Context.getInstance().updateApplicationContext(this.getApplicationContext());
+
 
         logoutListener = new Listener<Boolean>() {
             public void onEvent(Boolean data) {
@@ -115,11 +121,15 @@ public abstract class SecuredActivity extends Activity {
         String anmId = Context.getInstance().allSharedPreferences().fetchRegisteredANM();
         ProfileImage profileImage = new ProfileImage(UUID.randomUUID().toString(), anmId, entityid, "Image", details.get("profilepic"), ImageRepository.TYPE_Unsynced);
         ((ImageRepository) Context.getInstance().imageRepository()).add(profileImage);
+        Context.getInstance().allEligibleCouples().updatePhotoPath(entityid, details.get("profilepic"));
         Toast.makeText(this, entityid, Toast.LENGTH_LONG).show();
     }
 
     public void logoutUser() {
         context.userService().logout();
+
+
+        this.finish();
         startActivity(new Intent(this, LoginActivity.class));
     }
 

@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="utf-8"?>
+<items version="2" >
+
+    <item
+        jar="/home/naveen/.gradle/caches/modules-2/files-2.1/joda-time/joda-time/2.0/752c0fe8a5b2d6704c9d9d6f06d9abdcacf4045d/joda-time-2.0.jar"
+        jumboMode="false"
+        revision="23.0.0 rc2"
+        sha1="752c0fe8a5b2d6704c9d9d6f06d9abdcacf4045d">
+        <dex dex="/home/naveen/Documents/Project_git_hub/opensrp-doctor-diagnosis/app/build/intermediates/pre-dexed/debug/joda-time-2.0-29049f6b23e9cd03efd87ef223d18bd15050697c.jar" />
+    </item>
+    <item
+        jar="/home/naveen/.gradle/caches/modules-2/files-2.1/com.google.code.gson/gson/2.2.2/1f96456ca233dec780aa224bff076d8e8bca3908/gson-2.2.2.jar"
+        jumboMode="false"
+        revision="23.0.0 rc2"
+        sha1="1f96456ca233dec780aa224bff076d8e8bca3908">
+        <dex dex="/home/naveen/Documents/Project_git_hub/opensrp-doctor-diagnosis/app/build/intermediates/pre-dexed/debug/gson-2.2.2-2ce8862367547b79b475e33910b2a48e232e1368.jar" />
+    </item>
+    <item
+        jar="/home/naveen/Documents/Project_git_hub/opensrp-doctor-diagnosis/app/build/intermediates/exploded-aar/com.android.support/support-v4/21.0.3/jars/classes.jar"
+        jumboMode="false"
+        revision="23.0.0 rc2"
+        sha1="2c91c949a45a21cdecf26e03951e46c7beec9ad8">
+        <dex dex="/home/naveen/Documents/Project_git_hub/opensrp-doctor-diagnosis/app/build/intermediates/pre-dexed/debug/classes-147883fae86c1f129afeb2114c7af12bbe653c91.jar" />
+    </item>
+    <item
+        jar="/home/naveen/.gradle/caches/modules-2/files-2.1/org.hamcrest/hamcrest-library/1.1/b988c01468e3398d46678a2eb48aeb5bde271e9f/hamcrest-library-1.1.jar"
+        jumboMode="false"
+        revision="23.0.0 rc2"
+        sha1="b988c01468e3398d46678a2eb48aeb5bde271e9f">
+        <dex dex="/home/naveen/Documents/Project_git_hub/opensrp-doctor-diagnosis/app/build/intermediates/pre-dexed/androidTest/debug/hamcrest-library-1.1-f4e9e071b564ce70a9572433dc1f0eae73f24c08.jar" />
+    </item>
+    <item
+        jar="/home/naveen/.gradle/caches/modules-2/files-2.1/com.google.guava/guava/18.0/cce0823396aa693798f8882e64213b1772032b09/guava-18.0.jar"
+        jumboMode="false"
+        revision="23.0.0 rc2"
+        sha1="cce0823396aa693798f8882e64213b1772032b09">
+        <dex dex="/home/naveen/Documents/Project_git_hub/opensrp-doctor-diagnosis/app/build/intermediates/pre-dexed/debug/guava-18.0-0d166708e14e17819c9a4c2dbcb173f892d7f222.jar" />
+    </item>
+    <item
+        jar="/home/naveen/Documents/Project_git_hub/opensrp-doctor-diagnosis/app/libs/mockito-all-1.9.5.jar"
+        jumboMode="false"
+        revision="23.0.0 rc2"
+        sha1="79a8984096fc6591c1e3690e07d41be506356fa5">
+        <dex dex="/home/naveen/Documents/Project_git_hub/opensrp-doctor-diagnosis/app/build/intermediates/pre-dexed/debug/mockito-all-1.9.5-a937714ce428fe2462e044d4a745188e3753aa4d.jar" />
+    </item>
+    <item
+        jar="/home/naveen/Documents/Project_git_hub/opensrp-doctor-diagnosis/app/build/intermediates/exploded-aar/com.android.support/support-v4/21.0.3/jars/libs/internal_impl-21.0.3.jar"
+        jumboMode="false"
+        revision="23.0.0 rc2"
+        sha1="01ec05bfbafcc07646ba813000bf2ef11742dd03">
+        <dex dex="/home/naveen/Documents/Project_git_hub/opensrp-doctor-diagnosis/app/build/intermediates/pre-dexed/debug/internal_impl-21.0.3-d9f421f22e002e448c9b1d17ae001e0f118624c1.jar" />
+    </item>
+    <item
+        jar="/home/naveen/Documents/Project_git_hub/opensrp-doctor-diagnosis/app/libs/robotium-solo-5.4.1.jar"
+        jumboMode="false"
+        revision="23.0.0 rc2"
+        sha1="8cf467c87b83c959fd7e8aef842127abce72fc5c">
+        <dex dex="/home/naveen/Documents/Project_git_hub/opensrp-doctor-diagnosis/app/build/intermediates/pre-dexed/debug/robotium-solo-5.4.1-d62dfc90dbbfd838ed6953a21bc2f0c99ecbcee3.jar" />
+    </item>
+    <item
+        jar="/home/naveen/Documents/Project_git_hub/opensrp-doctor-diagnosis/app/libs/CONTEC08A_SDK v1.6.jar"
+        jumboMode="false"
+        revision="23.0.0 rc2"
+        sha1="7caf65fd12bf712c064b8e2a082e799ac9b65bcf">
+        <dex dex="/home/naveen/Documents/Project_git_hub/opensrp-doctor-diagnosis/app/build/intermediates/pre-dexed/debug/CONTEC08A_SDK v1.6-85e395bed7caddcba19a05a3241a182b89938230.jar" />
+    </item>
+    <item
+        jar="/home/naveen/Documents/Project_git_hub/opensrp-doctor-diagnosis/app/libs/hellocharts-library-1.5.6.jar"
+        jumboMode="false"
+        revision="23.0.0 rc2"
+        sha1="0935cbfbfabbc6c8c24182a0a94fb374dd8144c4">
+        <dex dex="/home/naveen/Documents/Project_git_hub/opensrp-doctor-diagnosis/app/build/intermediates/pre-dexed/debug/hellocharts-library-1.5.6-1208e660516789c96d305dc227cb974bac80ccef.jar" />
+    </item>
+    <item
+        jar="/home/naveen/Documents/Project_git_hub/opensrp-doctor-diagnosis/app/libs/Sonoline-S_SDK v1.0.jar"
+        jumboMode="false"
+        revision="23.0.0 rc2"
+        sha1="ab05d9c87ac1ec7073dbe4e9a5c2cd1e0898edcd">
+        <dex dex="/home/naveen/Documents/Project_git_hub/opensrp-doctor-diagnosis/app/build/intermediates/pre-dexed/debug/Sonoline-S_SDK v1.0-686c9961a0cfa30c4c2f16f4d4db414f4d84366f.jar" />
+    </item>
+    <item
+        jar="/home/naveen/Documents/Project_git_hub/opensrp-doctor-diagnosis/app/libs/commons-codec-1.6.jar"
+        jumboMode="false"
+        revision="23.0.0 rc2"
+        sha1="b7f0fc8f61ecadeb3695f0b9464755eee44374d4">
+        <dex dex="/home/naveen/Documents/Project_git_hub/opensrp-doctor-diagnosis/app/build/intermediates/pre-dexed/debug/commons-codec-1.6-e5c7964265a8bc9f3256b96eaaf34b45aa26cd5e.jar" />
+    </item>
+    <item
+        jar="/home/naveen/Documents/Project_git_hub/opensrp-doctor-diagnosis/app/libs/rhino-1.7R4.jar"
+        jumboMode="false"
+        revision="23.0.0 rc2"
+        sha1="e982f2136574b9a423186fbaeaaa98dc3e5a5288">
+        <dex dex="/home/naveen/Documents/Project_git_hub/opensrp-doctor-diagnosis/app/build/intermediates/pre-dexed/debug/rhino-1.7R4-d29085b60c1ee86cfd3ade87a1e2c74a1b72689c.jar" />
+    </item>
+    <item
+        jar="/home/naveen/Documents/Project_git_hub/opensrp-doctor-diagnosis/app/libs/EarTemperature_SDK.jar"
+        jumboMode="false"
+        revision="23.0.0 rc2"
+        sha1="5debef3ca669bbbb748f16f8f8db24029111d011">
+        <dex dex="/home/naveen/Documents/Project_git_hub/opensrp-doctor-diagnosis/app/build/intermediates/pre-dexed/debug/EarTemperature_SDK-2774b502cb00ec021ee334d1039780625660ce66.jar" />
+    </item>
+    <item
+        jar="/home/naveen/Documents/Project_git_hub/opensrp-doctor-diagnosis/app/libs/project_cms50dj_jar.jar"
+        jumboMode="false"
+        revision="23.0.0 rc2"
+        sha1="6c7b1b1ed01fdf3af5470a6a265a5b10461acb35">
+        <dex dex="/home/naveen/Documents/Project_git_hub/opensrp-doctor-diagnosis/app/build/intermediates/pre-dexed/debug/project_cms50dj_jar-65f524fc923bb776321e35a811f3729aa1bfed98.jar" />
+    </item>
+    <item
+        jar="/home/naveen/.gradle/caches/modules-2/files-2.1/org.hamcrest/hamcrest-core/1.1/860340562250678d1a344907ac75754e259cdb14/hamcrest-core-1.1.jar"
+        jumboMode="false"
+        revision="23.0.0 rc2"
+        sha1="860340562250678d1a344907ac75754e259cdb14">
+        <dex dex="/home/naveen/Documents/Project_git_hub/opensrp-doctor-diagnosis/app/build/intermediates/pre-dexed/androidTest/debug/hamcrest-core-1.1-553918d2c9e05326ad137880f17cf6c80880aafc.jar" />
+    </item>
+    <item
+        jar="/home/naveen/Documents/Project_git_hub/opensrp-doctor-diagnosis/app/libs/sqlcipher-2.2.0.jar"
+        jumboMode="false"
+        revision="23.0.0 rc2"
+        sha1="00f02373da141e608b4a0c94cfe508de3b997fac">
+        <dex dex="/home/naveen/Documents/Project_git_hub/opensrp-doctor-diagnosis/app/build/intermediates/pre-dexed/debug/sqlcipher-2.2.0-7f395ce6da9c042719a3a5ba50deb69771b047de.jar" />
+    </item>
+    <item
+        jar="/home/naveen/Documents/Project_git_hub/opensrp-doctor-diagnosis/app/libs/commons-io-2.1.jar"
+        jumboMode="false"
+        revision="23.0.0 rc2"
+        sha1="fd51f906669f49a4ffd06650666c3b8147a6106e">
+        <dex dex="/home/naveen/Documents/Project_git_hub/opensrp-doctor-diagnosis/app/build/intermediates/pre-dexed/debug/commons-io-2.1-2c720164b9be115f93d11bac2440f7b74eca1e79.jar" />
+    </item>
+    <item
+        jar="/home/naveen/Documents/Project_git_hub/opensrp-doctor-diagnosis/app/libs/achartengine-1.1.0.jar"
+        jumboMode="false"
+        revision="23.0.0 rc2"
+        sha1="9932e3fb9fbe54e80873e77f72a99f79e33b3250">
+        <dex dex="/home/naveen/Documents/Project_git_hub/opensrp-doctor-diagnosis/app/build/intermediates/pre-dexed/debug/achartengine-1.1.0-604168edc899a41178d8722ee0f14774549d03c4.jar" />
+    </item>
+    <item
+        jar="/home/naveen/Documents/Project_git_hub/opensrp-doctor-diagnosis/app/libs/junit.jar"
+        jumboMode="false"
+        revision="23.0.0 rc2"
+        sha1="543b0ae86f3e65fbf14ecac169d0c87cbb622e71">
+        <dex dex="/home/naveen/Documents/Project_git_hub/opensrp-doctor-diagnosis/app/build/intermediates/pre-dexed/debug/junit-e47be769aa2122117598c7258eb334524a5ae25e.jar" />
+    </item>
+    <item
+        jar="/home/naveen/.gradle/caches/modules-2/files-2.1/org.apache.httpcomponents/httpcore/4.2.2/b76bee23cd3f3ee9b98bc7c2c14670e821ddbbfd/httpcore-4.2.2.jar"
+        jumboMode="false"
+        revision="23.0.0 rc2"
+        sha1="b76bee23cd3f3ee9b98bc7c2c14670e821ddbbfd">
+        <dex dex="/home/naveen/Documents/Project_git_hub/opensrp-doctor-diagnosis/app/build/intermediates/pre-dexed/debug/httpcore-4.2.2-d8cc5c21de296579d153feb1098561662627dc83.jar" />
+    </item>
+    <item
+        jar="/home/naveen/android-sdks/extras/android/m2repository/com/android/support/support-annotations/21.0.3/support-annotations-21.0.3.jar"
+        jumboMode="false"
+        revision="23.0.0 rc2"
+        sha1="4b74cefe1f0c1b819e7260c8627a14674e37fd35">
+        <dex dex="/home/naveen/Documents/Project_git_hub/opensrp-doctor-diagnosis/app/build/intermediates/pre-dexed/debug/support-annotations-21.0.3-37f780d84c2f6e8b268f4e6c48365b82fffff469.jar" />
+    </item>
+    <item
+        jar="/home/naveen/Documents/Project_git_hub/opensrp-doctor-diagnosis/app/libs/commons-lang3-3.1.jar"
+        jumboMode="false"
+        revision="23.0.0 rc2"
+        sha1="905075e6c80f206bbe6cf1e809d2caa69f420c76">
+        <dex dex="/home/naveen/Documents/Project_git_hub/opensrp-doctor-diagnosis/app/build/intermediates/pre-dexed/debug/commons-lang3-3.1-7eb817308037692afc1e10e363a827aa86d19bbc.jar" />
+    </item>
+    <item
+        jar="/home/naveen/Documents/Project_git_hub/opensrp-doctor-diagnosis/app/build/intermediates/exploded-aar/com.diogobernardino/williamchart/2.0.1/jars/classes.jar"
+        jumboMode="false"
+        revision="23.0.0 rc2"
+        sha1="e209ebfa37d4dd762092a8fc4b68c4a93b07b17f">
+        <dex dex="/home/naveen/Documents/Project_git_hub/opensrp-doctor-diagnosis/app/build/intermediates/pre-dexed/debug/classes-5de2eee54df4835dbfc7b01bfabe5d8fa68ba4ea.jar" />
+    </item>
+    <item
+        jar="/home/naveen/.gradle/caches/modules-2/files-2.1/org.apache.httpcomponents/httpmime/4.2.3/118ae1bc7f3aeeddfe564f0edfd79c11d09d17d1/httpmime-4.2.3.jar"
+        jumboMode="false"
+        revision="23.0.0 rc2"
+        sha1="118ae1bc7f3aeeddfe564f0edfd79c11d09d17d1">
+        <dex dex="/home/naveen/Documents/Project_git_hub/opensrp-doctor-diagnosis/app/build/intermediates/pre-dexed/debug/httpmime-4.2.3-e20d33e64e1c2f3f905da4fc3ab2123098294b61.jar" />
+    </item>
+    <item
+        jar="/home/naveen/Documents/Project_git_hub/opensrp-doctor-diagnosis/app/libs/acra-4.5.0.jar"
+        jumboMode="false"
+        revision="23.0.0 rc2"
+        sha1="44a5eb946e0d83eed4a0128d877ca1fd8168b83a">
+        <dex dex="/home/naveen/Documents/Project_git_hub/opensrp-doctor-diagnosis/app/build/intermediates/pre-dexed/debug/acra-4.5.0-7f93a8329144eb2533c24afcf1f057ad115d8870.jar" />
+    </item>
+    <item
+        jar="/home/naveen/Documents/Project_git_hub/opensrp-doctor-diagnosis/app/libs/prettytime-1.0.8.final.jar"
+        jumboMode="false"
+        revision="23.0.0 rc2"
+        sha1="375ffaa7ed63d563978dc9c0a835f719e8088501">
+        <dex dex="/home/naveen/Documents/Project_git_hub/opensrp-doctor-diagnosis/app/build/intermediates/pre-dexed/debug/prettytime-1.0.8.final-2dbf1b6712717421bdbc999e8e1cb5e64f8deb73.jar" />
+    </item>
+    <item
+        jar="/home/naveen/Documents/Project_git_hub/opensrp-doctor-diagnosis/app/libs/jackson-all-1.6.1.jar"
+        jumboMode="false"
+        revision="23.0.0 rc2"
+        sha1="592efa2290710830f989b82c198fcee17b86d18a">
+        <dex dex="/home/naveen/Documents/Project_git_hub/opensrp-doctor-diagnosis/app/build/intermediates/pre-dexed/debug/jackson-all-1.6.1-3477789bb15e9f741bfe5a94ec8b3c247be7f23a.jar" />
+    </item>
+    <item
+        jar="/home/naveen/Documents/Project_git_hub/opensrp-doctor-diagnosis/app/build/intermediates/exploded-aar/com.jjoe64/graphview/4.0.1/jars/classes.jar"
+        jumboMode="false"
+        revision="23.0.0 rc2"
+        sha1="37bf8de5b4f9e7e93006db783b9b3168e32e38e9">
+        <dex dex="/home/naveen/Documents/Project_git_hub/opensrp-doctor-diagnosis/app/build/intermediates/pre-dexed/debug/classes-414b95ff83a5c121e44ed6ef1f8448a3bc4b741c.jar" />
+    </item>
+    <item
+        jar="/home/naveen/Documents/Project_git_hub/opensrp-doctor-diagnosis/app/libs/CMSSXT_SDK v1.2.jar"
+        jumboMode="false"
+        revision="23.0.0 rc2"
+        sha1="941faf3895f12d7a1fe2398ca75764676dddad92">
+        <dex dex="/home/naveen/Documents/Project_git_hub/opensrp-doctor-diagnosis/app/build/intermediates/pre-dexed/debug/CMSSXT_SDK v1.2-3e5fd2bc11629aa13c8fac98528bb70d2b900f54.jar" />
+    </item>
+
+</items>

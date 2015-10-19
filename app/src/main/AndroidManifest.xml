@@ -207,7 +207,6 @@
             android:name=".view.activity.NativeANMPlanofCareActivity"
             android:theme="@android:style/Theme.Holo.Light.Dialog" />
 
-        
         <activity
             android:name=".doctor.ViewPreVisitScreenActivity"
             android:screenOrientation="landscape" />

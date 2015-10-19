@@ -1,9 +1,11 @@
 package org.ei.telemedicine;
 
-import android.content.SharedPreferences;
+import android.content.*;
 import android.content.res.AssetManager;
+import android.preference.PreferenceManager;
 
 import org.ei.telemedicine.util.IntegerUtil;
+import org.ei.telemedicine.view.activity.LoginActivity;
 
 import java.io.IOException;
 import java.util.Properties;
@@ -18,14 +20,17 @@ public class DristhiConfiguration {
     private static final String SYNC_DOWNLOAD_BATCH_SIZE = "SYNC_DOWNLOAD_BATCH_SIZE";
 
     private Properties properties = new Properties();
+    SharedPreferences preferences;
 
-    public DristhiConfiguration(AssetManager assetManager) {
+    public DristhiConfiguration(AssetManager assetManager, android.content.Context context) {
         try {
             properties.load(assetManager.open("app.properties"));
+            preferences = PreferenceManager.getDefaultSharedPreferences(context);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
+
 
     private String get(String key) {
         return properties.getProperty(key);
@@ -44,11 +49,11 @@ public class DristhiConfiguration {
     }
 
     public String dristhiBaseURL() {
-        return this.get(DRISHTI_BASE_URL);
+        return !preferences.getString("prefBaseURL", "").equals("") ? "http://" + preferences.getString("prefBaseURL", "") + "/drishti-web-0.1-SNAPSHOT" : this.get(DRISHTI_BASE_URL);
     }
 
     public String dristhiDjangoBaseURL() {
-        return this.get(DRISHTI_DJANGO_BASE_URL);
+        return !preferences.getString("prefDjangoBaseURL", "").equals("") ? "http://" + preferences.getString("prefDjangoBaseURL", "") : this.get(DRISHTI_DJANGO_BASE_URL);
     }
 
     public int syncDownloadBatchSize() {

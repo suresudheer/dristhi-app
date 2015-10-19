@@ -1,10 +1,17 @@
 package org.ei.telemedicine.doctor;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
 import android.util.Log;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.Comparator;
 import java.util.Map;
 
@@ -23,6 +30,12 @@ public class DoctorData {
     private String SyncStatus;
     private String VisitType;
     private String villageName;
+
+    private String imgUrl;
+//
+//    private Bitmap image;
+//
+//    private PendingConsultantBaseAdapter pendingConsultantBaseAdapter;
 
     public String getVisitType() {
         return VisitType;
@@ -106,6 +119,7 @@ public class DoctorData {
         this.villageName = villageName;
     }
 
+
     public static Comparator<DoctorData> womanNameComparator = new Comparator<DoctorData>() {
 
         public int compare(DoctorData s1, DoctorData s2) {
@@ -127,4 +141,77 @@ public class DoctorData {
     };
 
 
+    public String getImgUrl() {
+        return imgUrl;
+    }
+
+    public void setImgUrl(String imgUrl) {
+        this.imgUrl = imgUrl;
+    }
+//
+//    public Bitmap getImage() {
+//        return image;
+//    }
+//
+//    public void loadImage(PendingConsultantBaseAdapter pendingConsultantBaseAdapter) {
+//        this.pendingConsultantBaseAdapter = pendingConsultantBaseAdapter;
+//        if (getImgUrl() != null && !getImgUrl().equals("")) {
+//            new ImageLoadTask().execute(getImgUrl());
+//        }
+//    }
+//
+//    public PendingConsultantBaseAdapter getPendingConsultantBaseAdapter() {
+//        return pendingConsultantBaseAdapter;
+//    }
+//
+//    public void setPendingConsultantBaseAdapter(PendingConsultantBaseAdapter pendingConsultantBaseAdapter) {
+//        this.pendingConsultantBaseAdapter = pendingConsultantBaseAdapter;
+//    }
+//
+//    public static Bitmap getBitmapFromURL(String src) {
+//        try {
+//            URL url = new URL(src);
+//            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+//            connection.setDoInput(true);
+//            connection.connect();
+//            InputStream input = connection.getInputStream();
+//            Bitmap myBitmap = BitmapFactory.decodeStream(input);
+//            return myBitmap;
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//            return null;
+//        }
+//    }
+//
+//    private class ImageLoadTask extends AsyncTask<String, String, Bitmap> {
+//
+//        @Override
+//        protected Bitmap doInBackground(String... params) {
+//            Log.e("ImageLoadTask", "Attempting to load image URL: " + params[0]);
+//            try {
+//                Bitmap b = getBitmapFromURL(params[0]);
+//                return b;
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//                return null;
+//            }
+//
+//        }
+//
+//        @Override
+//        protected void onPostExecute(Bitmap bitmap) {
+//            if (bitmap != null) {
+//                Log.i("ImageLoadTask", "Successfully loaded " + anmId + " image");
+//                image = bitmap;
+//                if (pendingConsultantBaseAdapter != null) {
+//                    // WHEN IMAGE IS LOADED NOTIFY THE ADAPTER
+//                    NativeDoctorActivity.syncDataAdapter.notifyDataSetChanged();
+//
+//                }
+//            } else {
+//                Log.e("ImageLoadTask", "Failed to load " + anmId + " image");
+//            }
+//
+//        }
+//}
 }

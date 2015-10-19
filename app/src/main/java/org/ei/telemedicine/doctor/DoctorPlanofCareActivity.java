@@ -253,111 +253,123 @@ public class DoctorPlanofCareActivity extends Activity {
                 ib_anm_logo.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        Dialog chooseDialog = new Dialog(DoctorPlanofCareActivity.this);
-                        chooseDialog.setContentView(R.layout.dialog_box);
-                        ListView chooselistview = (ListView) chooseDialog
-                                .findViewById(R.id.listview);
+                        try {
+                            Intent intent = new Intent(Intent.ACTION_MAIN);
+                            intent.setComponent(new ComponentName("org.appspot.apprtc",
+                                    "org.appspot.apprtc.ConnectActivity"));
+                            startActivity(intent);
+                        } catch (Exception e) {
+                            Toast.makeText(DoctorPlanofCareActivity.this, "Please install Apprtc APK", Toast.LENGTH_SHORT).show();
+                        }
 
-                        Button submit = (Button) chooseDialog.findViewById(R.id.btn);
-                        submit.setVisibility(View.GONE);
-                        String[] channels = new String[]{"AppRTC", "Jitsi"};
-
-                        chooseDialog.show();
-
-                        ArrayAdapter<String> chooseadapter = new ArrayAdapter<String>(
-                                DoctorPlanofCareActivity.this,
-                                android.R.layout.simple_list_item_1, channels);
-                        chooselistview.setAdapter(chooseadapter);
-
-                        chooselistview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-
-                            @Override
-                            public void onItemClick(AdapterView<?> arg0, View arg1,
-                                                    int arg2, long arg3) {
-
-                                obj = arg0.getItemAtPosition(arg2);
-                                Log.v("Selected Item", obj.toString());
-                                if (obj.toString().equals("AppRTC")) {
-                                    Intent intent = new Intent(Intent.ACTION_MAIN);
-                                    intent.setComponent(new ComponentName("org.appspot.apprtc",
-                                            "org.appspot.apprtc.ConnectActivity"));
-                                    startActivity(intent);
-                                } else {
-
-                                    popup_dialog = new Dialog(DoctorPlanofCareActivity.this);
-                                    popup_dialog.setContentView(R.layout.dialog_box);
-
-                                    //   getWindow().setLayout(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT);
-                                    ListView listview = (ListView) popup_dialog
-                                            .findViewById(R.id.listview);
-
-                                    Button submit = (Button) popup_dialog.findViewById(R.id.btn);
-                                    String[] accounts = new String[]{"Dhanush1", "Dhanush2"};
-
-                                    popup_dialog.show();
-
-                                    ArrayAdapter<String> adapter = new ArrayAdapter<String>(
-                                            DoctorPlanofCareActivity.this,
-                                            android.R.layout.simple_list_item_1, accounts);
-                                    listview.setAdapter(adapter);
-
-                                    listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-
-                                        @Override
-                                        public void onItemClick(AdapterView<?> arg0, View arg1,
-                                                                int arg2, long arg3) {
-                                            // TODO Auto-generated method stub
-
-                                            obj = arg0.getItemAtPosition(arg2);
-                                            Log.v("Selected Item", obj.toString());
-
-
-                                        }
-
-                                    });
-
-                                    submit.setOnClickListener(new View.OnClickListener() {
-
-                                        @Override
-                                        public void onClick(View v) {
-                                            popup_dialog.dismiss();
-                                            if (obj.toString().equalsIgnoreCase("Dhanush1")) {
-
-                                                Intent intent = new Intent(Intent.ACTION_MAIN);
-                                                intent.setComponent(new ComponentName("org.jitsi",
-                                                        "org.jitsi.android.gui.LauncherActivity"));
-
-                                                intent.putExtra("Username",
-                                                        "dhanush1@jwchat.org");
-                                                intent.putExtra("Password", "123456");
-
-                                                startActivity(intent);
-                                                finish();
-
-                                            } else if (obj.toString().equalsIgnoreCase("Dhanush2")) {
-
-                                                Intent intent = new Intent(Intent.ACTION_MAIN);
-                                                intent.setComponent(new ComponentName("org.jitsi",
-                                                        "org.jitsi.android.gui.LauncherActivity"));
-
-                                                intent.putExtra("Username",
-                                                        "dhanush2@jwchat.org");
-                                                intent.putExtra("Password", "123456");
-
-
-                                                startActivity(intent);
-                                                finish();
-                                            } else {
-
-                                            }
-
-
-                                        }
-
-                                    });
-                                }
-                            }
-                        });
+//                        Dialog chooseDialog = new Dialog(DoctorPlanofCareActivity.this);
+//                        chooseDialog.setContentView(R.layout.dialog_box);
+//                        ListView chooselistview = (ListView) chooseDialog
+//                                .findViewById(R.id.listview);
+//
+//                        Button submit = (Button) chooseDialog.findViewById(R.id.btn);
+//                        submit.setVisibility(View.GONE);
+//                        String[] channels = new String[]{"AppRTC", "Jitsi"};
+//
+//                        chooseDialog.show();
+//
+//                        ArrayAdapter<String> chooseadapter = new ArrayAdapter<String>(
+//                                DoctorPlanofCareActivity.this,
+//                                android.R.layout.simple_list_item_1, channels);
+//                        chooselistview.setAdapter(chooseadapter);
+//
+//                        chooselistview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//
+//                                                                  @Override
+//                                                                  public void onItemClick(AdapterView<?> arg0, View arg1,
+//                                                                                          int arg2, long arg3) {
+//
+//                                                                      obj = arg0.getItemAtPosition(arg2);
+//                                                                      Log.v("Selected Item", obj.toString());
+//                                                                      if (obj.toString().equals("AppRTC")) {
+//                                                                          Intent intent = new Intent(Intent.ACTION_MAIN);
+//                                                                          intent.setComponent(new ComponentName("org.appspot.apprtc",
+//                                                                                  "org.appspot.apprtc.ConnectActivity"));
+//                                                                          startActivity(intent);
+//                                                                      }
+////                                else {
+////
+////                                    popup_dialog = new Dialog(DoctorPlanofCareActivity.this);
+////                                    popup_dialog.setContentView(R.layout.dialog_box);
+////
+////                                    //   getWindow().setLayout(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT);
+////                                    ListView listview = (ListView) popup_dialog
+////                                            .findViewById(R.id.listview);
+////
+////                                    Button submit = (Button) popup_dialog.findViewById(R.id.btn);
+////                                    String[] accounts = new String[]{"Dhanush1", "Dhanush2"};
+////
+////                                    popup_dialog.show();
+////
+////                                    ArrayAdapter<String> adapter = new ArrayAdapter<String>(
+////                                            DoctorPlanofCareActivity.this,
+////                                            android.R.layout.simple_list_item_1, accounts);
+////                                    listview.setAdapter(adapter);
+////
+////                                    listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+////
+////                                        @Override
+////                                        public void onItemClick(AdapterView<?> arg0, View arg1,
+////                                                                int arg2, long arg3) {
+////                                            // TODO Auto-generated method stub
+////
+////                                            obj = arg0.getItemAtPosition(arg2);
+////                                            Log.v("Selected Item", obj.toString());
+////
+////
+////                                        }
+////
+////                                    });
+////
+////                                    submit.setOnClickListener(new View.OnClickListener() {
+////
+////                                        @Override
+////                                        public void onClick(View v) {
+////                                            popup_dialog.dismiss();
+////                                            if (obj.toString().equalsIgnoreCase("Dhanush1")) {
+////
+////                                                Intent intent = new Intent(Intent.ACTION_MAIN);
+////                                                intent.setComponent(new ComponentName("org.jitsi",
+////                                                        "org.jitsi.android.gui.LauncherActivity"));
+////
+////                                                intent.putExtra("Username",
+////                                                        "dhanush1@jwchat.org");
+////                                                intent.putExtra("Password", "123456");
+////
+////                                                startActivity(intent);
+////                                                finish();
+////
+////                                            } else if (obj.toString().equalsIgnoreCase("Dhanush2")) {
+////
+////                                                Intent intent = new Intent(Intent.ACTION_MAIN);
+////                                                intent.setComponent(new ComponentName("org.jitsi",
+////                                                        "org.jitsi.android.gui.LauncherActivity"));
+////
+////                                                intent.putExtra("Username",
+////                                                        "dhanush2@jwchat.org");
+////                                                intent.putExtra("Password", "123456");
+////
+////
+////                                                startActivity(intent);
+////                                                finish();
+////                                            } else {
+////
+////                                            }
+////
+////
+////                                        }
+////
+////                                    });
+////                            }
+//                                                                  }
+//                                                              }
+//
+//                        );
                     }
                 });
 
@@ -505,11 +517,13 @@ public class DoctorPlanofCareActivity extends Activity {
                                                                selectDrugs.add(pocDrugData);
                                                                pocDrugBaseAdapter.notifyDataSetChanged();
                                                            }
+                                                           et_drug_no_of_days.setText("");
+                                                           et_drug_qty.setText("");
+                                                           tv_stop_date.setText("");
                                                        } else
                                                            Toast.makeText(DoctorPlanofCareActivity.this, "All Fields are mandatory", Toast.LENGTH_SHORT).show();
-                                                       tv_stop_date.setText("");
-                                                       et_drug_no_of_days.setText("");
-                                                       et_drug_qty.setText("");
+
+
                                                    }
                                                }
 
@@ -627,6 +641,7 @@ public class DoctorPlanofCareActivity extends Activity {
         {
             Log.e(TAG, "No Data");
         }
+
     }
 
     private String getData(JSONObject jsonData, String key) {
@@ -713,6 +728,7 @@ public class DoctorPlanofCareActivity extends Activity {
 
                 return result;
             }
+
 
             @Override
             protected void onPostExecute(String resultData) {

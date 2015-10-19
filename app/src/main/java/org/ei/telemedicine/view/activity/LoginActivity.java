@@ -62,6 +62,15 @@ public class LoginActivity extends Activity {
         setDoneActionHandlerOnPasswordField();
         initializeProgressDialog();
 
+//        Button settingsButton = (Button) findViewById(R.id.settings_Button);
+//        settingsButton.setVisibility(View.VISIBLE);
+//        settingsButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Intent i = new Intent(getApplicationContext(), UserSettingsActivity.class);
+//                startActivity(i);
+//            }
+//        });
     }
 
     private void initializeBuildDetails() {

@@ -1,0 +1,8 @@
+1.sudo scp /home/naveen/Documents/Project_git_hub/opensrp-doctor-diagnosis/app/build/outputs/apk/dipl-telemedicine-v4.4.apk administrator@202.153.34.169:/home/administrator/Desktop
+2.su root
+3.cp /home/administrator/Desktop/dipl-telemedicine-v4.4.apk /var/www/html/Downloads/
+
+
+
+ 
+

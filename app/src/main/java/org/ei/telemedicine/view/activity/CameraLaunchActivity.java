@@ -26,7 +26,7 @@ import static org.ei.telemedicine.event.Event.ON_PHOTO_CAPTURED;
 public class CameraLaunchActivity extends SecuredActivity {
     private static final int TAKE_PHOTO_REQUEST_CODE = 111;
     private static final String JPG_FILE_SUFFIX = ".jpg";
-    private static final String DRISTHI_DIRECTORY_NAME = "Dristhi";
+    private static final String DRISTHI_DIRECTORY_NAME = "OpenSRP";
     private File imageFile;
     private String entityType;
     private String entityId;
@@ -102,7 +102,7 @@ public class CameraLaunchActivity extends SecuredActivity {
         if (WOMAN_TYPE.equals(entityType)) {
             context.allEligibleCouples().updatePhotoPath(entityId, imagePath);
         }
-        if(CHILD_TYPE.equals(entityType)) {
+        if (CHILD_TYPE.equals(entityType)) {
             context.childService().updatePhotoPath(entityId, imagePath);
         }
         ON_PHOTO_CAPTURED.notifyListeners(new CapturedPhotoInformation(entityId, imagePath));

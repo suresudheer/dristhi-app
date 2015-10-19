@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.content.ComponentName;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Environment;
@@ -61,6 +62,7 @@ public class NativeHomeActivity extends SecuredActivity {
     private PendingFormSubmissionService pendingFormSubmissionService;
     Dialog popup_dialog;
     Object obj;
+
     private Listener<Boolean> onSyncStartListener = new Listener<Boolean>() {
         @Override
         public void onEvent(Boolean data) {
@@ -265,29 +267,18 @@ public class NativeHomeActivity extends SecuredActivity {
             case R.id.updateMenuItem:
                 updateFromServer();
                 return true;
-//            case R.id.export:
-//                File sd = Environment.getExternalStorageDirectory();
-//                File data = Environment.getDataDirectory();
-//                FileChannel source = null;
-//                FileChannel destination = null;
-//                String SAMPLE_DB_NAME = "drishti.db";
-//                String currentDBPath = "/data/" + "org.ei.telemedicine" + "/databases/" + SAMPLE_DB_NAME;
-//                String backupDBPath = SAMPLE_DB_NAME;
-//                File currentDB = new File(data, currentDBPath);
-//                File backupDB = new File(sd, backupDBPath);
-//                try {
-//                    source = new FileInputStream(currentDB).getChannel();
-//                    destination = new FileOutputStream(backupDB).getChannel();
-//                    destination.transferFrom(source, 0, source.size());
-//                    source.close();
-//                    destination.close();
-//                    Toast.makeText(this, "DB Exported!", Toast.LENGTH_LONG).show();
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                }
-//                Toast.makeText(this, "Comple", Toast.LENGTH_SHORT).show();
-//                return true;
+
             case R.id.video:
+                try {
+                    Intent intent = new Intent(Intent.ACTION_MAIN);
+                    intent.setComponent(new ComponentName("org.appspot.apprtc",
+                            "org.appspot.apprtc.ConnectActivity"));
+                    startActivity(intent);
+                } catch (Exception e) {
+                    Toast.makeText(this, "Please install Apprtc APK", Toast.LENGTH_SHORT).show();
+                }
+
+
                 return true;
             case R.id.logout:
                 new AlertDialog.Builder(this).setTitle("Do you want logout?").setPositiveButton("Logout", new DialogInterface.OnClickListener() {

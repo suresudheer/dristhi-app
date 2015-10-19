@@ -605,6 +605,8 @@ public class BlueToothInfoActivity extends SecuredActivity implements OnClickLis
                         jsonObject.put("value", et_bp_dia.getText().toString());
                     else if (jsonObject.get("name").equals(bpSystolic))
                         jsonObject.put("value", et_bp_sys.getText().toString());
+                    else if (jsonObject.get("name").equals("pulseRate"))
+                        jsonObject.put("value", et_bp_heart.getText().toString());
                     else if (jsonObject.get("name").equals(temperature))
                         jsonObject.put("value", et_eet.getText().toString() + (context.allSettings().fetchANMConfiguration("temperature").startsWith("c") ? "-C" : "-F"));
                     else if (jsonObject.get("name").equals(AllConstants.PNCVisitFields.CHILD_TEMPERATURE))
