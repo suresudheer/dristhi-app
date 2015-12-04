@@ -1,5 +1,5 @@
 # dristhi-app
-Android app for rural nurse midwives (Dristhi project).
+Android app for rural nurse midwives
 
 To run test classes
 
