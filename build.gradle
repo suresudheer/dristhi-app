@@ -29,4 +29,6 @@ allprojects {
     }
 }
 
-cobertura.coverageFormats = ['html', 'xml']
+plugins{
+id 'net.saliman.cobertura' version '2.0.0'
+}
