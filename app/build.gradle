@@ -15,6 +15,13 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
         }
+        debug {
+            runProguard false
+            proguardFile 'proguard-rules.txt'
+            debuggable true
+            testCoverageEnabled = true
+
+        }
     }
     packagingOptions {
 
