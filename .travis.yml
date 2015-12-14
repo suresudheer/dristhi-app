@@ -33,5 +33,5 @@ script:
   #- ./gradlew connectedAndroidTest
   - ./gradlew clean assembleDebug
 after_success:
-  - coveralls
+  - ./gradlew jacocoTestReport coveralls
 
