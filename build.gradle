@@ -1,6 +1,6 @@
 
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
-apply plugin: 'cobertura'
+apply plugin: 'net.saliman.cobertura'
 apply plugin: 'com.github.kt3k.coveralls'
 
 buildscript {
