@@ -1,14 +1,19 @@
 buildscript {
     repositories { jcenter() }
     dependencies {
-        classpath 'net.saliman:gradle-cobertura-plugin:2.2.2'
-        classpath 'org.kt3k.gradle.plugin:coveralls-gradle-plugin:0.3.1'
+        classpath 'org.kt3k.gradle.plugin:coveralls-gradle-plugin:0.2.5'
     }
 }
-apply plugin: 'cobertura'
+
+apply plugin: 'jacoco'
 apply plugin: 'coveralls'
 
-cobertura.coverageFormats = ['html', 'xml']
+jacocoTestReport {
+    reports {
+        xml.enabled = true
+        html.enabled = true
+    }
+}
 
 apply plugin: 'com.android.application'
 
