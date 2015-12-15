@@ -1,3 +1,15 @@
+buildscript {
+    repositories { jcenter() }
+    dependencies {
+        classpath 'net.saliman:gradle-cobertura-plugin:2.2.2'
+        classpath 'org.kt3k.gradle.plugin:coveralls-gradle-plugin:0.3.1'
+    }
+}
+apply plugin: 'cobertura'
+apply plugin: 'coveralls'
+
+cobertura.coverageFormats = ['html', 'xml']
+
 apply plugin: 'com.android.application'
 
 android {
