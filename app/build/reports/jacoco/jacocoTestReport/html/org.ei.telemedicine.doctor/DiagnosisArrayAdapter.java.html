@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>DiagnosisArrayAdapter.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">org.ei.telemedicine.doctor</a> &gt; <span class="el_source">DiagnosisArrayAdapter.java</span></div><h1>DiagnosisArrayAdapter.java</h1><pre class="source lang-java linenums">package org.ei.telemedicine.doctor;
+
+import android.content.Context;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
+import android.widget.Filter;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import org.ei.telemedicine.R;
+
+import java.util.ArrayList;
+
+///**
+// * Created by naveen on 6/2/15.
+// */
+public class DiagnosisArrayAdapter extends ArrayAdapter {
+    ArrayList&lt;PocDiagnosis&gt; dataList;
+    ArrayList&lt;PocDiagnosis&gt; dataListAll;
+    ArrayList&lt;PocDiagnosis&gt; suggestions;
+<span class="nc" id="L25">    private String TAG = &quot;DiagnosisArrayAdapter&quot;;</span>
+    Context context;
+    int resource;
+
+    public DiagnosisArrayAdapter(Context context, int resource, ArrayList&lt;PocDiagnosis&gt; datalist) {
+<span class="nc" id="L30">        super(context, resource, datalist);</span>
+<span class="nc" id="L31">        Log.e(TAG, &quot;Diagnosis Size&quot; + datalist.size());</span>
+<span class="nc" id="L32">        this.dataList = datalist;</span>
+<span class="nc" id="L33">        this.context = context;</span>
+<span class="nc" id="L34">        this.resource = resource;</span>
+<span class="nc" id="L35">        this.suggestions = new ArrayList&lt;PocDiagnosis&gt;();</span>
+<span class="nc" id="L36">        this.dataListAll = (ArrayList&lt;PocDiagnosis&gt;) datalist.clone();</span>
+<span class="nc" id="L37">    }</span>
+
+<span class="nc" id="L39">    private class ViewHolder {</span>
+        TextView tv_name;
+    }
+
+    @Override
+    public View getView(int position, View convertView, ViewGroup parent) {
+<span class="nc" id="L45">        LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);</span>
+<span class="nc" id="L46">        convertView = inflater.inflate(resource, null);</span>
+<span class="nc" id="L47">        ViewHolder holder = new ViewHolder();</span>
+<span class="nc" id="L48">        holder.tv_name = (TextView) convertView.findViewById(R.id.tv_name);</span>
+<span class="nc" id="L49">        holder.tv_name.setText(dataList.get(position).getIcd10_name().toString());</span>
+<span class="nc" id="L50">        return convertView;</span>
+    }
+
+    @Override
+    public Filter getFilter() {
+<span class="nc" id="L55">        return nameFilter;</span>
+    }
+
+<span class="nc" id="L58">    Filter nameFilter = new Filter() {</span>
+        @Override
+        protected FilterResults performFiltering(CharSequence constraint) {
+<span class="nc bnc" id="L61" title="All 2 branches missed.">            if (constraint != null) {</span>
+<span class="nc" id="L62">                suggestions.clear();</span>
+<span class="nc bnc" id="L63" title="All 2 branches missed.">                for (PocDiagnosis pocDiagnosis : dataListAll) {</span>
+<span class="nc bnc" id="L64" title="All 2 branches missed.">                    if (pocDiagnosis.getIcd10_name().toLowerCase().contains(constraint.toString().toLowerCase())) {</span>
+<span class="nc" id="L65">                        suggestions.add(pocDiagnosis);</span>
+                    }
+<span class="nc" id="L67">                }</span>
+<span class="nc" id="L68">                FilterResults filterResults = new FilterResults();</span>
+<span class="nc" id="L69">                filterResults.values = suggestions;</span>
+<span class="nc" id="L70">                filterResults.count = suggestions.size();</span>
+<span class="nc" id="L71">                return filterResults;</span>
+            } else {
+<span class="nc" id="L73">                return new FilterResults();</span>
+            }
+        }
+
+        @Override
+        public CharSequence convertResultToString(Object resultValue) {
+<span class="nc" id="L79">            String str = ((PocDiagnosis) (resultValue)).getIcd10_name();</span>
+<span class="nc" id="L80">            return str;</span>
+        }
+
+        @Override
+        protected void publishResults(CharSequence constraint, FilterResults results) {
+
+<span class="nc" id="L86">            ArrayList&lt;PocDiagnosis&gt; filteredList = (ArrayList&lt;PocDiagnosis&gt;) results.values;</span>
+<span class="nc bnc" id="L87" title="All 4 branches missed.">            if (results != null &amp;&amp; results.count &gt; 0) {</span>
+<span class="nc" id="L88">                clear();</span>
+<span class="nc bnc" id="L89" title="All 2 branches missed.">                for (PocDiagnosis pocDiagnosis : filteredList) {</span>
+<span class="nc" id="L90">                    add(pocDiagnosis);</span>
+<span class="nc" id="L91">                }</span>
+<span class="nc" id="L92">                notifyDataSetChanged();</span>
+            }
+<span class="nc" id="L94">        }</span>
+    };
+}
+
+
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.1.201405082137</span></div></body></html>

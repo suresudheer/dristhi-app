@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>ChildImmunization9PlusServiceMode.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">org.ei.telemedicine.view.dialog</a> &gt; <span class="el_source">ChildImmunization9PlusServiceMode.java</span></div><h1>ChildImmunization9PlusServiceMode.java</h1><pre class="source lang-java linenums">package org.ei.telemedicine.view.dialog;
+
+import static android.view.View.INVISIBLE;
+import static android.view.View.VISIBLE;
+import static org.ei.telemedicine.AllConstants.FormNames.CHILD_IMMUNIZATIONS;
+import static org.ei.telemedicine.AllConstants.FormNames.VITAMIN_A;
+import static org.ei.telemedicine.view.contract.AlertDTO.emptyAlert;
+
+import org.ei.telemedicine.Context;
+import org.ei.telemedicine.R;
+import org.ei.telemedicine.domain.ChildServiceType;
+import org.ei.telemedicine.provider.SmartRegisterClientsProvider;
+import org.ei.telemedicine.view.activity.SecuredNativeSmartRegisterActivity.ClientsHeaderProvider;
+import org.ei.telemedicine.view.contract.ANCSmartRegisterClient;
+import org.ei.telemedicine.view.contract.AlertDTO;
+import org.ei.telemedicine.view.contract.AlertStatus;
+import org.ei.telemedicine.view.contract.ChildSmartRegisterClient;
+import org.ei.telemedicine.view.contract.FPSmartRegisterClient;
+import org.ei.telemedicine.view.contract.pnc.PNCSmartRegisterClient;
+import org.ei.telemedicine.view.viewHolder.NativeANCSmartRegisterViewHolder;
+import org.ei.telemedicine.view.viewHolder.NativeChildSmartRegisterViewHolder;
+import org.ei.telemedicine.view.viewHolder.NativeFPSmartRegisterViewHolder;
+import org.ei.telemedicine.view.viewHolder.NativePNCSmartRegisterViewHolder;
+import org.ei.telemedicine.view.viewHolder.OnClickFormLauncher;
+
+import android.view.View;
+import android.widget.TextView;
+
+public class ChildImmunization9PlusServiceMode extends ServiceModeOption {
+
+    public ChildImmunization9PlusServiceMode(SmartRegisterClientsProvider provider) {
+<span class="nc" id="L32">        super(provider);</span>
+<span class="nc" id="L33">    }</span>
+
+    @Override
+    public String name() {
+<span class="nc" id="L37">        return Context.getInstance().getStringResource(R.string.child_service_mode_immunization_9_plus);</span>
+    }
+
+    @Override
+    public ClientsHeaderProvider getHeaderProvider() {
+<span class="nc" id="L42">        return new ClientsHeaderProvider() {</span>
+            @Override
+            public int count() {
+<span class="nc" id="L45">                return 6;</span>
+            }
+
+            @Override
+            public int weightSum() {
+<span class="nc" id="L50">                return 100;</span>
+            }
+
+            @Override
+            public int[] weights() {
+<span class="nc" id="L55">                return new int[]{26, 14, 15, 15, 15, 15};</span>
+            }
+
+            @Override
+            public int[] headerTextResourceIds() {
+<span class="nc" id="L60">                return new int[]{</span>
+                        R.string.header_name, R.string.header_id_no, R.string.header_measles,
+                        R.string.header_opv_booster, R.string.header_dpt_booster, R.string.header_vitamin_a};
+            }
+        };
+
+    }
+
+    @Override
+    public void setupListView(ChildSmartRegisterClient client,
+                              NativeChildSmartRegisterViewHolder viewHolder,
+                              View.OnClickListener clientSectionClickListener) {
+<span class="nc" id="L72">        viewHolder.serviceModeImmunization9PlusView().setVisibility(VISIBLE);</span>
+
+<span class="nc" id="L74">        setupMeaslesLayout(client, viewHolder);</span>
+<span class="nc" id="L75">        setupOpvBoosterLayout(client, viewHolder);</span>
+<span class="nc" id="L76">        setupDptBoosterLayout(client, viewHolder);</span>
+<span class="nc" id="L77">        setupVitaminALayout(client, viewHolder);</span>
+<span class="nc" id="L78">    }</span>
+
+    @Override
+    public void setupListView(ANCSmartRegisterClient client, NativeANCSmartRegisterViewHolder viewHolder, View.OnClickListener clientSectionClickListener) {
+
+<span class="nc" id="L83">    }</span>
+
+    @Override
+    public void setupListView(FPSmartRegisterClient client, NativeFPSmartRegisterViewHolder viewHolder, View.OnClickListener clientSectionClickListener) {
+
+<span class="nc" id="L88">    }</span>
+
+    @Override
+    public void setupListView(PNCSmartRegisterClient client, NativePNCSmartRegisterViewHolder viewHolder, View.OnClickListener clientSectionClickListener) {
+
+<span class="nc" id="L93">    }</span>
+
+
+    public void setupMeaslesLayout(ChildSmartRegisterClient client,
+                                   NativeChildSmartRegisterViewHolder viewHolder) {
+<span class="nc bnc" id="L98" title="All 2 branches missed.">        if (client.isMeaslesDone()) {</span>
+<span class="nc" id="L99">            viewHolder.measlesDoneOnView().setVisibility(VISIBLE);</span>
+<span class="nc" id="L100">            viewHolder.measlesDoneOnView().setText(client.measlesDoneDate());</span>
+        } else {
+<span class="nc" id="L102">            viewHolder.measlesDoneOnView().setVisibility(INVISIBLE);</span>
+        }
+
+<span class="nc" id="L105">        AlertDTO measlesAlert = client.getAlert(ChildServiceType.MEASLES);</span>
+<span class="nc bnc" id="L106" title="All 2 branches missed.">        if (measlesAlert != emptyAlert) {</span>
+<span class="nc" id="L107">            viewHolder.addMeaslesView().setVisibility(INVISIBLE);</span>
+<span class="nc" id="L108">            viewHolder.layoutMeaslesAlertView().setVisibility(VISIBLE);</span>
+<span class="nc" id="L109">            viewHolder.layoutMeaslesAlertView().setOnClickListener(launchChildImmunizationForm(client));</span>
+<span class="nc" id="L110">            setAlertLayout(viewHolder.layoutMeaslesAlertView(),</span>
+                    viewHolder.measlesAlertDueTypeView(),
+                    viewHolder.measlesAlertDueOnView(),
+                    measlesAlert);
+        } else {
+<span class="nc" id="L115">            viewHolder.layoutMeaslesAlertView().setVisibility(INVISIBLE);</span>
+<span class="nc" id="L116">            viewHolder.addMeaslesView().setVisibility(VISIBLE);</span>
+<span class="nc" id="L117">            viewHolder.addMeaslesView().setOnClickListener(launchChildImmunizationForm(client));</span>
+        }
+<span class="nc" id="L119">    }</span>
+
+    public void setupOpvBoosterLayout(ChildSmartRegisterClient client,
+                                      NativeChildSmartRegisterViewHolder viewHolder) {
+<span class="nc bnc" id="L123" title="All 2 branches missed.">        if (client.isOpvBoosterDone()) {</span>
+<span class="nc" id="L124">            viewHolder.opvBoosterDoneOnView().setVisibility(VISIBLE);</span>
+<span class="nc" id="L125">            viewHolder.opvBoosterDoneOnView().setText(client.opvBoosterDoneDate());</span>
+        } else {
+<span class="nc" id="L127">            viewHolder.opvBoosterDoneOnView().setVisibility(INVISIBLE);</span>
+        }
+
+<span class="nc" id="L130">        AlertDTO opvBoosterAlert = client.getAlert(ChildServiceType.OPV_BOOSTER);</span>
+<span class="nc bnc" id="L131" title="All 2 branches missed.">        if (opvBoosterAlert != emptyAlert) {</span>
+<span class="nc" id="L132">            viewHolder.addOpvBoosterView().setVisibility(INVISIBLE);</span>
+<span class="nc" id="L133">            viewHolder.layoutOpvBoosterAlertView().setVisibility(VISIBLE);</span>
+<span class="nc" id="L134">            viewHolder.layoutOpvBoosterAlertView().setOnClickListener(launchChildImmunizationForm(client));</span>
+<span class="nc" id="L135">            setAlertLayout(viewHolder.layoutOpvBoosterAlertView(),</span>
+                    viewHolder.opvBoosterAlertDueTypeView(),
+                    viewHolder.opvBoosterAlertDueOnView(),
+                    opvBoosterAlert);
+        } else {
+<span class="nc" id="L140">            viewHolder.layoutOpvBoosterAlertView().setVisibility(INVISIBLE);</span>
+<span class="nc" id="L141">            viewHolder.addOpvBoosterView().setVisibility(VISIBLE);</span>
+<span class="nc" id="L142">            viewHolder.addOpvBoosterView().setOnClickListener(launchChildImmunizationForm(client));</span>
+        }
+<span class="nc" id="L144">    }</span>
+
+    public void setupDptBoosterLayout(ChildSmartRegisterClient client,
+                                      NativeChildSmartRegisterViewHolder viewHolder) {
+<span class="nc bnc" id="L148" title="All 2 branches missed.">        if (client.isDptBoosterDone()) {</span>
+<span class="nc" id="L149">            viewHolder.dptBoosterDoneOnView().setVisibility(VISIBLE);</span>
+<span class="nc" id="L150">            viewHolder.dptBoosterDoneOnView().setText(client.dptBoosterDoneDate());</span>
+        } else {
+<span class="nc" id="L152">            viewHolder.dptBoosterDoneOnView().setVisibility(INVISIBLE);</span>
+        }
+
+<span class="nc" id="L155">        AlertDTO dptBoosterAlert = client.getAlert(ChildServiceType.DPTBOOSTER_1);</span>
+<span class="nc bnc" id="L156" title="All 2 branches missed.">        if (dptBoosterAlert != emptyAlert) {</span>
+<span class="nc" id="L157">            viewHolder.addDptBoosterView().setVisibility(INVISIBLE);</span>
+<span class="nc" id="L158">            viewHolder.layoutDptBoosterAlertView().setVisibility(VISIBLE);</span>
+<span class="nc" id="L159">            viewHolder.layoutDptBoosterAlertView().setOnClickListener(launchChildImmunizationForm(client));</span>
+<span class="nc" id="L160">            setAlertLayout(viewHolder.layoutDptBoosterAlertView(),</span>
+                    viewHolder.dptBoosterAlertDueTypeView(),
+                    viewHolder.dptBoosterAlertDueOnView(),
+                    dptBoosterAlert);
+        } else {
+<span class="nc" id="L165">            viewHolder.layoutDptBoosterAlertView().setVisibility(INVISIBLE);</span>
+<span class="nc" id="L166">            viewHolder.addDptBoosterView().setVisibility(VISIBLE);</span>
+<span class="nc" id="L167">            viewHolder.addDptBoosterView().setOnClickListener(</span>
+                    launchChildImmunizationForm(client));
+        }
+<span class="nc" id="L170">    }</span>
+
+    public void setupVitaminALayout(ChildSmartRegisterClient client,
+                                    NativeChildSmartRegisterViewHolder viewHolder) {
+<span class="nc bnc" id="L174" title="All 2 branches missed.">        if (client.isVitaminADone()) {</span>
+<span class="nc" id="L175">            viewHolder.vitaminADoneOnView().setVisibility(VISIBLE);</span>
+<span class="nc" id="L176">            viewHolder.vitaminADoneOnView().setText(client.vitaminADoneDate());</span>
+        } else {
+<span class="nc" id="L178">            viewHolder.vitaminADoneOnView().setVisibility(INVISIBLE);</span>
+        }
+
+<span class="nc" id="L181">        AlertDTO vitaminAAlert = client.getAlert(ChildServiceType.VITAMIN_A);</span>
+<span class="nc bnc" id="L182" title="All 2 branches missed.">        if (vitaminAAlert != emptyAlert) {</span>
+<span class="nc" id="L183">            viewHolder.addVitaminAView().setVisibility(INVISIBLE);</span>
+<span class="nc" id="L184">            viewHolder.layoutVitaminAAlertView().setVisibility(VISIBLE);</span>
+<span class="nc" id="L185">            viewHolder.layoutVitaminAAlertView().setOnClickListener(launchChildImmunizationForm(client));</span>
+<span class="nc" id="L186">            setAlertLayout(viewHolder.layoutVitaminAAlertView(),</span>
+                    viewHolder.vitaminAAlertDueTypeView(),
+                    viewHolder.vitaminAAlertDueOnView(),
+                    vitaminAAlert);
+        } else {
+<span class="nc" id="L191">            viewHolder.layoutVitaminAAlertView().setVisibility(INVISIBLE);</span>
+<span class="nc" id="L192">            viewHolder.addVitaminAView().setVisibility(VISIBLE);</span>
+<span class="nc" id="L193">            viewHolder.addVitaminAView().setOnClickListener(launchVitaminAForm(client));</span>
+        }
+<span class="nc" id="L195">    }</span>
+
+    private View.OnClickListener launchVitaminAForm(ChildSmartRegisterClient client) {
+<span class="nc" id="L198">        return provider().newFormLauncher(VITAMIN_A, client.entityId(), null);</span>
+    }
+
+    private OnClickFormLauncher launchChildImmunizationForm(ChildSmartRegisterClient client) {
+<span class="nc" id="L202">        return provider().newFormLauncher(CHILD_IMMUNIZATIONS, client.entityId(), null);</span>
+    }
+
+    private void setAlertLayout(View layout, TextView typeView, TextView dateView, AlertDTO alert) {
+<span class="nc" id="L206">        typeView.setText(alert.type().shortName());</span>
+<span class="nc" id="L207">        dateView.setText(&quot;due &quot; + alert.shortDate());</span>
+
+<span class="nc" id="L209">        final AlertStatus alertStatus = alert.alertStatus();</span>
+<span class="nc" id="L210">        layout.setBackgroundResource(alertStatus.backgroundColorResourceId());</span>
+<span class="nc" id="L211">        typeView.setTextColor(alertStatus.fontColor());</span>
+<span class="nc" id="L212">        dateView.setTextColor(alertStatus.fontColor());</span>
+<span class="nc" id="L213">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.1.201405082137</span></div></body></html>

@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>DoctorData.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">org.ei.telemedicine.doctor</a> &gt; <span class="el_source">DoctorData.java</span></div><h1>DoctorData.java</h1><pre class="source lang-java linenums">package org.ei.telemedicine.doctor;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.Comparator;
+
+/**
+ * Created by naveen on 5/20/15.
+ */
+<span class="nc" id="L11">public class DoctorData {</span>
+
+
+    private String anmId;
+    private String FormInformation;
+    private String FormTime;
+    private String POCInformation;
+    private String PocStatus;
+    private String PocTime;
+    private String SyncStatus;
+    private String VisitType;
+    private String villageName;
+
+    private String imgUrl;
+
+    public String getVisitType() {
+<span class="nc" id="L27">        return VisitType;</span>
+    }
+
+    public void setVisitType(String visitType) {
+<span class="nc" id="L31">        VisitType = visitType;</span>
+<span class="nc" id="L32">    }</span>
+
+    public String getCaseId() {
+<span class="nc" id="L35">        return CaseId;</span>
+    }
+
+    public void setCaseId(String caseId) {
+<span class="nc" id="L39">        CaseId = caseId;</span>
+<span class="nc" id="L40">    }</span>
+
+    public String CaseId;
+
+    public String getAnmId() {
+<span class="nc" id="L45">        return anmId;</span>
+    }
+
+    public void setAnmId(String anmId) {
+<span class="nc" id="L49">        this.anmId = anmId;</span>
+<span class="nc" id="L50">    }</span>
+
+    public String getFormInformation() {
+<span class="nc" id="L53">        return FormInformation;</span>
+    }
+
+    public void setFormInformation(String formInformation) {
+<span class="nc" id="L57">        FormInformation = formInformation;</span>
+<span class="nc" id="L58">    }</span>
+
+    public String getFormTime() {
+<span class="nc" id="L61">        return FormTime;</span>
+    }
+
+    public void setFormTime(String formTime) {
+<span class="nc" id="L65">        FormTime = formTime;</span>
+<span class="nc" id="L66">    }</span>
+
+    public String getPOCInformation() {
+<span class="nc" id="L69">        return POCInformation;</span>
+    }
+
+    public void setPOCInformation(String POCInformation) {
+<span class="nc" id="L73">        this.POCInformation = POCInformation;</span>
+<span class="nc" id="L74">    }</span>
+
+    public String getPocStatus() {
+<span class="nc" id="L77">        return PocStatus;</span>
+    }
+
+    public void setPocStatus(String pocStatus) {
+<span class="nc" id="L81">        PocStatus = pocStatus;</span>
+<span class="nc" id="L82">    }</span>
+
+    public String getPocTime() {
+<span class="nc" id="L85">        return PocTime;</span>
+    }
+
+    public void setPocTime(String pocTime) {
+<span class="nc" id="L89">        PocTime = pocTime;</span>
+<span class="nc" id="L90">    }</span>
+
+    public String getSyncStatus() {
+<span class="nc" id="L93">        return SyncStatus;</span>
+    }
+
+    public void setSyncStatus(String syncStatus) {
+<span class="nc" id="L97">        SyncStatus = syncStatus;</span>
+<span class="nc" id="L98">    }</span>
+
+    public String getVillageName() {
+<span class="nc" id="L101">        return villageName;</span>
+    }
+
+    public void setVillageName(String villageName) {
+<span class="nc" id="L105">        this.villageName = villageName;</span>
+<span class="nc" id="L106">    }</span>
+
+
+<span class="nc" id="L109">    public static Comparator&lt;DoctorData&gt; womanNameComparator = new Comparator&lt;DoctorData&gt;() {</span>
+
+        public int compare(DoctorData s1, DoctorData s2) {
+<span class="nc" id="L112">            JSONObject compareformInfoJson = null;</span>
+            try {
+<span class="nc" id="L114">                compareformInfoJson = new JSONObject(s1.getFormInformation());</span>
+<span class="nc" id="L115">                JSONObject currentformInfoJson = new JSONObject(s2.getFormInformation());</span>
+<span class="nc bnc" id="L116" title="All 2 branches missed.">                String compareWomanName = compareformInfoJson.has(DoctorFormDataConstants.wife_name) ? compareformInfoJson.getString((DoctorFormDataConstants.wife_name)).toUpperCase() : &quot;&quot;;</span>
+<span class="nc bnc" id="L117" title="All 2 branches missed.">                String currentWomanName = currentformInfoJson.has(DoctorFormDataConstants.wife_name) ? currentformInfoJson.getString((DoctorFormDataConstants.wife_name)).toUpperCase() : &quot;&quot;;</span>
+<span class="nc" id="L118">                return compareWomanName.compareTo(currentWomanName);</span>
+<span class="nc" id="L119">            } catch (JSONException e) {</span>
+<span class="nc" id="L120">                e.printStackTrace();</span>
+            }
+
+<span class="nc" id="L123">            return 0;</span>
+            //descending order
+            //return StudentName2.compareTo(StudentName1);
+        }
+    };
+
+
+    public String getImgUrl() {
+<span class="nc" id="L131">        return imgUrl;</span>
+    }
+
+    public void setImgUrl(String imgUrl) {
+<span class="nc" id="L135">        this.imgUrl = imgUrl;</span>
+<span class="nc" id="L136">    }</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.1.201405082137</span></div></body></html>

@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>ReportMonth.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">org.ei.telemedicine.domain</a> &gt; <span class="el_source">ReportMonth.java</span></div><h1>ReportMonth.java</h1><pre class="source lang-java linenums">package org.ei.telemedicine.domain;
+
+import org.ei.telemedicine.util.DateUtil;
+import org.joda.time.LocalDate;
+
+import java.util.Date;
+
+<span class="nc" id="L8">public class ReportMonth {</span>
+
+    public static final int FIRST_REPORT_MONTH_OF_YEAR = 3;
+    public static final int REPORTING_MONTH_START_DAY = 26;
+    public static final int REPORTING_MONTH_END_DAY = 25;
+    private static final int JANUARY = 1;
+    private static final int DECEMBER = 12;
+
+    public Date startDateOfReportingYear() {
+<span class="nc" id="L17">        int reportingYear = reportingYear();</span>
+<span class="nc" id="L18">        return new LocalDate().withDayOfMonth(REPORTING_MONTH_START_DAY).withMonthOfYear(FIRST_REPORT_MONTH_OF_YEAR).withYear(reportingYear).toDate();</span>
+    }
+
+    public int reportingYear() {
+<span class="nc" id="L22">        LocalDate now = DateUtil.today();</span>
+<span class="nc" id="L23">        LocalDate beginningOfReportingYear = DateUtil.today().withMonthOfYear(FIRST_REPORT_MONTH_OF_YEAR).withDayOfMonth(REPORTING_MONTH_START_DAY);</span>
+<span class="nc bnc" id="L24" title="All 2 branches missed.">        return now.isBefore(beginningOfReportingYear) ? previousYear(now) : now.getYear();</span>
+    }
+
+    public LocalDate startDateOfNextReportingMonth(LocalDate date) {
+<span class="nc bnc" id="L28" title="All 2 branches missed.">        if (date.getDayOfMonth() &lt; REPORTING_MONTH_START_DAY) {</span>
+<span class="nc" id="L29">            return new LocalDate(date.getYear(), date.getMonthOfYear(), REPORTING_MONTH_START_DAY);</span>
+        }
+<span class="nc bnc" id="L31" title="All 2 branches missed.">        if (date.getMonthOfYear() == DECEMBER) {</span>
+<span class="nc" id="L32">            return new LocalDate(date.plusYears(1).getYear(), JANUARY, REPORTING_MONTH_START_DAY);</span>
+        }
+<span class="nc" id="L34">        return new LocalDate(date.getYear(), date.plusMonths(1).getMonthOfYear(), REPORTING_MONTH_START_DAY);</span>
+    }
+
+    public LocalDate endDateOfReportingMonthGivenStartDate(LocalDate startDate) {
+<span class="nc" id="L38">        return startDate.plusMonths(1).minusDays(1);</span>
+    }
+
+    public LocalDate startOfCurrentReportMonth(LocalDate date) {
+<span class="nc bnc" id="L42" title="All 2 branches missed.">        if (date.getDayOfMonth() &gt;= REPORTING_MONTH_START_DAY) {</span>
+<span class="nc" id="L43">            return new LocalDate(date.getYear(), date.getMonthOfYear(), REPORTING_MONTH_START_DAY);</span>
+        }
+<span class="nc bnc" id="L45" title="All 2 branches missed.">        if (date.getMonthOfYear() == JANUARY) {</span>
+<span class="nc" id="L46">            return new LocalDate(previousYear(date), DECEMBER, REPORTING_MONTH_START_DAY);</span>
+        }
+<span class="nc" id="L48">        return new LocalDate(date.getYear(), previousMonth(date), REPORTING_MONTH_START_DAY);</span>
+    }
+
+    public LocalDate endOfCurrentReportMonth(LocalDate date) {
+<span class="nc bnc" id="L52" title="All 2 branches missed.">        if (date.getDayOfMonth() &gt; REPORTING_MONTH_END_DAY) {</span>
+<span class="nc bnc" id="L53" title="All 2 branches missed.">            if (date.getMonthOfYear() == DECEMBER) {</span>
+<span class="nc" id="L54">                return new LocalDate(nextYear(date), JANUARY, REPORTING_MONTH_END_DAY);</span>
+            } else {
+<span class="nc" id="L56">                return new LocalDate(date.getYear(), nextMonth(date), REPORTING_MONTH_END_DAY);</span>
+            }
+        } else {
+<span class="nc" id="L59">            return new LocalDate(date.getYear(), date.getMonthOfYear(), REPORTING_MONTH_END_DAY);</span>
+        }
+    }
+
+    public boolean isDateWithinCurrentReportMonth(LocalDate lastReportedDate) {
+<span class="nc bnc" id="L64" title="All 4 branches missed.">        return !(lastReportedDate.isBefore(startOfCurrentReportMonth(DateUtil.today())) ||</span>
+                lastReportedDate.isAfter(endOfCurrentReportMonth(DateUtil.today())));
+    }
+
+    private int previousMonth(LocalDate today) {
+<span class="nc" id="L69">        return today.getMonthOfYear() - 1;</span>
+    }
+
+    private int nextMonth(LocalDate today) {
+<span class="nc" id="L73">        return today.getMonthOfYear() + 1;</span>
+    }
+
+    private int previousYear(LocalDate today) {
+<span class="nc" id="L77">        return today.getYear() - 1;</span>
+    }
+
+    private int nextYear(LocalDate today) {
+<span class="nc" id="L81">        return today.getYear() + 1;</span>
+    }
+
+    public int reportingMonth(LocalDate date) {
+<span class="nc" id="L85">        return endOfCurrentReportMonth(date).getMonthOfYear();</span>
+    }
+
+    public int reportingYear(LocalDate date) {
+<span class="nc" id="L89">        return endOfCurrentReportMonth(date).getYear();</span>
+    }
+}
+
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.1.201405082137</span></div></body></html>

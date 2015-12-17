@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>ANCStatusView.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">org.ei.telemedicine.view.customControls</a> &gt; <span class="el_source">ANCStatusView.java</span></div><h1>ANCStatusView.java</h1><pre class="source lang-java linenums">package org.ei.telemedicine.view.customControls;
+
+import android.content.Context;
+import android.util.AttributeSet;
+import android.view.View;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
+
+import org.ei.telemedicine.R;
+import org.ei.telemedicine.util.IntegerUtil;
+import org.ei.telemedicine.view.contract.ANCSmartRegisterClient;
+
+import static org.ei.telemedicine.Context.getInstance;
+import static org.ei.telemedicine.R.color.alert_urgent_red;
+
+public class ANCStatusView extends RelativeLayout {
+	private TextView txtEdd;
+	private TextView txtDaysPastDue;
+	private TextView lblEdd;
+	private TextView lblDaysPastDue;
+	private TextView lblANCStatus;
+	private TextView txtANCStatus;
+	private TextView lblLmp;
+	private TextView txtLmp;
+
+	@SuppressWarnings(&quot;UnusedDeclaration&quot;)
+	public ANCStatusView(Context context) {
+<span class="nc" id="L28">		this(context, null, 0);</span>
+<span class="nc" id="L29">	}</span>
+
+	@SuppressWarnings(&quot;UnusedDeclaration&quot;)
+	public ANCStatusView(Context context, AttributeSet attrs) {
+<span class="nc" id="L33">		this(context, attrs, 0);</span>
+<span class="nc" id="L34">	}</span>
+
+	public ANCStatusView(Context context, AttributeSet attrs, int defStyle) {
+<span class="nc" id="L37">		super(context, attrs, defStyle);</span>
+<span class="nc" id="L38">	}</span>
+
+	public void initialize() {
+<span class="nc" id="L41">		txtEdd = (TextView) findViewById(R.id.txt_edd);</span>
+<span class="nc" id="L42">		txtDaysPastDue = (TextView) findViewById(R.id.txt_days_past_due);</span>
+<span class="nc" id="L43">		lblEdd = (TextView) findViewById(R.id.lbl_edd);</span>
+<span class="nc" id="L44">		lblDaysPastDue = (TextView) findViewById(R.id.lbl_days_past_due);</span>
+<span class="nc" id="L45">		lblANCStatus = (TextView) findViewById(R.id.lbl_anc_status);</span>
+<span class="nc" id="L46">		txtANCStatus = (TextView) findViewById(R.id.txt_anc_status);</span>
+<span class="nc" id="L47">		lblLmp = (TextView) findViewById(R.id.lbl_lmp);</span>
+<span class="nc" id="L48">		txtLmp = ((TextView) findViewById(R.id.txt_lmp));</span>
+<span class="nc" id="L49">	}</span>
+
+	public void bindData(ANCSmartRegisterClient client) {
+<span class="nc" id="L52">		hideAllViews();</span>
+<span class="nc bnc" id="L53" title="All 2 branches missed.">		if (IntegerUtil.tryParse(client.pastDueInDays(), 0) &gt; 0) {</span>
+<span class="nc" id="L54">			setVisibilityForPastDue();</span>
+<span class="nc" id="L55">			setTextForPastDue(client);</span>
+<span class="nc" id="L56">			setTextColorForPastDue();</span>
+		} else {
+<span class="nc" id="L58">			setVisibilityForLMP();</span>
+<span class="nc" id="L59">			setTextForLMP(client);</span>
+<span class="nc" id="L60">			setTextColorForLMP(client);</span>
+		}
+<span class="nc" id="L62">	}</span>
+
+	private void setTextForPastDue(ANCSmartRegisterClient client) {
+<span class="nc" id="L65">		txtEdd.setText(client.eddForDisplay());</span>
+<span class="nc" id="L66">		txtDaysPastDue.setText(client.pastDueInDays());</span>
+<span class="nc" id="L67">	}</span>
+
+	private void setVisibilityForPastDue() {
+<span class="nc" id="L70">		txtEdd.setVisibility(VISIBLE);</span>
+<span class="nc" id="L71">		txtDaysPastDue.setVisibility(VISIBLE);</span>
+<span class="nc" id="L72">		lblEdd.setVisibility(VISIBLE);</span>
+<span class="nc" id="L73">		lblDaysPastDue.setVisibility(VISIBLE);</span>
+<span class="nc" id="L74">	}</span>
+
+	private void setVisibilityForLMP() {
+<span class="nc" id="L77">		txtLmp.setVisibility(VISIBLE);</span>
+<span class="nc" id="L78">		txtEdd.setVisibility(VISIBLE);</span>
+<span class="nc" id="L79">		txtANCStatus.setVisibility(VISIBLE);</span>
+<span class="nc" id="L80">		lblLmp.setVisibility(VISIBLE);</span>
+<span class="nc" id="L81">		lblEdd.setVisibility(VISIBLE);</span>
+<span class="nc" id="L82">		lblANCStatus.setVisibility(VISIBLE);</span>
+<span class="nc" id="L83">	}</span>
+
+	private void setTextForLMP(ANCSmartRegisterClient client) {
+<span class="nc" id="L86">		txtLmp.setText(client.lmp());</span>
+<span class="nc" id="L87">		txtEdd.setText(client.eddForDisplay());</span>
+<span class="nc" id="L88">		txtANCStatus.setText(client.weeksAfterLMP());</span>
+<span class="nc" id="L89">	}</span>
+
+	private void setTextColorForLMP(ANCSmartRegisterClient client) {
+<span class="nc bnc" id="L92" title="All 4 branches missed.">		if (IntegerUtil.tryParse(client.pastDueInDays(), 0) &gt; -30</span>
+				&amp;&amp; IntegerUtil.tryParse(client.pastDueInDays(), 0) &lt; 0) {
+<span class="nc" id="L94">			txtLmp.setTextColor(getInstance().getColorResource(</span>
+					R.color.alert_in_progress_blue));
+<span class="nc" id="L96">			txtEdd.setTextColor(getInstance().getColorResource(</span>
+					R.color.alert_in_progress_blue));
+<span class="nc" id="L98">			txtANCStatus.setTextColor(getInstance().getColorResource(</span>
+					R.color.alert_in_progress_blue));
+<span class="nc" id="L100">			lblLmp.setTextColor(getInstance().getColorResource(</span>
+					R.color.alert_in_progress_blue));
+<span class="nc" id="L102">			lblEdd.setTextColor(getInstance().getColorResource(</span>
+					R.color.alert_in_progress_blue));
+<span class="nc" id="L104">			lblANCStatus.setTextColor(getInstance().getColorResource(</span>
+					R.color.alert_in_progress_blue));
+		} else {
+<span class="nc" id="L107">			txtLmp.setTextColor(getInstance().getColorResource(</span>
+					R.color.text_black));
+<span class="nc" id="L109">			txtEdd.setTextColor(getInstance().getColorResource(</span>
+					R.color.text_black));
+<span class="nc" id="L111">			txtANCStatus.setTextColor(getInstance().getColorResource(</span>
+					R.color.text_black));
+<span class="nc" id="L113">			lblLmp.setTextColor(getInstance().getColorResource(</span>
+					R.color.text_black));
+<span class="nc" id="L115">			lblEdd.setTextColor(getInstance().getColorResource(</span>
+					R.color.text_black));
+<span class="nc" id="L117">			lblANCStatus.setTextColor(getInstance().getColorResource(</span>
+					R.color.text_black));
+		}
+<span class="nc" id="L120">	}</span>
+
+	private void setTextColorForPastDue() {
+<span class="nc" id="L123">		lblEdd.setTextColor(getInstance().getColorResource(alert_urgent_red));</span>
+<span class="nc" id="L124">		txtEdd.setTextColor(getInstance().getColorResource(alert_urgent_red));</span>
+<span class="nc" id="L125">		lblDaysPastDue.setTextColor(getInstance().getColorResource(</span>
+				alert_urgent_red));
+<span class="nc" id="L127">		txtDaysPastDue.setTextColor(getInstance().getColorResource(</span>
+				alert_urgent_red));
+<span class="nc" id="L129">	}</span>
+
+	private void hideAllViews() {
+<span class="nc" id="L132">		lblLmp.setVisibility(View.GONE);</span>
+<span class="nc" id="L133">		txtLmp.setVisibility(View.GONE);</span>
+<span class="nc" id="L134">		lblANCStatus.setVisibility(View.GONE);</span>
+<span class="nc" id="L135">		txtANCStatus.setVisibility(View.GONE);</span>
+<span class="nc" id="L136">		txtDaysPastDue.setVisibility(View.GONE);</span>
+<span class="nc" id="L137">		lblDaysPastDue.setVisibility(View.GONE);</span>
+<span class="nc" id="L138">		txtEdd.setVisibility(View.GONE);</span>
+<span class="nc" id="L139">		lblEdd.setVisibility(View.GONE);</span>
+<span class="nc" id="L140">	}</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.1.201405082137</span></div></body></html>

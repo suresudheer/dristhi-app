@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>VillageController.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">org.ei.telemedicine.view.controller</a> &gt; <span class="el_source">VillageController.java</span></div><h1>VillageController.java</h1><pre class="source lang-java linenums">package org.ei.telemedicine.view.controller;
+
+import com.google.gson.Gson;
+
+import org.ei.telemedicine.repository.AllEligibleCouples;
+import org.ei.telemedicine.util.Cache;
+import org.ei.telemedicine.util.CacheableData;
+import org.ei.telemedicine.view.contract.Village;
+import org.ei.telemedicine.view.contract.Villages;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class VillageController {
+    private static final String VILLAGE_LIST = &quot;VILLAGE_LIST&quot;;
+    private AllEligibleCouples allEligibleCouples;
+    private Cache&lt;String&gt; cache;
+    private Cache&lt;Villages&gt; villagesCache;
+
+    public VillageController(AllEligibleCouples allEligibleCouples, Cache&lt;String&gt; cache,
+<span class="fc" id="L21">                             Cache&lt;Villages&gt; villagesCache) {</span>
+<span class="fc" id="L22">        this.allEligibleCouples = allEligibleCouples;</span>
+<span class="fc" id="L23">        this.cache = cache;</span>
+<span class="fc" id="L24">        this.villagesCache = villagesCache;</span>
+<span class="fc" id="L25">    }</span>
+
+    public String villages() {
+<span class="fc" id="L28">        return cache.get(VILLAGE_LIST, new CacheableData&lt;String&gt;() {</span>
+            @Override
+            public String fetch() {
+<span class="fc" id="L31">                List&lt;Village&gt; villagesList = new ArrayList&lt;Village&gt;();</span>
+<span class="fc" id="L32">                List&lt;String&gt; villages = allEligibleCouples.villages();</span>
+<span class="fc bfc" id="L33" title="All 2 branches covered.">                for (String village : villages) {</span>
+<span class="fc" id="L34">                    villagesList.add(new Village(village));</span>
+<span class="fc" id="L35">                }</span>
+<span class="fc" id="L36">                return new Gson().toJson(villagesList);</span>
+            }
+        });
+    }
+
+    public Villages getVillages() {
+<span class="nc" id="L42">        return villagesCache.get(VILLAGE_LIST, new CacheableData&lt;Villages&gt;() {</span>
+            @Override
+            public Villages fetch() {
+<span class="nc" id="L45">                Villages villagesList = new Villages();</span>
+<span class="nc" id="L46">                List&lt;String&gt; villages = allEligibleCouples.villages();</span>
+<span class="nc bnc" id="L47" title="All 2 branches missed.">                for (String village : villages) {</span>
+<span class="nc" id="L48">                    villagesList.add(new Village(village));</span>
+<span class="nc" id="L49">                }</span>
+<span class="nc" id="L50">                return villagesList;</span>
+            }
+        });
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.1.201405082137</span></div></body></html>

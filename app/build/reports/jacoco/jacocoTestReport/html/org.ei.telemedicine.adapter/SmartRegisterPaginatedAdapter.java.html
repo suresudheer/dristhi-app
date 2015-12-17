@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>SmartRegisterPaginatedAdapter.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">org.ei.telemedicine.adapter</a> &gt; <span class="el_source">SmartRegisterPaginatedAdapter.java</span></div><h1>SmartRegisterPaginatedAdapter.java</h1><pre class="source lang-java linenums">package org.ei.telemedicine.adapter;
+
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.BaseAdapter;
+
+import org.ei.telemedicine.provider.SmartRegisterClientsProvider;
+import org.ei.telemedicine.view.contract.SmartRegisterClient;
+import org.ei.telemedicine.view.contract.SmartRegisterClients;
+import org.ei.telemedicine.view.dialog.FilterOption;
+import org.ei.telemedicine.view.dialog.ServiceModeOption;
+import org.ei.telemedicine.view.dialog.SortOption;
+
+public class SmartRegisterPaginatedAdapter extends BaseAdapter {
+    private static final int CLIENTS_PER_PAGE = 20;
+
+    private int clientCount;
+    private int pageCount;
+<span class="fc" id="L19">    private int currentPage = 0;</span>
+    private SmartRegisterClients filteredClients;
+
+    private final int clientsPerPage;
+    private final SmartRegisterClientsProvider listItemProvider;
+
+    public SmartRegisterPaginatedAdapter(SmartRegisterClientsProvider listItemProvider) {
+<span class="fc" id="L26">        this(CLIENTS_PER_PAGE, listItemProvider);</span>
+<span class="fc" id="L27">    }</span>
+
+    public SmartRegisterPaginatedAdapter(
+<span class="fc" id="L30">            int clientsPerPage, SmartRegisterClientsProvider listItemProvider) {</span>
+<span class="fc" id="L31">        this.clientsPerPage = clientsPerPage;</span>
+<span class="fc" id="L32">        this.listItemProvider = listItemProvider;</span>
+<span class="fc" id="L33">        refreshClients(listItemProvider.getClients());</span>
+<span class="fc" id="L34">    }</span>
+
+    private void refreshClients(SmartRegisterClients filteredClients) {
+<span class="fc" id="L37">        this.filteredClients = filteredClients;</span>
+<span class="fc" id="L38">        clientCount = filteredClients.size();</span>
+<span class="fc" id="L39">        pageCount = (int) Math.ceil((double) clientCount / (double) clientsPerPage);</span>
+<span class="fc" id="L40">        currentPage = 0;</span>
+<span class="fc" id="L41">    }</span>
+
+    @Override
+    public int getCount() {
+<span class="fc bfc" id="L45" title="All 2 branches covered.">        if (clientCount &lt;= clientsPerPage) {</span>
+<span class="fc" id="L46">            return clientCount;</span>
+<span class="fc bfc" id="L47" title="All 2 branches covered.">        } else if (currentPage == pageCount() - 1) {</span>
+<span class="fc" id="L48">            return clientCount - currentPage * clientsPerPage;</span>
+        }
+<span class="fc" id="L50">        return clientsPerPage;</span>
+    }
+
+    @Override
+    public Object getItem(int i) {
+<span class="fc" id="L55">        return filteredClients.get(i);</span>
+    }
+
+    @Override
+    public long getItemId(int i) {
+<span class="fc" id="L60">        return actualPosition(i);</span>
+    }
+
+    @Override
+    public View getView(int i, View parentView, ViewGroup viewGroup) {
+<span class="fc" id="L65">        return listItemProvider.getView((SmartRegisterClient) getItem(actualPosition(i)), parentView, viewGroup);</span>
+    }
+
+    private int actualPosition(int i) {
+<span class="pc bpc" id="L69" title="1 of 2 branches missed.">        if (clientCount &lt;= clientsPerPage) {</span>
+<span class="nc" id="L70">            return i;</span>
+        } else {
+<span class="fc" id="L72">            return i + (currentPage * clientsPerPage);</span>
+        }
+    }
+
+    public int pageCount() {
+<span class="fc" id="L77">        return pageCount;</span>
+    }
+
+    public int currentPage() {
+<span class="fc" id="L81">        return currentPage;</span>
+    }
+
+    public void nextPage() {
+<span class="pc bpc" id="L85" title="1 of 2 branches missed.">        if (hasNextPage()) {</span>
+<span class="fc" id="L86">            currentPage++;</span>
+        }
+<span class="fc" id="L88">    }</span>
+
+    public void previousPage() {
+<span class="pc bpc" id="L91" title="1 of 2 branches missed.">        if (hasPreviousPage()) {</span>
+<span class="fc" id="L92">            currentPage--;</span>
+        }
+<span class="fc" id="L94">    }</span>
+
+    public boolean hasNextPage() {
+<span class="fc bfc" id="L97" title="All 2 branches covered.">        return currentPage &lt; pageCount() - 1;</span>
+    }
+
+    public boolean hasPreviousPage() {
+<span class="fc bfc" id="L101" title="All 2 branches covered.">        return currentPage &gt; 0;</span>
+    }
+
+    public void refreshList(FilterOption villageFilter, ServiceModeOption serviceModeOption,
+                            FilterOption searchFilter, SortOption sortOption) {
+<span class="fc" id="L106">        SmartRegisterClients filteredClients = listItemProvider</span>
+                .updateClients(villageFilter, serviceModeOption, searchFilter, sortOption);
+<span class="fc" id="L108">        refreshClients(filteredClients);</span>
+<span class="fc" id="L109">        notifyDataSetChanged();</span>
+<span class="fc" id="L110">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.1.201405082137</span></div></body></html>

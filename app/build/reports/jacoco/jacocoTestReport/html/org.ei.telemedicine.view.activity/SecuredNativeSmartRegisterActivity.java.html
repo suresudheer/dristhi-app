@@ -1,0 +1,547 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>SecuredNativeSmartRegisterActivity.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">org.ei.telemedicine.view.activity</a> &gt; <span class="el_source">SecuredNativeSmartRegisterActivity.java</span></div><h1>SecuredNativeSmartRegisterActivity.java</h1><pre class="source lang-java linenums">package org.ei.telemedicine.view.activity;
+
+import static android.os.AsyncTask.THREAD_POOL_EXECUTOR;
+import static android.view.View.INVISIBLE;
+import static android.view.View.VISIBLE;
+import static java.text.MessageFormat.format;
+import static java.util.Arrays.asList;
+import static org.apache.commons.lang3.StringUtils.isEmpty;
+import static org.ei.telemedicine.AllConstants.PNC_REGISTERS_KEY;
+import static org.ei.telemedicine.AllConstants.SHORT_DATE_FORMAT;
+
+import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+
+import org.ei.telemedicine.AllConstants;
+import org.ei.telemedicine.Context;
+import org.ei.telemedicine.R;
+import org.ei.telemedicine.adapter.SmartRegisterPaginatedAdapter;
+import org.ei.telemedicine.domain.ProfileImage;
+import org.ei.telemedicine.domain.ReportMonth;
+import org.ei.telemedicine.event.CapturedPhotoInformation;
+import org.ei.telemedicine.event.Listener;
+import org.ei.telemedicine.provider.SmartRegisterClientsProvider;
+import org.ei.telemedicine.repository.ImageRepository;
+import org.ei.telemedicine.view.contract.SmartRegisterClient;
+import org.ei.telemedicine.view.customControls.CustomFontTextView;
+import org.ei.telemedicine.view.customControls.FontVariant;
+import org.ei.telemedicine.view.dialog.AllClientsFilter;
+import org.ei.telemedicine.view.dialog.DialogOption;
+import org.ei.telemedicine.view.dialog.DialogOptionModel;
+import org.ei.telemedicine.view.dialog.ECSearchOption;
+import org.ei.telemedicine.view.dialog.EditOption;
+import org.ei.telemedicine.view.dialog.FilterOption;
+import org.ei.telemedicine.view.dialog.ServiceModeOption;
+import org.ei.telemedicine.view.dialog.SmartRegisterDialogFragment;
+import org.ei.telemedicine.view.dialog.SortOption;
+import org.joda.time.LocalDate;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Fragment;
+import android.app.FragmentTransaction;
+import android.app.ProgressDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.database.DataSetObserver;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
+import android.net.Uri;
+import android.os.AsyncTask;
+import android.os.Environment;
+import android.provider.MediaStore;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.util.Log;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.widget.AbsListView;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ListView;
+import android.widget.ProgressBar;
+import android.widget.TextView;
+import android.widget.Toast;
+
+<span class="nc" id="L82">public abstract class SecuredNativeSmartRegisterActivity extends SecuredActivity {</span>
+
+    private static final String DIALOG_TAG = &quot;dialog&quot;;
+<span class="nc" id="L85">    public static final List&lt;? extends DialogOption&gt; DEFAULT_FILTER_OPTIONS = asList(new AllClientsFilter());</span>
+
+    private ListView clientsView;
+    private ProgressBar clientsProgressView;
+    private TextView serviceModeView;
+    private TextView appliedVillageFilterView;
+    private TextView appliedSortView;
+    private EditText searchView;
+    private View searchCancelView;
+    private TextView titleLabelView;
+
+    private SmartRegisterPaginatedAdapter clientsAdapter;
+
+    private FilterOption currentVillageFilter;
+    private SortOption currentSortOption;
+    private FilterOption currentSearchFilter;
+    private ServiceModeOption currentServiceModeOption;
+
+<span class="nc" id="L103">    private final PaginationViewHandler paginationViewHandler = new PaginationViewHandler();</span>
+<span class="nc" id="L104">    private final NavBarActionsHandler navBarActionsHandler = new NavBarActionsHandler();</span>
+<span class="nc" id="L105">    private final SearchCancelHandler searchCancelHandler = new SearchCancelHandler();</span>
+<span class="nc" id="L106">    private String TAG = &quot;SecuredNativeSmartRegisterActivity&quot;;</span>
+
+    public interface ClientsHeaderProvider {
+
+        public abstract int count();
+
+        public abstract int weightSum();
+
+        public abstract int[] weights();
+
+        public abstract int[] headerTextResourceIds();
+    }
+
+    public interface DefaultOptionsProvider {
+
+        public abstract ServiceModeOption serviceMode();
+
+        public abstract FilterOption villageFilter();
+
+        public abstract SortOption sortOption();
+
+        public abstract String nameInShortFormForTitle();
+
+    }
+
+    public interface NavBarOptionsProvider {
+
+        public abstract DialogOption[] filterOptions();
+
+        public abstract DialogOption[] serviceModeOptions();
+
+        public abstract DialogOption[] sortingOptions();
+
+        public abstract String searchHint();
+    }
+
+    private DefaultOptionsProvider defaultOptionProvider;
+    private NavBarOptionsProvider navBarOptionsProvider;
+
+    @Override
+    public void onCreation() {
+<span class="nc" id="L147">        setContentView(R.layout.smart_register_activity);</span>
+
+<span class="nc" id="L149">        this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);</span>
+
+<span class="nc" id="L151">        onInitialization();</span>
+
+<span class="nc" id="L153">        defaultOptionProvider = getDefaultOptionsProvider();</span>
+<span class="nc" id="L154">        navBarOptionsProvider = getNavBarOptionsProvider();</span>
+
+<span class="nc" id="L156">        setupViews();</span>
+<span class="nc" id="L157">    }</span>
+
+    public void chooseVillage() {
+<span class="nc" id="L160">        final ArrayList&lt;String&gt; villages = context.allSettings().getVillages();</span>
+<span class="nc bnc" id="L161" title="All 2 branches missed.">        if (villages.size() != 0) {</span>
+<span class="nc" id="L162">            AlertDialog.Builder builder = new AlertDialog.Builder(SecuredNativeSmartRegisterActivity.this);</span>
+<span class="nc" id="L163">            builder.setTitle(&quot;Choose Village&quot;)</span>
+<span class="nc" id="L164">                    .setItems(villages.toArray(new CharSequence[villages.size()]), new DialogInterface.OnClickListener() {</span>
+                        public void onClick(DialogInterface dialog, int which) {
+                            try {
+<span class="nc" id="L167">                                startRegistration(villages.get(which).toString());</span>
+<span class="nc" id="L168">                            } catch (JSONException e) {</span>
+<span class="nc" id="L169">                                e.printStackTrace();</span>
+<span class="nc" id="L170">                            }</span>
+<span class="nc" id="L171">                        }</span>
+                    });
+<span class="nc" id="L173">            builder.show();</span>
+<span class="nc" id="L174">        } else</span>
+<span class="nc" id="L175">            Toast.makeText(SecuredNativeSmartRegisterActivity.this, &quot;No villages for this anm&quot;, Toast.LENGTH_SHORT).show();</span>
+<span class="nc" id="L176">    }</span>
+
+    @Override
+    public void onResumption() {
+<span class="nc" id="L180">        new AsyncTask&lt;Void, Void, Void&gt;() {</span>
+            @Override
+            protected Void doInBackground(Void... params) {
+<span class="nc" id="L183">                publishProgress();</span>
+<span class="nc" id="L184">                setupAdapter();</span>
+<span class="nc" id="L185">                return null;</span>
+            }
+
+            @Override
+            protected void onPreExecute() {
+<span class="nc" id="L190">                super.onPreExecute();</span>
+<span class="nc" id="L191">                clientsProgressView.setVisibility(VISIBLE);</span>
+<span class="nc" id="L192">                clientsView.setVisibility(INVISIBLE);</span>
+<span class="nc" id="L193">            }</span>
+
+            @Override
+            protected void onPostExecute(Void result) {
+<span class="nc" id="L197">                clientsView.setAdapter(clientsAdapter);</span>
+<span class="nc" id="L198">                paginationViewHandler.refresh();</span>
+<span class="nc" id="L199">                clientsProgressView.setVisibility(View.GONE);</span>
+<span class="nc" id="L200">                clientsView.setVisibility(VISIBLE);</span>
+
+<span class="nc" id="L202">            }</span>
+        }.executeOnExecutor(THREAD_POOL_EXECUTOR);
+<span class="nc" id="L204">    }</span>
+
+    protected void setupViews() {
+<span class="nc" id="L207">        setupNavBarViews();</span>
+<span class="nc" id="L208">        populateClientListHeaderView(defaultOptionProvider.serviceMode().getHeaderProvider());</span>
+
+<span class="nc" id="L210">        clientsProgressView = (ProgressBar) findViewById(R.id.client_list_progress);</span>
+<span class="nc" id="L211">        clientsView = (ListView) findViewById(R.id.list);</span>
+
+<span class="nc" id="L213">        setupStatusBarViews();</span>
+<span class="nc" id="L214">        paginationViewHandler.addPagination(clientsView);</span>
+
+<span class="nc" id="L216">        updateDefaultOptions();</span>
+<span class="nc" id="L217">    }</span>
+
+    private void setupStatusBarViews() {
+<span class="nc" id="L220">        appliedSortView = (TextView) findViewById(R.id.sorted_by);</span>
+<span class="nc" id="L221">        appliedVillageFilterView = (TextView) findViewById(R.id.village);</span>
+<span class="nc" id="L222">    }</span>
+
+    private void setupNavBarViews() {
+<span class="nc" id="L225">        findViewById(R.id.btn_back_to_home).setOnClickListener(navBarActionsHandler);</span>
+
+<span class="nc" id="L227">        setupTitleView();</span>
+
+<span class="nc" id="L229">        View villageFilterView = findViewById(R.id.filter_selection);</span>
+<span class="nc" id="L230">        villageFilterView.setOnClickListener(navBarActionsHandler);</span>
+
+<span class="nc" id="L232">        View sortView = findViewById(R.id.sort_selection);</span>
+<span class="nc" id="L233">        sortView.setOnClickListener(navBarActionsHandler);</span>
+
+<span class="nc" id="L235">        serviceModeView = (TextView) findViewById(R.id.service_mode_selection);</span>
+<span class="nc" id="L236">        serviceModeView.setOnClickListener(navBarActionsHandler);</span>
+
+<span class="nc" id="L238">        findViewById(R.id.register_client).setOnClickListener(navBarActionsHandler);</span>
+
+<span class="nc" id="L240">        setupSearchView();</span>
+<span class="nc" id="L241">    }</span>
+
+    protected void setServiceModeViewDrawableRight(Drawable drawable) {
+<span class="nc" id="L244">        serviceModeView.setCompoundDrawables(null, null, drawable, null);</span>
+<span class="nc" id="L245">    }</span>
+
+    private void setupTitleView() {
+<span class="nc" id="L248">        ViewGroup titleLayout = (ViewGroup) findViewById(R.id.title_layout);</span>
+<span class="nc" id="L249">        titleLayout.setOnClickListener(navBarActionsHandler);</span>
+
+<span class="nc" id="L251">        titleLabelView = (TextView) findViewById(R.id.txt_title_label);</span>
+
+<span class="nc" id="L253">        TextView reportMonthStartView = (TextView) findViewById(R.id.btn_report_month);</span>
+<span class="nc" id="L254">        setReportDates(reportMonthStartView);</span>
+<span class="nc" id="L255">    }</span>
+
+    private void setupSearchView() {
+<span class="nc" id="L258">        searchView = (EditText) findViewById(R.id.edt_search);</span>
+<span class="nc" id="L259">        searchView.setHint(navBarOptionsProvider.searchHint());</span>
+<span class="nc" id="L260">        searchView.addTextChangedListener(new TextWatcher() {</span>
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i2, int i3) {
+<span class="nc" id="L263">            }</span>
+
+            @Override
+            public void onTextChanged(CharSequence cs, int start, int before, int count) {
+<span class="nc bnc" id="L267" title="All 2 branches missed.">                if (clientsAdapter != null) {</span>
+<span class="nc" id="L268">                    currentSearchFilter = new ECSearchOption(cs.toString());</span>
+<span class="nc" id="L269">                    clientsAdapter</span>
+                            .refreshList(currentVillageFilter, currentServiceModeOption,
+                                    currentSearchFilter, currentSortOption);
+<span class="nc bnc" id="L272" title="All 2 branches missed.">                    searchCancelView.setVisibility(isEmpty(cs) ? INVISIBLE : VISIBLE);</span>
+                } else
+<span class="nc" id="L274">                    Log.e(TAG, &quot;No Data in Clients Adapter&quot;);</span>
+<span class="nc" id="L275">            }</span>
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+<span class="nc" id="L279">            }</span>
+        });
+<span class="nc" id="L281">        searchCancelView = findViewById(R.id.btn_search_cancel);</span>
+<span class="nc" id="L282">        searchCancelView.setOnClickListener(searchCancelHandler);</span>
+<span class="nc" id="L283">    }</span>
+
+    private void setReportDates(TextView titleView) {
+<span class="nc" id="L286">        ReportMonth report = new ReportMonth();</span>
+<span class="nc" id="L287">        titleView.setText(report.startOfCurrentReportMonth(LocalDate.now()).toString(SHORT_DATE_FORMAT)</span>
+                + &quot; - &quot;
+                + report.endOfCurrentReportMonth(LocalDate.now()).toString(SHORT_DATE_FORMAT));
+<span class="nc" id="L290">    }</span>
+
+    private void updateDefaultOptions() {
+<span class="nc" id="L293">        currentSearchFilter = new ECSearchOption(null);</span>
+<span class="nc" id="L294">        currentVillageFilter = defaultOptionProvider.villageFilter();</span>
+<span class="nc" id="L295">        currentServiceModeOption = defaultOptionProvider.serviceMode();</span>
+<span class="nc" id="L296">        currentSortOption = defaultOptionProvider.sortOption();</span>
+
+<span class="nc" id="L298">        appliedSortView.setText(currentSortOption.name());</span>
+<span class="nc" id="L299">        appliedVillageFilterView.setText(currentVillageFilter.name());</span>
+<span class="nc" id="L300">        serviceModeView.setText(currentServiceModeOption.name());</span>
+<span class="nc" id="L301">        titleLabelView.setText(defaultOptionProvider.nameInShortFormForTitle());</span>
+<span class="nc" id="L302">    }</span>
+
+    private void populateClientListHeaderView(ClientsHeaderProvider headerProvider) {
+<span class="nc" id="L305">        LinearLayout clientsHeaderLayout = (LinearLayout) findViewById(R.id.clients_header_layout);</span>
+<span class="nc" id="L306">        clientsHeaderLayout.removeAllViewsInLayout();</span>
+<span class="nc" id="L307">        int columnCount = headerProvider.count();</span>
+<span class="nc" id="L308">        int[] weights = headerProvider.weights();</span>
+<span class="nc" id="L309">        int[] headerTxtResIds = headerProvider.headerTextResourceIds();</span>
+<span class="nc" id="L310">        clientsHeaderLayout.setWeightSum(headerProvider.weightSum());</span>
+
+<span class="nc bnc" id="L312" title="All 2 branches missed.">        for (int i = 0; i &lt; columnCount; i++) {</span>
+<span class="nc" id="L313">            clientsHeaderLayout.addView(getColumnHeaderView(i, weights, headerTxtResIds));</span>
+        }
+<span class="nc" id="L315">    }</span>
+
+    private View getColumnHeaderView(int i, int[] weights, int[] headerTxtResIds) {
+<span class="nc" id="L318">        CustomFontTextView header = new CustomFontTextView(this, null, R.style.CustomFontTextViewStyle_Header_Black);</span>
+<span class="nc" id="L319">        header.setFontVariant(FontVariant.BLACK);</span>
+<span class="nc" id="L320">        header.setTextSize(16);</span>
+<span class="nc" id="L321">        header.setTextColor(getResources().getColor(R.color.client_list_header_text_color));</span>
+<span class="nc" id="L322">        LinearLayout.LayoutParams lp =</span>
+                new LinearLayout.LayoutParams(
+                        0,
+                        ViewGroup.LayoutParams.MATCH_PARENT,
+                        weights[i]);
+
+<span class="nc" id="L328">        header.setLayoutParams(lp);</span>
+<span class="nc" id="L329">        header.setText(headerTxtResIds[i]);</span>
+<span class="nc" id="L330">        return header;</span>
+    }
+
+    private void setupAdapter() {
+<span class="nc" id="L334">        clientsAdapter = adapter();</span>
+<span class="nc" id="L335">        clientsAdapter.registerDataSetObserver(new DataSetObserver() {</span>
+            @Override
+            public void onChanged() {
+<span class="nc" id="L338">                paginationViewHandler.refresh();</span>
+<span class="nc" id="L339">            }</span>
+        });
+<span class="nc" id="L341">    }</span>
+
+    protected SmartRegisterPaginatedAdapter adapter() {
+<span class="nc" id="L344">        return new SmartRegisterPaginatedAdapter(clientsProvider());</span>
+    }
+
+    protected void onServiceModeSelection(ServiceModeOption serviceModeOption) {
+<span class="nc" id="L348">        currentServiceModeOption = serviceModeOption;</span>
+<span class="nc" id="L349">        serviceModeView.setText(serviceModeOption.name());</span>
+<span class="nc" id="L350">        clientsAdapter</span>
+                .refreshList(currentVillageFilter, currentServiceModeOption,
+                        currentSearchFilter, currentSortOption);
+
+<span class="nc" id="L354">        populateClientListHeaderView(serviceModeOption.getHeaderProvider());</span>
+<span class="nc" id="L355">    }</span>
+
+    protected void onSortSelection(SortOption sortBy) {
+<span class="nc" id="L358">        currentSortOption = sortBy;</span>
+<span class="nc" id="L359">        appliedSortView.setText(sortBy.name());</span>
+<span class="nc" id="L360">        clientsAdapter</span>
+                .refreshList(currentVillageFilter, currentServiceModeOption,
+                        currentSearchFilter, currentSortOption);
+<span class="nc" id="L363">    }</span>
+
+    protected void onFilterSelection(FilterOption filter) {
+<span class="nc" id="L366">        currentVillageFilter = filter;</span>
+<span class="nc" id="L367">        appliedVillageFilterView.setText(filter.name());</span>
+<span class="nc" id="L368">        clientsAdapter</span>
+                .refreshList(currentVillageFilter, currentServiceModeOption,
+                        currentSearchFilter, currentSortOption);
+<span class="nc" id="L371">    }</span>
+
+    protected void onEditSelection(EditOption editOption, SmartRegisterClient client) {
+<span class="nc" id="L374">        editOption.doEdit(client);</span>
+<span class="nc" id="L375">    }</span>
+
+    private void goBack() {
+<span class="nc" id="L378">        finish();</span>
+<span class="nc" id="L379">    }</span>
+
+    void showFragmentDialog(DialogOptionModel dialogOptionModel) {
+<span class="nc" id="L382">        showFragmentDialog(dialogOptionModel, null);</span>
+<span class="nc" id="L383">    }</span>
+
+    public void showFragmentDialog(DialogOptionModel dialogOptionModel, Object tag) {
+<span class="nc bnc" id="L386" title="All 2 branches missed.">        if (dialogOptionModel.getDialogOptions().length &lt;= 0) {</span>
+<span class="nc" id="L387">            return;</span>
+        }
+
+<span class="nc" id="L390">        FragmentTransaction ft = getFragmentManager().beginTransaction();</span>
+<span class="nc" id="L391">        Fragment prev = getFragmentManager().findFragmentByTag(DIALOG_TAG);</span>
+<span class="nc bnc" id="L392" title="All 2 branches missed.">        if (prev != null) {</span>
+<span class="nc" id="L393">            ft.remove(prev);</span>
+        }
+<span class="nc" id="L395">        ft.addToBackStack(null);</span>
+
+<span class="nc" id="L397">        SmartRegisterDialogFragment</span>
+                .newInstance(this, dialogOptionModel, tag)
+                .show(ft, DIALOG_TAG);
+<span class="nc" id="L400">    }</span>
+
+    protected abstract DefaultOptionsProvider getDefaultOptionsProvider();
+
+    protected abstract NavBarOptionsProvider getNavBarOptionsProvider();
+
+    protected abstract SmartRegisterClientsProvider clientsProvider();
+
+    protected abstract void onInitialization();
+
+    protected abstract void startRegistration(String village) throws JSONException;
+
+<span class="nc" id="L412">    private class FilterDialogOptionModel implements DialogOptionModel {</span>
+        @Override
+        public DialogOption[] getDialogOptions() {
+<span class="nc" id="L415">            return navBarOptionsProvider.filterOptions();</span>
+        }
+
+        @Override
+        public void onDialogOptionSelection(DialogOption option, Object tag) {
+<span class="nc" id="L420">            onFilterSelection((FilterOption) option);</span>
+<span class="nc" id="L421">        }</span>
+    }
+
+<span class="nc" id="L424">    private class SortDialogOptionModel implements DialogOptionModel {</span>
+        @Override
+        public DialogOption[] getDialogOptions() {
+<span class="nc" id="L427">            return navBarOptionsProvider.sortingOptions();</span>
+        }
+
+        @Override
+        public void onDialogOptionSelection(DialogOption option, Object tag) {
+<span class="nc" id="L432">            onSortSelection((SortOption) option);</span>
+<span class="nc" id="L433">        }</span>
+    }
+
+<span class="nc" id="L436">    protected class ServiceModeDialogOptionModel implements DialogOptionModel {</span>
+        @Override
+        public DialogOption[] getDialogOptions() {
+<span class="nc" id="L439">            return navBarOptionsProvider.serviceModeOptions();</span>
+        }
+
+        @Override
+        public void onDialogOptionSelection(DialogOption option, Object tag) {
+<span class="nc" id="L444">            onServiceModeSelection((ServiceModeOption) option);</span>
+<span class="nc" id="L445">        }</span>
+    }
+
+<span class="nc" id="L448">    public class PaginationViewHandler implements View.OnClickListener {</span>
+        private Button nextPageView;
+        private Button previousPageView;
+        private TextView pageInfoView;
+
+        private void addPagination(ListView clientsView) {
+<span class="nc" id="L454">            ViewGroup footerView = getPaginationView();</span>
+<span class="nc" id="L455">            nextPageView = (Button) footerView.findViewById(R.id.btn_next_page);</span>
+<span class="nc" id="L456">            previousPageView = (Button) footerView.findViewById(R.id.btn_previous_page);</span>
+<span class="nc" id="L457">            pageInfoView = (TextView) footerView.findViewById(R.id.txt_page_info);</span>
+
+<span class="nc" id="L459">            nextPageView.setOnClickListener(this);</span>
+<span class="nc" id="L460">            previousPageView.setOnClickListener(this);</span>
+
+<span class="nc" id="L462">            footerView.setLayoutParams(new AbsListView.LayoutParams(</span>
+                    AbsListView.LayoutParams.MATCH_PARENT,
+                    (int) getResources().getDimension(R.dimen.pagination_bar_height)));
+
+<span class="nc" id="L466">            clientsView.addFooterView(footerView);</span>
+<span class="nc" id="L467">        }</span>
+
+        private ViewGroup getPaginationView() {
+<span class="nc" id="L470">            return (ViewGroup) getLayoutInflater().inflate(R.layout.smart_register_pagination, null);</span>
+        }
+
+        private int getCurrentPageCount() {
+<span class="nc bnc" id="L474" title="All 2 branches missed.">            return clientsAdapter.currentPage() + 1 &gt; clientsAdapter.pageCount() ? clientsAdapter.pageCount() : clientsAdapter.currentPage() + 1;</span>
+        }
+
+        public void refresh() {
+<span class="nc" id="L478">            pageInfoView.setText(</span>
+                    format(getResources().getString(R.string.str_page_info),
+                            (getCurrentPageCount()),
+                            (clientsAdapter.pageCount())));
+<span class="nc bnc" id="L482" title="All 2 branches missed.">            nextPageView.setVisibility(clientsAdapter.hasNextPage() ? VISIBLE : INVISIBLE);</span>
+<span class="nc bnc" id="L483" title="All 2 branches missed.">            previousPageView.setVisibility(clientsAdapter.hasPreviousPage() ? VISIBLE : INVISIBLE);</span>
+<span class="nc" id="L484">        }</span>
+
+        @Override
+        public void onClick(View view) {
+<span class="nc bnc" id="L488" title="All 3 branches missed.">            switch (view.getId()) {</span>
+                case R.id.btn_next_page:
+<span class="nc" id="L490">                    gotoNextPage();</span>
+<span class="nc" id="L491">                    break;</span>
+                case R.id.btn_previous_page:
+<span class="nc" id="L493">                    goBackToPreviousPage();</span>
+                    break;
+            }
+<span class="nc" id="L496">        }</span>
+
+        private void gotoNextPage() {
+<span class="nc" id="L499">            clientsAdapter.nextPage();</span>
+<span class="nc" id="L500">            clientsAdapter.notifyDataSetChanged();</span>
+<span class="nc" id="L501">        }</span>
+
+        private void goBackToPreviousPage() {
+<span class="nc" id="L504">            clientsAdapter.previousPage();</span>
+<span class="nc" id="L505">            clientsAdapter.notifyDataSetChanged();</span>
+<span class="nc" id="L506">        }</span>
+    }
+
+
+<span class="nc" id="L510">    public class NavBarActionsHandler implements View.OnClickListener {</span>
+
+        @Override
+        public void onClick(View view) {
+<span class="nc bnc" id="L514" title="All 6 branches missed.">            switch (view.getId()) {</span>
+                case R.id.title_layout:
+                case R.id.btn_back_to_home:
+<span class="nc" id="L517">                    goBack();</span>
+<span class="nc" id="L518">                    break;</span>
+                case R.id.register_client:
+<span class="nc" id="L520">                    chooseVillage();</span>
+<span class="nc" id="L521">                    break;</span>
+                case R.id.filter_selection:
+<span class="nc" id="L523">                    showFragmentDialog(new FilterDialogOptionModel());</span>
+<span class="nc" id="L524">                    break;</span>
+                case R.id.sort_selection:
+<span class="nc" id="L526">                    showFragmentDialog(new SortDialogOptionModel());</span>
+<span class="nc" id="L527">                    break;</span>
+                case R.id.service_mode_selection:
+<span class="nc" id="L529">                    showFragmentDialog(new ServiceModeDialogOptionModel());</span>
+                    break;
+            }
+<span class="nc" id="L532">        }</span>
+    }
+
+<span class="nc" id="L535">    public class SearchCancelHandler implements View.OnClickListener {</span>
+
+        @Override
+        public void onClick(View view) {
+<span class="nc" id="L539">            clearSearchText();</span>
+<span class="nc" id="L540">        }</span>
+
+        private void clearSearchText() {
+<span class="nc" id="L543">            searchView.setText(&quot;&quot;);</span>
+<span class="nc" id="L544">        }</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.1.201405082137</span></div></body></html>

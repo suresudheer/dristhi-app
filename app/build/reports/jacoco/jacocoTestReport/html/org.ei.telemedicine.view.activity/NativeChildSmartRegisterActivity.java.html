@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>NativeChildSmartRegisterActivity.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">org.ei.telemedicine.view.activity</a> &gt; <span class="el_source">NativeChildSmartRegisterActivity.java</span></div><h1>NativeChildSmartRegisterActivity.java</h1><pre class="source lang-java linenums">package org.ei.telemedicine.view.activity;
+
+import static com.google.common.collect.Iterables.concat;
+import static com.google.common.collect.Iterables.toArray;
+import static java.util.Arrays.asList;
+
+import java.util.List;
+
+import org.ei.telemedicine.AllConstants;
+import org.ei.telemedicine.R;
+import org.ei.telemedicine.adapter.SmartRegisterPaginatedAdapter;
+import org.ei.telemedicine.domain.form.FieldOverrides;
+import org.ei.telemedicine.provider.ChildSmartRegisterClientsProvider;
+import org.ei.telemedicine.provider.SmartRegisterClientsProvider;
+import org.ei.telemedicine.view.contract.SmartRegisterClient;
+import org.ei.telemedicine.view.controller.ChildSmartRegisterController;
+import org.ei.telemedicine.view.controller.VillageController;
+import org.ei.telemedicine.view.dialog.AllClientsFilter;
+import org.ei.telemedicine.view.dialog.ChildAgeSort;
+import org.ei.telemedicine.view.dialog.ChildHighRiskSort;
+import org.ei.telemedicine.view.dialog.ChildImmunization0to9ServiceMode;
+import org.ei.telemedicine.view.dialog.ChildImmunization9PlusServiceMode;
+import org.ei.telemedicine.view.dialog.ChildOverviewServiceMode;
+import org.ei.telemedicine.view.dialog.DialogOption;
+import org.ei.telemedicine.view.dialog.DialogOptionMapper;
+import org.ei.telemedicine.view.dialog.DialogOptionModel;
+import org.ei.telemedicine.view.dialog.EditOption;
+import org.ei.telemedicine.view.dialog.FilterOption;
+import org.ei.telemedicine.view.dialog.NameSort;
+import org.ei.telemedicine.view.dialog.OpenFormOption;
+import org.ei.telemedicine.view.dialog.OutOfAreaFilter;
+import org.ei.telemedicine.view.dialog.ServiceModeOption;
+import org.ei.telemedicine.view.dialog.SortOption;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import android.view.View;
+
+<span class="nc" id="L40">public class NativeChildSmartRegisterActivity extends SecuredNativeSmartRegisterActivity {</span>
+
+<span class="nc" id="L42">    private SmartRegisterClientsProvider clientProvider = null;</span>
+    private ChildSmartRegisterController controller;
+    private VillageController villageController;
+    private DialogOptionMapper dialogOptionMapper;
+<span class="nc" id="L46">    public static final List&lt;? extends DialogOption&gt; DEFAULT_CHILD_FILTER_OPTIONS =</span>
+            asList(new OutOfAreaFilter());
+
+<span class="nc" id="L49">    private final ClientActionHandler clientActionHandler = new ClientActionHandler();</span>
+
+    @Override
+    protected SmartRegisterPaginatedAdapter adapter() {
+<span class="nc" id="L53">        return new SmartRegisterPaginatedAdapter(clientsProvider());</span>
+    }
+
+    @Override
+    protected SmartRegisterClientsProvider clientsProvider() {
+<span class="nc bnc" id="L58" title="All 2 branches missed.">        if (clientProvider == null) {</span>
+<span class="nc" id="L59">            clientProvider = new ChildSmartRegisterClientsProvider(</span>
+                    this, clientActionHandler, controller);
+        }
+<span class="nc" id="L62">        return clientProvider;</span>
+    }
+
+    @Override
+    protected DefaultOptionsProvider getDefaultOptionsProvider() {
+<span class="nc" id="L67">        return new DefaultOptionsProvider() {</span>
+
+            @Override
+            public ServiceModeOption serviceMode() {
+<span class="nc" id="L71">                return new ChildOverviewServiceMode(clientsProvider());</span>
+            }
+
+            @Override
+            public FilterOption villageFilter() {
+<span class="nc" id="L76">                return new AllClientsFilter();</span>
+            }
+
+            @Override
+            public SortOption sortOption() {
+<span class="nc" id="L81">                return new NameSort();</span>
+            }
+
+            @Override
+            public String nameInShortFormForTitle() {
+<span class="nc" id="L86">                return getResources().getString(R.string.child_register_title_in_short);</span>
+            }
+        };
+    }
+
+    @Override
+    protected NavBarOptionsProvider getNavBarOptionsProvider() {
+<span class="nc" id="L93">        return new NavBarOptionsProvider() {</span>
+
+            @Override
+            public DialogOption[] filterOptions() {
+<span class="nc" id="L97">                Iterable&lt;? extends DialogOption&gt; villageFilterOptions =</span>
+                        dialogOptionMapper.mapToVillageFilterOptions(villageController.getVillages());
+<span class="nc" id="L99">                return toArray(concat(DEFAULT_FILTER_OPTIONS, DEFAULT_CHILD_FILTER_OPTIONS, villageFilterOptions), DialogOption.class);</span>
+            }
+
+            @Override
+            public DialogOption[] serviceModeOptions() {
+<span class="nc" id="L104">                return new DialogOption[]{</span>
+                        new ChildOverviewServiceMode(clientsProvider()),
+                        new ChildImmunization0to9ServiceMode(clientsProvider()),
+                        new ChildImmunization9PlusServiceMode(clientsProvider())
+                };
+            }
+
+            @Override
+            public DialogOption[] sortingOptions() {
+<span class="nc" id="L113">                return new DialogOption[]{new NameSort(), new ChildAgeSort(),</span>
+                        new ChildHighRiskSort()};
+            }
+
+            @Override
+            public String searchHint() {
+<span class="nc" id="L119">                return getString(R.string.str_child_search_hint);</span>
+            }
+        };
+    }
+
+    private DialogOption[] getEditOptions() {
+<span class="nc" id="L125">        return new DialogOption[]{</span>
+//                new OpenFormOption(&quot;Child Edit&quot;, AllConstants.FormNames.CHILD_EDIT, formController),
+                new OpenFormOption(getString(R.string.str_child_immunizations), AllConstants.FormNames.CHILD_IMMUNIZATIONS, formController),
+                new OpenFormOption(getString(R.string.str_child_illness), AllConstants.FormNames.CHILD_ILLNESS, formController),
+                new OpenFormOption(getString(R.string.str_anc_plan_of_care), AllConstants.VIEW_CHILD_PLAN_OF_CARE, formController, NativeChildSmartRegisterActivity.this),
+                new OpenFormOption(getString(R.string.str_child_close), AllConstants.FormNames.CHILD_CLOSE, formController),
+                new OpenFormOption(getString(R.string.str_vitamin_a), AllConstants.FormNames.VITAMIN_A, formController)
+        };
+    }
+
+    @Override
+    protected void onInitialization() {
+<span class="nc" id="L137">        controller = new ChildSmartRegisterController(</span>
+                context.serviceProvidedService(),
+                context.alertService(),
+                context.allBeneficiaries(),
+                context.listCache(),
+                context.smartRegisterClientsCache());
+
+<span class="nc" id="L144">        villageController = new VillageController(</span>
+                context.allEligibleCouples(),
+                context.listCache(),
+                context.villagesCache());
+
+<span class="nc" id="L149">        dialogOptionMapper = new DialogOptionMapper();</span>
+
+<span class="nc" id="L151">        clientsProvider().onServiceModeSelected(new ChildOverviewServiceMode(clientsProvider()));</span>
+<span class="nc" id="L152">    }</span>
+
+    @Override
+    protected void startRegistration(String village) throws JSONException {
+<span class="nc" id="L156">        String locationJSON = context.anmLocationController().getFormInfoJSON();</span>
+<span class="nc" id="L157">        JSONObject jsonFormInfo = new JSONObject(locationJSON);</span>
+<span class="nc" id="L158">        jsonFormInfo.put(&quot;village&quot;, village.trim().replace(&quot; &quot;, &quot;%20&quot;));</span>
+<span class="nc" id="L159">        String customFields = context.allSettings().fetchFieldLabels(&quot;ChildRegistration&quot;);</span>
+<span class="nc bnc" id="L160" title="All 4 branches missed.">        if (customFields != null &amp;&amp; !customFields.equals(&quot;&quot;)) {</span>
+<span class="nc" id="L161">            JSONArray customFieldsArray = new JSONArray(customFields);</span>
+<span class="nc bnc" id="L162" title="All 2 branches missed.">            for (int i = 0; i &lt; customFieldsArray.length(); i++) {</span>
+<span class="nc" id="L163">                jsonFormInfo.put(&quot;field&quot; + (i + 1), customFieldsArray.getString(i).trim().replace(&quot; &quot;, &quot;%20&quot;));</span>
+            }
+        }
+<span class="nc" id="L166">        FieldOverrides fieldOverrides = new FieldOverrides(jsonFormInfo.toString());</span>
+<span class="nc" id="L167">        startFormActivity(AllConstants.FormNames.CHILD_REGISTRATION_OA, null, fieldOverrides.getJSONString());</span>
+<span class="nc" id="L168">    }</span>
+
+<span class="nc" id="L170">    private class ClientActionHandler implements View.OnClickListener {</span>
+        @Override
+        public void onClick(View view) {
+<span class="nc bnc" id="L173" title="All 3 branches missed.">            switch (view.getId()) {</span>
+                case R.id.profile_info_layout:
+<span class="nc" id="L175">                    showProfileView((SmartRegisterClient) view.getTag());</span>
+<span class="nc" id="L176">                    break;</span>
+                case R.id.btn_edit:
+<span class="nc" id="L178">                    showFragmentDialog(new EditDialogOptionModel(), view.getTag());</span>
+                    break;
+            }
+<span class="nc" id="L181">        }</span>
+
+        private void showProfileView(SmartRegisterClient client) {
+<span class="nc" id="L184">            navigationController.startChild(client.entityId());</span>
+<span class="nc" id="L185">        }</span>
+    }
+
+<span class="nc" id="L188">    private class EditDialogOptionModel implements DialogOptionModel {</span>
+        @Override
+        public DialogOption[] getDialogOptions() {
+<span class="nc" id="L191">            return getEditOptions();</span>
+        }
+
+        @Override
+        public void onDialogOptionSelection(DialogOption option, Object tag) {
+<span class="nc" id="L196">            onEditSelection((EditOption) option, (SmartRegisterClient) tag);</span>
+<span class="nc" id="L197">        }</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.1.201405082137</span></div></body></html>

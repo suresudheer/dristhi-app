@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>ClientProfileView.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">org.ei.telemedicine.view.customControls</a> &gt; <span class="el_source">ClientProfileView.java</span></div><h1>ClientProfileView.java</h1><pre class="source lang-java linenums">package org.ei.telemedicine.view.customControls;
+
+import org.ei.telemedicine.AllConstants;
+import org.ei.telemedicine.R;
+import org.ei.telemedicine.image.ImageLoader;
+import org.ei.telemedicine.util.Log;
+import org.ei.telemedicine.view.contract.ANCSmartRegisterClient;
+import org.ei.telemedicine.view.contract.SmartRegisterClient;
+import org.ei.telemedicine.view.viewHolder.ProfilePhotoLoader;
+
+import android.content.Context;
+import android.util.AttributeSet;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
+
+public class ClientProfileView extends RelativeLayout {
+    private ImageView imgProfileView;
+    private TextView txtNameView;
+    private TextView txtHusbandNameView;
+    private TextView txtVillageNameView;
+    private TextView txtAgeView;
+    private TextView txtOutOfArea;
+    private ImageView badgeHPView;
+    private ImageView badgeHRView;
+    private ImageView badgeBPLView;
+    private ImageView badgePOCPendingView;
+    private ImageView badgePocCompleteView;
+
+    @SuppressWarnings(&quot;UnusedDeclaration&quot;)
+    public ClientProfileView(Context context) {
+<span class="nc" id="L33">        this(context, null, 0);</span>
+<span class="nc" id="L34">    }</span>
+
+    @SuppressWarnings(&quot;UnusedDeclaration&quot;)
+    public ClientProfileView(Context context, AttributeSet attrs) {
+<span class="nc" id="L38">        this(context, attrs, 0);</span>
+<span class="nc" id="L39">    }</span>
+
+    public ClientProfileView(Context context, AttributeSet attrs, int defStyle) {
+<span class="nc" id="L42">        super(context, attrs, defStyle);</span>
+<span class="nc" id="L43">    }</span>
+
+    public void initialize() {
+<span class="nc" id="L46">        imgProfileView = (ImageView) findViewById(R.id.img_profile);</span>
+<span class="nc" id="L47">        txtNameView = (TextView) findViewById(R.id.txt_wife_name);</span>
+<span class="nc" id="L48">        txtHusbandNameView = (TextView) findViewById(R.id.txt_husband_name);</span>
+<span class="nc" id="L49">        txtVillageNameView = (TextView) findViewById(R.id.txt_village_name);</span>
+<span class="nc" id="L50">        txtAgeView = (TextView) findViewById(R.id.txt_age);</span>
+<span class="nc" id="L51">        txtOutOfArea = (TextView) findViewById(R.id.txt_out_of_area);</span>
+<span class="nc" id="L52">        badgeHPView = (ImageView) findViewById(R.id.img_hp_badge);</span>
+<span class="nc" id="L53">        badgeHRView = (ImageView) findViewById(R.id.img_hr_badge);</span>
+<span class="nc" id="L54">        badgeBPLView = (ImageView) findViewById(R.id.img_bpl_badge);</span>
+<span class="nc" id="L55">        badgePOCPendingView = (ImageView) findViewById(R.id.img_poc_pending_badge);</span>
+<span class="nc" id="L56">        badgePocCompleteView = (ImageView) findViewById(R.id.img_poc_badge);</span>
+<span class="nc" id="L57">    }</span>
+
+    // #TODO: make these names generic, so this layout can be reused in all the registers
+    public void bindData(SmartRegisterClient client, ProfilePhotoLoader photoLoader) {
+<span class="nc bnc" id="L61" title="All 4 branches missed.">        if (!client.profilePhotoPath().equals(&quot;&quot;) &amp;&amp; client.profilePhotoPath().toLowerCase().startsWith(&quot;http://&quot;)) {</span>
+<span class="nc" id="L62">            new ImageLoader(getContext()).DisplayImage(client.profilePhotoPath(), imgProfileView, photoLoader.get(client));</span>
+        } else
+<span class="nc" id="L64">            new ImageLoader(getContext()).DisplayImage(client.profilePhotoPath(), imgProfileView, photoLoader.get(client));</span>
+//        imgProfileView.setBackground(photoLoader.get(client));
+<span class="nc" id="L66">        txtNameView.setText(client.displayName());</span>
+<span class="nc" id="L67">        txtHusbandNameView.setText(client.husbandName());</span>
+<span class="nc" id="L68">        txtVillageNameView.setText(client.village());</span>
+<span class="nc" id="L69">        txtAgeView.setText(client.ageInString());</span>
+<span class="nc" id="L70">        txtOutOfArea.setText(getOutOfAreaText(client.locationStatus()));</span>
+<span class="nc bnc" id="L71" title="All 4 branches missed.">        badgeHPView.setVisibility(!isAnANCClient(client) &amp;&amp; client.isHighPriority() ? View.VISIBLE : View.GONE);</span>
+<span class="nc" id="L72">        setHROrHRPBadge(client);</span>
+<span class="nc bnc" id="L73" title="All 2 branches missed.">        badgeHRView.setVisibility(client.isHighRisk() ? View.VISIBLE : View.GONE);</span>
+<span class="nc bnc" id="L74" title="All 2 branches missed.">        badgeBPLView.setVisibility(client.isBPL() ? View.VISIBLE : View.GONE);</span>
+//        if (client.isPOC()) {
+//            badgePocCompleteView.setVisibility(VISIBLE);
+//            badgePocCompleteView.setImageResource(client.isPocPending() ? R.drawable.flag_poc_pending : R.drawable.flag_poc_complete);
+//        }
+
+<span class="nc bnc" id="L80" title="All 4 branches missed.">        badgePocCompleteView.setVisibility(client.isPOC() &amp;&amp; !client.isPocPending() ? View.VISIBLE : View.GONE);</span>
+<span class="nc bnc" id="L81" title="All 2 branches missed.">        badgePOCPendingView.setVisibility(client.isPocPending() ? View.VISIBLE : View.GONE);</span>
+<span class="nc" id="L82">    }</span>
+
+    private void setHROrHRPBadge(SmartRegisterClient client) {
+<span class="nc bnc" id="L85" title="All 2 branches missed.">        badgeHRView.setImageResource(isAnANCClient(client) ? R.drawable.flag_hrp : R.drawable.flag_hr);</span>
+<span class="nc" id="L86">    }</span>
+
+    private boolean isAnANCClient(SmartRegisterClient client) {
+<span class="nc" id="L89">        return client instanceof ANCSmartRegisterClient;</span>
+    }
+
+    private String getOutOfAreaText(String locationStatus) {
+<span class="nc bnc" id="L93" title="All 2 branches missed.">        return isOutOfArea(locationStatus) ? org.ei.telemedicine.Context.getInstance().getStringResource(R.string.str_out_of_area) : &quot;&quot;;</span>
+    }
+
+    private boolean isOutOfArea(String locationStatus) {
+<span class="nc" id="L97">        return AllConstants.OUT_OF_AREA.equalsIgnoreCase(locationStatus);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.1.201405082137</span></div></body></html>

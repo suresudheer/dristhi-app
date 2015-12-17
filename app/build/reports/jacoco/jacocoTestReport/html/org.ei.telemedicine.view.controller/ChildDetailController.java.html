@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>ChildDetailController.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">org.ei.telemedicine.view.controller</a> &gt; <span class="el_source">ChildDetailController.java</span></div><h1>ChildDetailController.java</h1><pre class="source lang-java linenums">package org.ei.telemedicine.view.controller;
+
+import android.content.Context;
+import android.content.Intent;
+
+import com.google.gson.Gson;
+
+import org.ei.telemedicine.AllConstants;
+import org.ei.telemedicine.domain.Child;
+import org.ei.telemedicine.domain.EligibleCouple;
+import org.ei.telemedicine.domain.Mother;
+import org.ei.telemedicine.repository.AllBeneficiaries;
+import org.ei.telemedicine.repository.AllEligibleCouples;
+import org.ei.telemedicine.repository.AllTimelineEvents;
+import org.ei.telemedicine.util.DateUtil;
+import org.ei.telemedicine.util.TimelineEventComparator;
+import org.ei.telemedicine.view.activity.CameraLaunchActivity;
+import org.ei.telemedicine.view.contract.*;
+import org.joda.time.LocalDate;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
+import org.ocpsoft.pretty.time.Duration;
+import org.ocpsoft.pretty.time.PrettyTime;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+import static java.lang.Math.min;
+import static org.apache.commons.lang3.StringUtils.isBlank;
+import static org.ei.telemedicine.AllConstants.CHILD_TYPE;
+import static org.ei.telemedicine.AllConstants.ENTITY_ID;
+
+public class ChildDetailController {
+    private final Context context;
+    private final String caseId;
+    private final AllEligibleCouples allEligibleCouples;
+    private final AllBeneficiaries allBeneficiaries;
+    private final AllTimelineEvents allTimelineEvents;
+
+<span class="fc" id="L41">    public ChildDetailController(Context context, String caseId, AllEligibleCouples allEligibleCouples, AllBeneficiaries allBeneficiaries, AllTimelineEvents allTimelineEvents) {</span>
+<span class="fc" id="L42">        this.context = context;</span>
+<span class="fc" id="L43">        this.caseId = caseId;</span>
+<span class="fc" id="L44">        this.allEligibleCouples = allEligibleCouples;</span>
+<span class="fc" id="L45">        this.allBeneficiaries = allBeneficiaries;</span>
+<span class="fc" id="L46">        this.allTimelineEvents = allTimelineEvents;</span>
+<span class="fc" id="L47">    }</span>
+
+    public String get() {
+<span class="fc" id="L50">        Child child = allBeneficiaries.findChild(caseId);</span>
+<span class="fc" id="L51">        Mother mother = allBeneficiaries.findMother(child.motherCaseId());</span>
+<span class="fc" id="L52">        EligibleCouple couple = allEligibleCouples.findByCaseID(mother.ecCaseId());</span>
+
+<span class="fc" id="L54">        LocalDate deliveryDate = LocalDate.parse(child.dateOfBirth());</span>
+<span class="pc bpc" id="L55" title="3 of 4 branches missed.">        String photoPath = isBlank(child.photoPath()) ?</span>
+                (AllConstants.FEMALE_GENDER.equalsIgnoreCase(child.gender())
+                        ? AllConstants.DEFAULT_GIRL_INFANT_IMAGE_PLACEHOLDER_PATH
+                        : AllConstants.DEFAULT_BOY_INFANT_IMAGE_PLACEHOLDER_PATH)
+                : child.photoPath();
+
+<span class="fc" id="L61">        ChildDetail detail = new ChildDetail(caseId, mother.thayiCardNumber(),</span>
+                new CoupleDetails(couple.wifeName(), couple.husbandName(), couple.ecNumber(), couple.isOutOfArea()),
+                new LocationDetails(couple.village(), couple.subCenter()),
+                new BirthDetails(deliveryDate.toString(), calculateAge(deliveryDate), child.gender()), photoPath)
+                .addTimelineEvents(getEvents())
+                .addExtraDetails(child.details());
+
+<span class="fc" id="L68">        return new Gson().toJson(detail);</span>
+    }
+
+    public void takePhoto() {
+<span class="nc" id="L72">        Intent intent = new Intent(context, CameraLaunchActivity.class);</span>
+<span class="nc" id="L73">        intent.putExtra(AllConstants.TYPE, CHILD_TYPE);</span>
+<span class="nc" id="L74">        intent.putExtra(ENTITY_ID, caseId);</span>
+<span class="nc" id="L75">        context.startActivity(intent);</span>
+<span class="nc" id="L76">    }</span>
+
+    private List&lt;TimelineEvent&gt; getEvents() {
+<span class="fc" id="L79">        List&lt;org.ei.telemedicine.domain.TimelineEvent&gt; events = allTimelineEvents.forCase(caseId);</span>
+<span class="fc" id="L80">        List&lt;TimelineEvent&gt; timelineEvents = new ArrayList&lt;TimelineEvent&gt;();</span>
+
+<span class="fc" id="L82">        Collections.sort(events, new TimelineEventComparator());</span>
+
+<span class="fc bfc" id="L84" title="All 2 branches covered.">        for (org.ei.telemedicine.domain.TimelineEvent event : events) {</span>
+<span class="fc" id="L85">            DateTimeFormatter dateTimeFormatter = DateTimeFormat.forPattern(&quot;dd-MM-YYYY&quot;);</span>
+<span class="fc" id="L86">            timelineEvents.add(new TimelineEvent(event.type(), event.title(), new String[]{event.detail1(), event.detail2()}, event.referenceDate().toString(dateTimeFormatter)));</span>
+<span class="fc" id="L87">        }</span>
+
+<span class="fc" id="L89">        return timelineEvents;</span>
+    }
+
+    private String calculateAge(LocalDate deliveryDate) {
+<span class="fc" id="L93">        PrettyTime time = new PrettyTime(DateUtil.today().toDate());</span>
+<span class="fc" id="L94">        List&lt;Duration&gt; durationComponents = time.calculatePreciseDuration(deliveryDate.toDate());</span>
+<span class="fc" id="L95">        return time.format(durationComponents.subList(0, min(durationComponents.size(), 1))).replaceAll(&quot; ago&quot;, &quot;&quot;);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.1.201405082137</span></div></body></html>

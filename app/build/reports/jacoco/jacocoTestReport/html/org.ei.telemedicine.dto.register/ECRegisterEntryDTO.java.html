@@ -1,0 +1,252 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>ECRegisterEntryDTO.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">org.ei.telemedicine.dto.register</a> &gt; <span class="el_source">ECRegisterEntryDTO.java</span></div><h1>ECRegisterEntryDTO.java</h1><pre class="source lang-java linenums">package org.ei.telemedicine.dto.register;
+
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.codehaus.jackson.annotate.JsonProperty;
+
+<span class="nc" id="L8">public class ECRegisterEntryDTO</span>
+{
+  @JsonProperty
+  private String caste;
+  @JsonProperty
+  private String currentFPMethod;
+  @JsonProperty
+  private String currentFPMethodStartDate;
+  @JsonProperty
+  private String ecNumber;
+  @JsonProperty
+  private String economicStatus;
+  @JsonProperty
+  private String gravida;
+  @JsonProperty
+  private String headOfHousehold;
+  @JsonProperty
+  private String householdAddress;
+  @JsonProperty
+  private String householdNumber;
+  @JsonProperty
+  private String husbandAge;
+  @JsonProperty
+  private String husbandEducationLevel;
+  @JsonProperty
+  private String husbandName;
+  @JsonProperty
+  private String isPregnant;
+  @JsonProperty
+  private String numberOfAbortions;
+  @JsonProperty
+  private String numberOfLivingChildren;
+  @JsonProperty
+  private String numberOfLivingFemaleChildren;
+  @JsonProperty
+  private String numberOfLivingMaleChildren;
+  @JsonProperty
+  private String numberOfStillBirths;
+  @JsonProperty
+  private String parity;
+  @JsonProperty
+  private String phc;
+  @JsonProperty
+  private String registrationDate;
+  @JsonProperty
+  private String religion;
+  @JsonProperty
+  private String subCenter;
+  @JsonProperty
+  private String village;
+  @JsonProperty
+  private String wifeAge;
+  @JsonProperty
+  private String wifeEducationLevel;
+  @JsonProperty
+  private String wifeName;
+  @JsonProperty
+  private String youngestChildAge;
+  
+  public boolean equals(Object paramObject)
+  {
+<span class="nc" id="L69">    return EqualsBuilder.reflectionEquals(this, paramObject, new String[0]);</span>
+  }
+  
+  public int hashCode()
+  {
+<span class="nc" id="L74">    return HashCodeBuilder.reflectionHashCode(this, new String[0]);</span>
+  }
+  
+  public String toString()
+  {
+<span class="nc" id="L79">    return ToStringBuilder.reflectionToString(this);</span>
+  }
+  
+  public ECRegisterEntryDTO withCaste(String paramString)
+  {
+<span class="nc" id="L84">    this.caste = paramString;</span>
+<span class="nc" id="L85">    return this;</span>
+  }
+  
+  public ECRegisterEntryDTO withCurrentFPMethod(String paramString)
+  {
+<span class="nc" id="L90">    this.currentFPMethod = paramString;</span>
+<span class="nc" id="L91">    return this;</span>
+  }
+  
+  public ECRegisterEntryDTO withCurrentFPMethodStartDate(String paramString)
+  {
+<span class="nc" id="L96">    this.currentFPMethodStartDate = paramString;</span>
+<span class="nc" id="L97">    return this;</span>
+  }
+  
+  public ECRegisterEntryDTO withECNumber(String paramString)
+  {
+<span class="nc" id="L102">    this.ecNumber = paramString;</span>
+<span class="nc" id="L103">    return this;</span>
+  }
+  
+  public ECRegisterEntryDTO withEconomicStatus(String paramString)
+  {
+<span class="nc" id="L108">    this.economicStatus = paramString;</span>
+<span class="nc" id="L109">    return this;</span>
+  }
+  
+  public ECRegisterEntryDTO withGravida(String paramString)
+  {
+<span class="nc" id="L114">    this.gravida = paramString;</span>
+<span class="nc" id="L115">    return this;</span>
+  }
+  
+  public ECRegisterEntryDTO withHeadOfHousehold(String paramString)
+  {
+<span class="nc" id="L120">    this.headOfHousehold = paramString;</span>
+<span class="nc" id="L121">    return this;</span>
+  }
+  
+  public ECRegisterEntryDTO withHouseholdAddress(String paramString)
+  {
+<span class="nc" id="L126">    this.householdAddress = paramString;</span>
+<span class="nc" id="L127">    return this;</span>
+  }
+  
+  public ECRegisterEntryDTO withHouseholdNumber(String paramString)
+  {
+<span class="nc" id="L132">    this.householdNumber = paramString;</span>
+<span class="nc" id="L133">    return this;</span>
+  }
+  
+  public ECRegisterEntryDTO withHusbandAge(String paramString)
+  {
+<span class="nc" id="L138">    this.husbandAge = paramString;</span>
+<span class="nc" id="L139">    return this;</span>
+  }
+  
+  public ECRegisterEntryDTO withHusbandEducationLevel(String paramString)
+  {
+<span class="nc" id="L144">    this.husbandEducationLevel = paramString;</span>
+<span class="nc" id="L145">    return this;</span>
+  }
+  
+  public ECRegisterEntryDTO withHusbandName(String paramString)
+  {
+<span class="nc" id="L150">    this.husbandName = paramString;</span>
+<span class="nc" id="L151">    return this;</span>
+  }
+  
+  public ECRegisterEntryDTO withNumberOfAbortions(String paramString)
+  {
+<span class="nc" id="L156">    this.numberOfAbortions = paramString;</span>
+<span class="nc" id="L157">    return this;</span>
+  }
+  
+  public ECRegisterEntryDTO withNumberOfLivingChildren(String paramString)
+  {
+<span class="nc" id="L162">    this.numberOfLivingChildren = paramString;</span>
+<span class="nc" id="L163">    return this;</span>
+  }
+  
+  public ECRegisterEntryDTO withNumberOfLivingFemaleChildren(String paramString)
+  {
+<span class="nc" id="L168">    this.numberOfLivingFemaleChildren = paramString;</span>
+<span class="nc" id="L169">    return this;</span>
+  }
+  
+  public ECRegisterEntryDTO withNumberOfLivingMaleChildren(String paramString)
+  {
+<span class="nc" id="L174">    this.numberOfLivingMaleChildren = paramString;</span>
+<span class="nc" id="L175">    return this;</span>
+  }
+  
+  public ECRegisterEntryDTO withNumberOfStillBirths(String paramString)
+  {
+<span class="nc" id="L180">    this.numberOfStillBirths = paramString;</span>
+<span class="nc" id="L181">    return this;</span>
+  }
+  
+  public ECRegisterEntryDTO withPHC(String paramString)
+  {
+<span class="nc" id="L186">    this.phc = paramString;</span>
+<span class="nc" id="L187">    return this;</span>
+  }
+  
+  public ECRegisterEntryDTO withParity(String paramString)
+  {
+<span class="nc" id="L192">    this.parity = paramString;</span>
+<span class="nc" id="L193">    return this;</span>
+  }
+  
+  public ECRegisterEntryDTO withPregnancyStatus(String paramString)
+  {
+<span class="nc" id="L198">    this.isPregnant = paramString;</span>
+<span class="nc" id="L199">    return this;</span>
+  }
+  
+  public ECRegisterEntryDTO withRegistrationDate(String paramString)
+  {
+<span class="nc" id="L204">    this.registrationDate = paramString;</span>
+<span class="nc" id="L205">    return this;</span>
+  }
+  
+  public ECRegisterEntryDTO withReligion(String paramString)
+  {
+<span class="nc" id="L210">    this.religion = paramString;</span>
+<span class="nc" id="L211">    return this;</span>
+  }
+  
+  public ECRegisterEntryDTO withSubCenter(String paramString)
+  {
+<span class="nc" id="L216">    this.subCenter = paramString;</span>
+<span class="nc" id="L217">    return this;</span>
+  }
+  
+  public ECRegisterEntryDTO withVillage(String paramString)
+  {
+<span class="nc" id="L222">    this.village = paramString;</span>
+<span class="nc" id="L223">    return this;</span>
+  }
+  
+  public ECRegisterEntryDTO withWifeAge(String paramString)
+  {
+<span class="nc" id="L228">    this.wifeAge = paramString;</span>
+<span class="nc" id="L229">    return this;</span>
+  }
+  
+  public ECRegisterEntryDTO withWifeEducationLevel(String paramString)
+  {
+<span class="nc" id="L234">    this.wifeEducationLevel = paramString;</span>
+<span class="nc" id="L235">    return this;</span>
+  }
+  
+  public ECRegisterEntryDTO withWifeName(String paramString)
+  {
+<span class="nc" id="L240">    this.wifeName = paramString;</span>
+<span class="nc" id="L241">    return this;</span>
+  }
+  
+  public ECRegisterEntryDTO withYoungestChildAge(String paramString)
+  {
+<span class="nc" id="L246">    this.youngestChildAge = paramString;</span>
+<span class="nc" id="L247">    return this;</span>
+  }
+}
+
+
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.1.201405082137</span></div></body></html>

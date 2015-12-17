@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>ActionActivity.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">org.ei.telemedicine.view.activity</a> &gt; <span class="el_source">ActionActivity.java</span></div><h1>ActionActivity.java</h1><pre class="source lang-java linenums">package org.ei.telemedicine.view.activity;
+
+import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
+import android.media.AudioManager;
+import android.media.Ringtone;
+import android.media.RingtoneManager;
+import android.net.Uri;
+import android.os.Bundle;
+import android.os.Vibrator;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.TextView;
+import android.widget.Toast;
+
+
+import org.ei.telemedicine.AllConstants;
+
+//import org.ei.telemedicine.Context;
+
+import org.ei.telemedicine.R;
+
+import java.util.Random;
+
+<span class="nc" id="L27">public class ActionActivity extends Activity {</span>
+
+    private org.ei.telemedicine.Context context;
+
+<span class="nc" id="L31">    protected String callUrl=AllConstants.RECEIVING_URL;</span>
+
+    private Ringtone ringtone;
+
+    public String getUsern()
+    {
+
+<span class="nc" id="L38">        context = org.ei.telemedicine.Context.getInstance().updateApplicationContext(this.getApplicationContext());</span>
+<span class="nc" id="L39">        return context.allSharedPreferences().fetchRegisteredANM();</span>
+    }
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+<span class="nc" id="L43">        super.onCreate(savedInstanceState);</span>
+        try {
+
+<span class="nc" id="L46">            Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE);</span>
+<span class="nc" id="L47">            ringtone = RingtoneManager.getRingtone(getApplicationContext(), notification);</span>
+<span class="nc" id="L48">            ringtone.play();</span>
+<span class="nc" id="L49">            Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);</span>
+            // Vibrate for 500 milliseconds
+<span class="nc" id="L51">            v.vibrate(500);</span>
+
+<span class="nc" id="L53">        }catch(Exception ex)</span>
+        {
+<span class="nc" id="L55">            ex.printStackTrace();</span>
+<span class="nc" id="L56">        }</span>
+<span class="nc" id="L57">        setContentView(R.layout.activity_action);</span>
+<span class="nc" id="L58">        Intent myIntent = getIntent();</span>
+<span class="nc" id="L59">        final String callerId = myIntent.getStringExtra(&quot;name&quot;);</span>
+<span class="nc" id="L60">        TextView showCaller =(TextView) findViewById(R.id.txtCaller);</span>
+<span class="nc" id="L61">        showCaller.setText(callerId);</span>
+<span class="nc" id="L62">        findViewById(R.id.img_btn1).setOnClickListener(new View.OnClickListener() {</span>
+            @Override
+            public void onClick(View view) {
+
+<span class="nc" id="L66">                ringtone.stop();</span>
+<span class="nc" id="L67">                Uri url = Uri.parse(String.format(callUrl,getUsern(),callerId));</span>
+<span class="nc" id="L68">                Intent _broswer = new Intent(Intent.ACTION_VIEW, url);</span>
+<span class="nc" id="L69">                startActivity(_broswer);</span>
+<span class="nc" id="L70">                finish();</span>
+<span class="nc" id="L71">            }</span>
+        });
+
+<span class="nc" id="L74">        findViewById(R.id.img_btn2).setOnClickListener(new View.OnClickListener() {</span>
+            @Override
+            public void onClick(View v) {
+<span class="nc" id="L77">                ringtone.stop();</span>
+<span class="nc" id="L78">                finish();</span>
+<span class="nc" id="L79">                            }</span>
+        });
+
+
+<span class="nc" id="L83">    }</span>
+    public Ringtone ringAlarm(Context context)
+    {
+<span class="nc" id="L86">        Uri alert = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);</span>
+<span class="nc bnc" id="L87" title="All 2 branches missed.">        if(alert == null){</span>
+            // alert is null, using backup
+<span class="nc" id="L89">            alert = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);</span>
+<span class="nc bnc" id="L90" title="All 2 branches missed.">            if(alert == null){  // I can't see this ever being null (as always have a default notification) but just incase</span>
+                // alert backup is null, using 2nd backup
+<span class="nc" id="L92">                alert = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE);</span>
+            }
+        }
+<span class="nc" id="L95">        Ringtone r = RingtoneManager.getRingtone(context.getApplicationContext(), alert);</span>
+<span class="nc" id="L96">        AudioManager audioManager = (AudioManager)context.getSystemService(Context.AUDIO_SERVICE);</span>
+<span class="nc" id="L97">        int maxVolumeAlarm = audioManager.getStreamMaxVolume(AudioManager.STREAM_ALARM);</span>
+        //int maxVolumeRing = audioManager.getStreamMaxVolume(AudioManager.STREAM_RING);
+<span class="nc" id="L99">        audioManager.setStreamVolume(AudioManager.STREAM_ALARM, maxVolumeAlarm, AudioManager.FLAG_REMOVE_SOUND_AND_VIBRATE);</span>
+        //audioManager.setStreamVolume(AudioManager.STREAM_RING, maxVolumeRing,AudioManager.FLAG_REMOVE_SOUND_AND_VIBRATE);
+<span class="nc" id="L101">        Toast.makeText(context.getApplicationContext(), &quot;alarm started&quot;, Toast.LENGTH_LONG).show();</span>
+<span class="nc" id="L102">        return r;</span>
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+<span class="nc" id="L108">        getMenuInflater().inflate(R.menu.menu_action, menu);</span>
+<span class="nc" id="L109">        return true;</span>
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+<span class="nc" id="L117">        int id = item.getItemId();</span>
+
+        //noinspection SimplifiableIfStatement
+<span class="nc bnc" id="L120" title="All 2 branches missed.">        if (id == R.id.action_settings) {</span>
+<span class="nc" id="L121">            return true;</span>
+        }
+
+<span class="nc" id="L124">        return super.onOptionsItemSelected(item);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.1.201405082137</span></div></body></html>

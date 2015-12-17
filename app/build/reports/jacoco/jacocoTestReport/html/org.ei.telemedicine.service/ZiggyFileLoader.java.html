@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>ZiggyFileLoader.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">org.ei.telemedicine.service</a> &gt; <span class="el_source">ZiggyFileLoader.java</span></div><h1>ZiggyFileLoader.java</h1><pre class="source lang-java linenums">package org.ei.telemedicine.service;
+
+import android.content.res.AssetManager;
+
+import org.apache.commons.io.IOUtils;
+
+import java.io.IOException;
+import java.net.URISyntaxException;
+
+import static java.text.MessageFormat.format;
+import static org.ei.telemedicine.util.Log.logError;
+
+public class ZiggyFileLoader {
+    private String ziggyDirectoryPath;
+    private String formDirectoryPath;
+    private AssetManager assetManager;
+
+<span class="nc" id="L18">    public ZiggyFileLoader(String ziggyDirectoryPath, String formDirectoryPath, AssetManager assetManager) {</span>
+<span class="nc" id="L19">        this.ziggyDirectoryPath = ziggyDirectoryPath;</span>
+<span class="nc" id="L20">        this.formDirectoryPath = formDirectoryPath;</span>
+<span class="nc" id="L21">        this.assetManager = assetManager;</span>
+<span class="nc" id="L22">    }</span>
+
+    public String getJSFiles() throws IOException, URISyntaxException {
+<span class="nc" id="L25">        StringBuilder builder = new StringBuilder();</span>
+<span class="nc" id="L26">        String[] fileNames = assetManager.list(ziggyDirectoryPath);</span>
+<span class="nc bnc" id="L27" title="All 2 branches missed.">        for (String fileName : fileNames) {</span>
+<span class="nc bnc" id="L28" title="All 2 branches missed.">            if (fileName.endsWith(&quot;.js&quot;)) {</span>
+<span class="nc" id="L29">                builder.append(IOUtils.toString(assetManager.open(ziggyDirectoryPath + &quot;/&quot; + fileName), &quot;UTF-8&quot;));</span>
+            }
+        }
+<span class="nc" id="L32">        return builder.toString();</span>
+    }
+
+    public String loadAppData(String fileName) {
+        try {
+<span class="nc" id="L37">            return IOUtils.toString(assetManager.open(formDirectoryPath + &quot;/&quot; + fileName), &quot;UTF-8&quot;);</span>
+<span class="nc" id="L38">        } catch (IOException e) {</span>
+<span class="nc" id="L39">            logError(format(&quot;Error while loading app data file: {0}, with exception: {1}&quot;, fileName, e));</span>
+        }
+<span class="nc" id="L41">        return null;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.1.201405082137</span></div></body></html>

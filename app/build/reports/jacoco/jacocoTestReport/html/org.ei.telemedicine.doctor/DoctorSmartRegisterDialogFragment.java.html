@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>DoctorSmartRegisterDialogFragment.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">org.ei.telemedicine.doctor</a> &gt; <span class="el_source">DoctorSmartRegisterDialogFragment.java</span></div><h1>DoctorSmartRegisterDialogFragment.java</h1><pre class="source lang-java linenums">package org.ei.telemedicine.doctor;
+
+
+import org.ei.telemedicine.R;
+import org.ei.telemedicine.util.StringUtil;
+import org.ei.telemedicine.view.activity.SecuredNativeSmartRegisterActivity;
+import org.ei.telemedicine.view.dialog.DialogOption;
+import org.ei.telemedicine.view.dialog.DialogOptionModel;
+import org.ei.telemedicine.view.dialog.SmartRegisterDialogFragment;
+
+import android.app.Activity;
+import android.app.DialogFragment;
+import android.content.Context;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import java.sql.Struct;
+import java.util.ArrayList;
+
+public class DoctorSmartRegisterDialogFragment extends DialogFragment {
+    //    private final SecuredNativeSmartRegisterActivity parentActivity;
+    private Context context;
+    //    private final DialogOption[] options;
+    private ArrayList&lt;String&gt; values;
+    //    private final DialogOptionModel dialogOptionModel;
+    private final Object tag;
+    private Activity activity;
+    PendingConsultantBaseAdapter pendingConsultantBaseAdapter;
+    ArrayList&lt;DoctorData&gt; doctorDatas;
+
+    private DoctorSmartRegisterDialogFragment(Context context,
+                                              ArrayList&lt;String&gt; values,
+<span class="nc" id="L41">                                              Object tag, PendingConsultantBaseAdapter adapter, ArrayList&lt;DoctorData&gt; doctorDatas) {</span>
+//        this.parentActivity = activity;
+<span class="nc" id="L43">        this.activity = (Activity) context;</span>
+<span class="nc" id="L44">        this.context = context;</span>
+<span class="nc" id="L45">        this.values = values;</span>
+<span class="nc" id="L46">        this.pendingConsultantBaseAdapter = adapter;</span>
+<span class="nc" id="L47">        this.doctorDatas = doctorDatas;</span>
+//        this.options = dialogOptionModel.getDialogOptions();
+//        this.dialogOptionModel = dialogOptionModel;
+<span class="nc" id="L50">        this.tag = tag;</span>
+<span class="nc" id="L51">    }</span>
+
+    public static DoctorSmartRegisterDialogFragment newInstance(
+            Activity activity,
+            ArrayList&lt;String&gt; values, String tag, PendingConsultantBaseAdapter adapter, ArrayList&lt;DoctorData&gt; doctorDatas) {
+<span class="nc" id="L56">        return new DoctorSmartRegisterDialogFragment(activity, values, tag, adapter, doctorDatas);</span>
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+<span class="nc" id="L61">        super.onCreate(savedInstanceState);</span>
+<span class="nc" id="L62">        setStyle(DialogFragment.STYLE_NO_TITLE, android.R.style.Theme_Holo_Light_Dialog);</span>
+<span class="nc" id="L63">    }</span>
+
+    @Override
+    public View onCreateView(final LayoutInflater inflater, final ViewGroup container,
+                             Bundle savedInstanceState) {
+<span class="nc" id="L68">        ViewGroup dialogView = (ViewGroup) inflater.inflate(R.layout.smart_register_dialog_view, container, false);</span>
+<span class="nc" id="L69">        ListView listView = (ListView) dialogView.findViewById(R.id.dialog_list);</span>
+<span class="nc" id="L70">        listView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);</span>
+
+<span class="nc" id="L72">        final ArrayAdapter&lt;String&gt; adapter = new ArrayAdapter&lt;String&gt;(</span>
+<span class="nc" id="L73">                activity, R.layout.smart_register_dialog_list_item, values) {</span>
+            @Override
+            public View getView(int position, View convertView, ViewGroup parent) {
+                ViewGroup itemView;
+<span class="nc bnc" id="L77" title="All 2 branches missed.">                if (convertView == null) {</span>
+<span class="nc" id="L78">                    itemView = (ViewGroup) inflater.inflate(R.layout.smart_register_dialog_list_item, parent, false);</span>
+                } else {
+<span class="nc" id="L80">                    itemView = (ViewGroup) convertView;</span>
+                }
+
+<span class="nc" id="L83">                ((TextView) itemView.findViewById(R.id.dialog_list_option))</span>
+                        .setText(getItem(position));
+<span class="nc" id="L85">                return itemView;</span>
+            }
+        };
+
+<span class="nc" id="L89">        listView.setAdapter(adapter);</span>
+<span class="nc" id="L90">        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {</span>
+            @Override
+            public void onItemClick(AdapterView&lt;?&gt; adapterView, View view, int i, long l) {
+<span class="nc" id="L93">                dismiss();</span>
+<span class="nc" id="L94">                Toast.makeText(context, values.get(i).toString(), Toast.LENGTH_SHORT).show();</span>
+<span class="nc bnc" id="L95" title="All 2 branches missed.">                if (tag.toString().equals(&quot;Filter&quot;)) {</span>
+<span class="nc" id="L96">                    String value = values.get(i).toString();</span>
+<span class="nc bnc" id="L97" title="All 2 branches missed.">                    if (pendingConsultantBaseAdapter != null) {</span>
+<span class="nc" id="L98">                        pendingConsultantBaseAdapter.villagesFilter(values.get(i).toString(), doctorDatas);</span>
+//                        pendingConsultantBaseAdapter.notifyDataSetChanged();
+                    }
+<span class="nc bnc" id="L101" title="All 2 branches missed.">                } else if (tag.toString().equals(&quot;Sort&quot;)) {</span>
+<span class="nc" id="L102">                    Log.e(&quot;Coming to Sort&quot;, &quot;Sotr&quot;);</span>
+<span class="nc" id="L103">                    NativeDoctorActivity.sorted_by_name.setText(values.get(i).toString());</span>
+<span class="nc bnc" id="L104" title="All 2 branches missed.">                    if (pendingConsultantBaseAdapter != null) {</span>
+<span class="nc" id="L105">                        pendingConsultantBaseAdapter.sort(values.get(i).toString(), doctorDatas);</span>
+//                        pendingConsultantBaseAdapter.notifyDataSetChanged();
+                    }
+                }
+//                dialogOptionModel.onDialogOptionSelection(values.get(i), tag);
+<span class="nc" id="L110">            }</span>
+        });
+
+<span class="nc" id="L113">        return dialogView;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.1.201405082137</span></div></body></html>

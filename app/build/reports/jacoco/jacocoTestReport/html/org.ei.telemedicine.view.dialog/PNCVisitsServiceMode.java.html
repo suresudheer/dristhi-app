@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>PNCVisitsServiceMode.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">org.ei.telemedicine.view.dialog</a> &gt; <span class="el_source">PNCVisitsServiceMode.java</span></div><h1>PNCVisitsServiceMode.java</h1><pre class="source lang-java linenums">package org.ei.telemedicine.view.dialog;
+
+import static android.view.View.VISIBLE;
+import static org.ei.telemedicine.AllConstants.FormNames.PNC_VISIT;
+import static org.ei.telemedicine.Context.getInstance;
+
+import org.ei.telemedicine.Context;
+import org.ei.telemedicine.R;
+import org.ei.telemedicine.domain.ANCServiceType;
+import org.ei.telemedicine.provider.SmartRegisterClientsProvider;
+import org.ei.telemedicine.util.DateUtil;
+import org.ei.telemedicine.view.activity.SecuredNativeSmartRegisterActivity.ClientsHeaderProvider;
+import org.ei.telemedicine.view.contract.ANCSmartRegisterClient;
+import org.ei.telemedicine.view.contract.AlertDTO;
+import org.ei.telemedicine.view.contract.AlertStatus;
+import org.ei.telemedicine.view.contract.ChildSmartRegisterClient;
+import org.ei.telemedicine.view.contract.FPSmartRegisterClient;
+import org.ei.telemedicine.view.contract.ServiceProvidedDTO;
+import org.ei.telemedicine.view.contract.pnc.PNCFirstSevenDaysVisits;
+import org.ei.telemedicine.view.contract.pnc.PNCSmartRegisterClient;
+import org.ei.telemedicine.view.viewHolder.NativeANCSmartRegisterViewHolder;
+import org.ei.telemedicine.view.viewHolder.NativeChildSmartRegisterViewHolder;
+import org.ei.telemedicine.view.viewHolder.NativeFPSmartRegisterViewHolder;
+import org.ei.telemedicine.view.viewHolder.NativePNCSmartRegisterViewHolder;
+
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.TextView;
+
+import com.google.gson.Gson;
+
+public class PNCVisitsServiceMode extends ServiceModeOption {
+<span class="nc" id="L34">    public static final AlertDTO emptyAlert = new AlertDTO(&quot;&quot;, &quot;&quot;, &quot;&quot;);</span>
+    private final LayoutInflater inflater;
+
+    public PNCVisitsServiceMode(SmartRegisterClientsProvider provider) {
+<span class="nc" id="L38">        super(provider);</span>
+<span class="nc" id="L39">        this.inflater = LayoutInflater.from(Context.getInstance().applicationContext());</span>
+<span class="nc" id="L40">    }</span>
+
+    @Override
+    public String name() {
+<span class="nc" id="L44">        return getInstance().getStringResource(R.string.pnc_register_service_mode_pnc_visits);</span>
+    }
+
+    @Override
+    public ClientsHeaderProvider getHeaderProvider() {
+<span class="nc" id="L49">        return new ClientsHeaderProvider() {</span>
+            @Override
+            public int count() {
+<span class="nc" id="L52">                return 6;</span>
+            }
+
+            @Override
+            public int weightSum() {
+<span class="nc" id="L57">                return 100;</span>
+            }
+
+            @Override
+            public int[] weights() {
+<span class="nc" id="L62">                return new int[]{24, 8, 7, 15, 22, 24};</span>
+            }
+
+            @Override
+            public int[] headerTextResourceIds() {
+<span class="nc" id="L67">                return new int[]{</span>
+                        R.string.header_name, R.string.pnc_no, R.string.header_days_pp,
+                        R.string.header_delivery_complications, R.string.header_first_seven_days, R.string.header_pnc_visits};
+            }
+        };
+    }
+
+    @Override
+    public void setupListView(PNCSmartRegisterClient client,
+                              NativePNCSmartRegisterViewHolder viewHolder,
+                              View.OnClickListener clientSectionClickListener) {
+<span class="nc" id="L78">        viewHolder.pncVisitsServiceModeView().setVisibility(VISIBLE);</span>
+<span class="nc" id="L79">        setupDaysPPView(client, viewHolder);</span>
+<span class="nc" id="L80">        setupComplicationsView(client, viewHolder);</span>
+<span class="nc" id="L81">        setUpPNCVisitsGraph(client, viewHolder);</span>
+<span class="nc" id="L82">        setUpPNCRecentVisits(client, viewHolder);</span>
+<span class="nc" id="L83">        setUpPNCVisitLayout(client, viewHolder);</span>
+<span class="nc" id="L84">    }</span>
+
+    private void setUpPNCVisitLayout(PNCSmartRegisterClient client, NativePNCSmartRegisterViewHolder viewHolder) {
+<span class="nc bnc" id="L87" title="All 2 branches missed.">        if (client.isVisitsDone()) {</span>
+<span class="nc" id="L88">            viewHolder.txtPNCVisitDoneOn().setVisibility(VISIBLE);</span>
+<span class="nc" id="L89">            viewHolder.txtPNCVisitDoneOn().setText(client.visitDoneDateWithVisitName());</span>
+        } else {
+<span class="nc" id="L91">            viewHolder.txtPNCVisitDoneOn().setVisibility(View.INVISIBLE);</span>
+        }
+
+<span class="nc" id="L94">        AlertDTO pncVisitAlert = client.getAlert(ANCServiceType.PNC);</span>
+<span class="nc bnc" id="L95" title="All 2 branches missed.">        if (!pncVisitAlert.equals(emptyAlert)) {</span>
+<span class="nc" id="L96">            viewHolder.btnPncVisitView().setVisibility(View.VISIBLE);</span>
+<span class="nc" id="L97">            viewHolder.layoutPNCVisitAlert().setVisibility(VISIBLE);</span>
+<span class="nc" id="L98">            viewHolder.layoutPNCVisitAlert().setOnClickListener(launchForm(client, pncVisitAlert, PNC_VISIT));</span>
+<span class="nc" id="L99">            setAlertLayout(viewHolder.layoutPNCVisitAlert(),</span>
+                    viewHolder.txtPNCVisitDueType(),
+                    viewHolder.txtPNCVisitAlertDueOn(),
+                    pncVisitAlert);
+        } else {
+<span class="nc" id="L104">            viewHolder.btnPncVisitView().setVisibility(View.VISIBLE);</span>
+<span class="nc" id="L105">            viewHolder.layoutPNCVisitAlert().setVisibility(VISIBLE);</span>
+<span class="nc" id="L106">            viewHolder.layoutPNCVisitAlert().setOnClickListener(launchForm(client, pncVisitAlert, PNC_VISIT));</span>
+        }
+<span class="nc" id="L108">    }</span>
+
+    private void setAlertLayout(View layout, TextView typeView,
+                                TextView dateView, AlertDTO alert) {
+<span class="nc" id="L112">        typeView.setText(alert.ancServiceType().shortName());</span>
+<span class="nc" id="L113">        dateView.setText(&quot;due &quot; + alert.shortDate());</span>
+<span class="nc" id="L114">        final AlertStatus alertStatus = alert.alertStatus();</span>
+<span class="nc" id="L115">        layout.setBackgroundResource(alertStatus.backgroundColorResourceId());</span>
+<span class="nc" id="L116">        typeView.setTextColor(alertStatus.fontColor());</span>
+<span class="nc" id="L117">        dateView.setTextColor(alertStatus.fontColor());</span>
+<span class="nc" id="L118">    }</span>
+
+    private View.OnClickListener launchForm(PNCSmartRegisterClient client, AlertDTO alert, String formName) {
+<span class="nc" id="L121">        return provider().newFormLauncher(formName, client.entityId(), &quot;{\&quot;entityId\&quot;:\&quot;&quot; + client.entityId() + &quot;\&quot;}&quot;);</span>
+    }
+
+    private void setUpPNCRecentVisits(PNCSmartRegisterClient client, NativePNCSmartRegisterViewHolder viewHolder) {
+<span class="nc" id="L125">        viewHolder.recentPNCVisits().removeAllViews();</span>
+<span class="nc bnc" id="L126" title="All 2 branches missed.">        for (ServiceProvidedDTO serviceProvided : client.recentlyProvidedServices()) {</span>
+<span class="nc" id="L127">            ViewGroup recentVisitsGroup = (ViewGroup) inflater.inflate(R.layout.smart_register_pnc_recent_visits_layout, null);</span>
+<span class="nc" id="L128">            ((TextView) recentVisitsGroup.findViewById(R.id.txt_recent_visit_day)).setText(String.valueOf(serviceProvided.day()));</span>
+<span class="nc" id="L129">            ((TextView) recentVisitsGroup.findViewById(R.id.txt_recent_visit_date)).setText(serviceProvided.dateForDisplay());</span>
+<span class="nc" id="L130">            viewHolder.recentPNCVisits().addView(recentVisitsGroup);</span>
+<span class="nc" id="L131">        }</span>
+<span class="nc" id="L132">    }</span>
+
+    private void setupDaysPPView(PNCSmartRegisterClient client, NativePNCSmartRegisterViewHolder viewHolder) {
+<span class="nc" id="L135">        viewHolder.txtNumberOfVisits().setText(String.valueOf(DateUtil.dayDifference(client.deliveryDate(), DateUtil.today())));</span>
+<span class="nc" id="L136">        viewHolder.txtDOB().setText(client.deliveryShortDate());</span>
+<span class="nc" id="L137">    }</span>
+
+    private void setupComplicationsView(PNCSmartRegisterClient client, NativePNCSmartRegisterViewHolder viewHolder) {
+<span class="nc" id="L140">        viewHolder.txtVisitComplicationsView().setText(client.pncComplications());</span>
+<span class="nc" id="L141">    }</span>
+
+    private void setUpPNCVisitsGraph(PNCSmartRegisterClient client, NativePNCSmartRegisterViewHolder viewHolder) {
+<span class="nc" id="L144">        String jsonString = new Gson().toJson(client.firstSevenDaysVisits(), PNCFirstSevenDaysVisits.class);</span>
+<span class="nc" id="L145">        viewHolder.wbvPncVisitsGraph().loadUrl(&quot;javascript:drawSevenDayGraphic('&quot; + jsonString + &quot;')&quot;);</span>
+<span class="nc" id="L146">    }</span>
+
+    @Override
+    public void setupListView(FPSmartRegisterClient client,
+                              NativeFPSmartRegisterViewHolder viewHolder,
+                              View.OnClickListener clientSectionClickListener) {
+
+<span class="nc" id="L153">    }</span>
+
+    @Override
+    public void setupListView(ChildSmartRegisterClient client,
+                              NativeChildSmartRegisterViewHolder viewHolder,
+                              View.OnClickListener clientSectionClickListener) {
+
+<span class="nc" id="L160">    }</span>
+
+    @Override
+    public void setupListView(ANCSmartRegisterClient client, NativeANCSmartRegisterViewHolder viewHolder, View.OnClickListener clientSectionClickListener) {
+
+<span class="nc" id="L165">    }</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.1.201405082137</span></div></body></html>

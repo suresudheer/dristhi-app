@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>VideosController.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">org.ei.telemedicine.view.controller</a> &gt; <span class="el_source">VideosController.java</span></div><h1>VideosController.java</h1><pre class="source lang-java linenums">package org.ei.telemedicine.view.controller;
+
+import java.text.MessageFormat;
+
+import org.ei.telemedicine.R;
+import org.ei.telemedicine.util.Log;
+
+import android.app.AlertDialog;
+import android.content.ActivityNotFoundException;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+
+public class VideosController {
+    public static final String VIDEO_PLAYER_INTENT = &quot;org.ei.dristhi_iec.VIDEO_PLAYER&quot;;
+    public static final String VIDEO_NAME_PARAMETER = &quot;VideoName&quot;;
+    private Context context;
+
+<span class="nc" id="L19">    public VideosController(Context context) {</span>
+<span class="nc" id="L20">        this.context = context;</span>
+<span class="nc" id="L21">    }</span>
+
+    public void play(String videoName) {
+        try {
+<span class="nc" id="L25">            Intent videoPlayerIntent = new Intent(VIDEO_PLAYER_INTENT);</span>
+<span class="nc" id="L26">            videoPlayerIntent.putExtra(VIDEO_NAME_PARAMETER, videoName);</span>
+<span class="nc" id="L27">            context.startActivity(videoPlayerIntent);</span>
+<span class="nc" id="L28">        } catch (ActivityNotFoundException e) {</span>
+<span class="nc" id="L29">            Log.logError(MessageFormat.format(&quot;Could not play video: {0}. Exception: {1}&quot;, videoName, e));</span>
+<span class="nc" id="L30">            new AlertDialog.Builder(context)</span>
+                    .setMessage(R.string.videos_IEC_not_installed_dialog_message)
+                    .setTitle(R.string.videos_cannot_play_video_dialog_title)
+                    .setCancelable(true)
+                    .setNeutralButton(android.R.string.ok,
+<span class="nc" id="L35">                            new DialogInterface.OnClickListener() {</span>
+                                public void onClick(DialogInterface dialog,
+                                                    int whichButton) {
+<span class="nc" id="L38">                                    dialog.dismiss();</span>
+<span class="nc" id="L39">                                }</span>
+                            })
+                    .show();
+<span class="nc" id="L42">        } catch (Exception e) {</span>
+<span class="nc" id="L43">            Log.logError(MessageFormat.format(&quot;Could not play video: {0}. Exception: {1}&quot;, videoName, e));</span>
+<span class="nc" id="L44">            new AlertDialog.Builder(context)</span>
+                    .setMessage(R.string.videos_unknown_error_dialog_message)
+                    .setTitle(R.string.videos_cannot_play_video_dialog_title)
+                    .setCancelable(true)
+                    .setNeutralButton(android.R.string.ok,
+<span class="nc" id="L49">                            new DialogInterface.OnClickListener() {</span>
+                                public void onClick(DialogInterface dialog,
+                                                    int whichButton) {
+<span class="nc" id="L52">                                    dialog.dismiss();</span>
+<span class="nc" id="L53">                                }</span>
+                            })
+                    .show();
+<span class="nc" id="L56">        }</span>
+<span class="nc" id="L57">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.1.201405082137</span></div></body></html>

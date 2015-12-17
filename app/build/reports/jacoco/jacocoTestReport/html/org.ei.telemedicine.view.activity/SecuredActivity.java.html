@@ -1,0 +1,293 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>SecuredActivity.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">org.ei.telemedicine.view.activity</a> &gt; <span class="el_source">SecuredActivity.java</span></div><h1>SecuredActivity.java</h1><pre class="source lang-java linenums">package org.ei.telemedicine.view.activity;
+
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.widget.Toast;
+
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
+import org.ei.telemedicine.AllConstants;
+import org.ei.telemedicine.Context;
+import org.ei.telemedicine.R;
+import org.ei.telemedicine.bluetooth.BlueToothInfoActivity;
+import org.ei.telemedicine.domain.ANM;
+import org.ei.telemedicine.domain.ProfileImage;
+import org.ei.telemedicine.domain.form.FormSubmission;
+import org.ei.telemedicine.domain.form.SubForm;
+import org.ei.telemedicine.event.CapturedPhotoInformation;
+import org.ei.telemedicine.event.Event;
+import org.ei.telemedicine.event.Listener;
+import org.ei.telemedicine.repository.ImageRepository;
+import org.ei.telemedicine.sync.DrishtiSyncScheduler;
+import org.ei.telemedicine.view.contract.HomeContext;
+import org.ei.telemedicine.view.controller.ANMController;
+import org.ei.telemedicine.view.controller.FormController;
+import org.ei.telemedicine.view.controller.NavigationController;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.Map;
+import java.util.UUID;
+
+import static org.ei.telemedicine.AllConstants.*;
+import static org.ei.telemedicine.AllConstants.ALERT_NAME_PARAM;
+import static org.ei.telemedicine.AllConstants.ENTITY_ID;
+import static org.ei.telemedicine.AllConstants.ENTITY_ID_PARAM;
+import static org.ei.telemedicine.AllConstants.FIELD_OVERRIDES_PARAM;
+import static org.ei.telemedicine.AllConstants.FORM_NAME_PARAM;
+import static org.ei.telemedicine.AllConstants.FORM_SUCCESSFULLY_SUBMITTED_RESULT_CODE;
+import static org.ei.telemedicine.AllConstants.FormNames.ANC_INVESTIGATIONS;
+import static org.ei.telemedicine.AllConstants.FormNames.ANC_VISIT;
+import static org.ei.telemedicine.AllConstants.FormNames.ANC_VISIT_EDIT;
+import static org.ei.telemedicine.AllConstants.FormNames.CHILD_ILLNESS;
+import static org.ei.telemedicine.AllConstants.FormNames.PNC_VISIT;
+import static org.ei.telemedicine.AllConstants.VIEW_FORM;
+import static org.ei.telemedicine.R.string.no_button_label;
+import static org.ei.telemedicine.R.string.yes_button_label;
+import static org.ei.telemedicine.event.Event.ON_LOGOUT;
+import static org.ei.telemedicine.util.Log.logError;
+import static org.ei.telemedicine.util.Log.logInfo;
+
+<span class="nc" id="L60">public abstract class SecuredActivity extends Activity {</span>
+    protected Context context;
+    protected Listener&lt;Boolean&gt; logoutListener;
+    protected Listener&lt;CapturedPhotoInformation&gt; photoCaptureListener;
+    protected FormController formController;
+    protected ANMController anmController;
+    protected NavigationController navigationController;
+    private String metaData;
+<span class="nc" id="L68">    private String TAG = &quot;SecuredActivity&quot;;</span>
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+<span class="nc" id="L72">        super.onCreate(savedInstanceState);</span>
+
+<span class="nc" id="L74">        context = Context.getInstance().updateApplicationContext(this.getApplicationContext());</span>
+
+
+<span class="nc" id="L77">        logoutListener = new Listener&lt;Boolean&gt;() {</span>
+            public void onEvent(Boolean data) {
+<span class="nc" id="L79">                finish();</span>
+<span class="nc" id="L80">            }</span>
+        };
+<span class="nc" id="L82">        ON_LOGOUT.addListener(logoutListener);</span>
+
+<span class="nc bnc" id="L84" title="All 2 branches missed.">        if (context.IsUserLoggedOut()) {</span>
+<span class="nc" id="L85">            startActivity(new Intent(this, LoginActivity.class));</span>
+<span class="nc" id="L86">            context.userService().logoutSession();</span>
+<span class="nc" id="L87">            return;</span>
+        }
+<span class="nc" id="L89">        formController = new FormController(this);</span>
+<span class="nc" id="L90">        anmController = context.anmController();</span>
+<span class="nc" id="L91">        navigationController = new NavigationController(this, anmController);</span>
+<span class="nc" id="L92">        onCreation();</span>
+<span class="nc" id="L93">    }</span>
+
+    @Override
+    protected void onResume() {
+<span class="nc" id="L97">        super.onResume();</span>
+<span class="nc bnc" id="L98" title="All 2 branches missed.">        if (context.IsUserLoggedOut()) {</span>
+<span class="nc" id="L99">            context.userService().logoutSession();</span>
+<span class="nc" id="L100">            startActivity(new Intent(this, LoginActivity.class));</span>
+<span class="nc" id="L101">            return;</span>
+        }
+
+<span class="nc" id="L104">        onResumption();</span>
+<span class="nc" id="L105">    }</span>
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+<span class="nc" id="L109">        switch (item.getItemId()) {</span>
+//            case R.id.switchLanguageMenuItem: {
+//                String newLanguagePreference = context.userService().switchLanguagePreference();
+//                Toast.makeText(this, &quot;Language preference set to &quot; + newLanguagePreference + &quot;. Please restart the application.&quot;, LENGTH_SHORT).show();
+//            }
+            default:
+<span class="nc" id="L115">                return super.onOptionsItemSelected(item);</span>
+        }
+    }
+
+    public void saveimagereference(String bindobject, String entityid, Map&lt;String, String&gt; details) {
+//        Context.getInstance().allBeneficiaries().mergeDetails(entityid, details);
+<span class="nc" id="L121">        String anmId = Context.getInstance().allSharedPreferences().fetchRegisteredANM();</span>
+<span class="nc" id="L122">        ProfileImage profileImage = new ProfileImage(UUID.randomUUID().toString(), anmId, entityid, &quot;Image&quot;, details.get(&quot;profilepic&quot;), ImageRepository.TYPE_Unsynced);</span>
+<span class="nc" id="L123">        ((ImageRepository) Context.getInstance().imageRepository()).add(profileImage);</span>
+<span class="nc" id="L124">        Context.getInstance().allEligibleCouples().updatePhotoPath(entityid, details.get(&quot;profilepic&quot;));</span>
+<span class="nc" id="L125">        Toast.makeText(this, entityid, Toast.LENGTH_LONG).show();</span>
+<span class="nc" id="L126">    }</span>
+
+    public void logoutUser() {
+<span class="nc" id="L129">        context.userService().logout();</span>
+
+
+<span class="nc" id="L132">        this.finish();</span>
+<span class="nc" id="L133">        startActivity(new Intent(this, LoginActivity.class));</span>
+<span class="nc" id="L134">    }</span>
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+<span class="nc" id="L138">        MenuInflater inflater = getMenuInflater();</span>
+<span class="nc" id="L139">        inflater.inflate(R.menu.main_menu, menu);</span>
+<span class="nc" id="L140">        return true;</span>
+    }
+
+    public abstract void onCreation();
+
+    public abstract void onResumption();
+
+    public void startFormActivity(String formName, String entityId, String metaData) {
+<span class="nc" id="L148">        launchForm(formName, entityId, metaData, FormActivity.class);</span>
+<span class="nc" id="L149">    }</span>
+
+    public void viewPOCActivity(String visitType, String entityId) {
+<span class="nc" id="L152">        Intent intent = new Intent(this, ViewPlanOfCareActivity.class);</span>
+<span class="nc" id="L153">        intent.putExtra(ENTITY_ID, entityId);</span>
+<span class="nc" id="L154">        intent.putExtra(VISIT_TYPE, visitType);</span>
+<span class="nc" id="L155">        startActivity(intent);</span>
+<span class="nc" id="L156">    }</span>
+
+    public void startFormActivity(String formName, String entityId, String metaData, boolean isViewForm) {
+<span class="nc" id="L159">        Log.e(&quot;View Form Entity Id&quot;, entityId);</span>
+<span class="nc" id="L160">        viewForm(formName, entityId, metaData, FormActivity.class, isViewForm);</span>
+<span class="nc" id="L161">    }</span>
+
+    private void viewForm(String formName, String entityId, String metaData, Class formActivityClass, boolean isViewForm) {
+<span class="nc" id="L164">        this.metaData = metaData;</span>
+<span class="nc" id="L165">        Log.e(&quot;EntityId&quot;, entityId);</span>
+<span class="nc" id="L166">        Intent intent = new Intent(this, formActivityClass);</span>
+<span class="nc" id="L167">        intent.putExtra(FORM_NAME_PARAM, formName);</span>
+<span class="nc" id="L168">        intent.putExtra(ENTITY_ID_PARAM, entityId);</span>
+<span class="nc" id="L169">        intent.putExtra(VIEW_FORM, true);</span>
+<span class="nc" id="L170">        addFieldOverridesIfExist(intent);</span>
+<span class="nc" id="L171">        startActivity(intent);</span>
+<span class="nc" id="L172">    }</span>
+
+    public void startMicroFormActivity(String formName, String entityId, String metaData) {
+<span class="nc" id="L175">        launchForm(formName, entityId, metaData, MicroFormActivity.class);</span>
+<span class="nc" id="L176">    }</span>
+
+    private void launchForm(String formName, String entityId, String metaData, Class formType) {
+<span class="nc" id="L179">        this.metaData = metaData;</span>
+<span class="nc" id="L180">        Log.e(&quot;Launching form&quot;, formName + &quot;===&quot; + entityId);</span>
+
+<span class="nc" id="L182">        Intent intent = new Intent(this, formType);</span>
+<span class="nc" id="L183">        intent.putExtra(FORM_NAME_PARAM, formName);</span>
+<span class="nc" id="L184">        intent.putExtra(ENTITY_ID_PARAM, entityId);</span>
+<span class="nc" id="L185">        addFieldOverridesIfExist(intent);</span>
+<span class="nc" id="L186">        startActivityForResult(intent, FORM_SUCCESSFULLY_SUBMITTED_RESULT_CODE);</span>
+<span class="nc" id="L187">    }</span>
+
+    private void addFieldOverridesIfExist(Intent intent) {
+<span class="nc bnc" id="L190" title="All 2 branches missed.">        if (hasMetadata()) {</span>
+<span class="nc" id="L191">            Map&lt;String, String&gt; metaDataMap = new Gson().fromJson(</span>
+<span class="nc" id="L192">                    this.metaData, new TypeToken&lt;Map&lt;String, String&gt;&gt;() {</span>
+                    }.getType());
+<span class="nc bnc" id="L194" title="All 2 branches missed.">            if (metaDataMap.containsKey(FIELD_OVERRIDES_PARAM)) {</span>
+<span class="nc" id="L195">                intent.putExtra(FIELD_OVERRIDES_PARAM, metaDataMap.get(FIELD_OVERRIDES_PARAM));</span>
+            }
+        }
+<span class="nc" id="L198">    }</span>
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+<span class="nc" id="L202">        super.onActivityResult(requestCode, resultCode, data);</span>
+<span class="nc" id="L203">        Log.e(&quot;Res&quot;, resultCode + &quot;&quot;);</span>
+<span class="nc bnc" id="L204" title="All 2 branches missed.">        if (isSuccessfulFormSubmission(resultCode)) {</span>
+<span class="nc" id="L205">            logInfo(&quot;Form successfully saved. MetaData: &quot; + metaData);</span>
+<span class="nc bnc" id="L206" title="All 2 branches missed.">            if (hasMetadata()) {</span>
+<span class="nc" id="L207">                Map&lt;String, String&gt; metaDataMap = new Gson().fromJson(metaData, new TypeToken&lt;Map&lt;String, String&gt;&gt;() {</span>
+                }.getType());
+<span class="nc bnc" id="L209" title="All 4 branches missed.">                if (metaDataMap.containsKey(ENTITY_ID) &amp;&amp; metaDataMap.containsKey(ALERT_NAME_PARAM)) {</span>
+<span class="nc" id="L210">                    Context.getInstance().alertService().changeAlertStatusToInProcess(metaDataMap.get(ENTITY_ID), metaDataMap.get(ALERT_NAME_PARAM));</span>
+                }
+            }
+<span class="nc bnc" id="L213" title="All 10 branches missed.">            if (context.userService().getFormName().equals(ANC_VISIT) || context.userService().getFormName().equals(ANC_INVESTIGATIONS) || context.userService().getFormName().equals(PNC_VISIT) || context.userService().getFormName().equals(ANC_VISIT_EDIT) || context.userService().getFormName().equals(CHILD_ILLNESS)) {</span>
+<span class="nc" id="L214">                DrishtiSyncScheduler.stop(SecuredActivity.this);</span>
+<span class="nc" id="L215">                FormSubmission formSubmission = context.formDataRepository().fetchFromSubmissionUseEntity(context.userService().getEntityId());</span>
+<span class="nc" id="L216">                int subFormCount = 0;</span>
+<span class="nc" id="L217">                String deliveryOutcome = &quot;&quot;, risks = &quot;&quot;, pncRisks = &quot;&quot;, childSigns = &quot;&quot;;</span>
+                try {
+<span class="nc" id="L219">                    childSigns = formSubmission.getFieldValue(AllConstants.ChildIllnessFields.CHILD_SIGNS);</span>
+<span class="nc" id="L220">                    pncRisks = formSubmission.getFieldValue(&quot;immediateReferralReason&quot;);</span>
+<span class="nc" id="L221">                    risks = formSubmission.getFieldValue(AllConstants.ANCVisitFields.RISKS);</span>
+<span class="nc" id="L222">                    deliveryOutcome = formSubmission.getFieldValue(&quot;deliveryOutcome&quot;);</span>
+<span class="nc" id="L223">                    SubForm subForm = formSubmission.getSubFormByName(AllConstants.PNCVisitFields.CHILD_PNC_VISIT_SUB_FORM_NAME);</span>
+<span class="nc" id="L224">                    subFormCount = subForm.instances().size();</span>
+<span class="nc bnc" id="L225" title="All 4 branches missed.">                    if (!deliveryOutcome.equals(&quot;&quot;) &amp;&amp; deliveryOutcome.equalsIgnoreCase(&quot;still_birth&quot;)) {</span>
+<span class="nc" id="L226">                        subFormCount = 0;</span>
+                    }
+<span class="nc" id="L228">                } catch (Exception e) {</span>
+<span class="nc" id="L229">                    Log.e(&quot;No Subforms&quot;, &quot;No Subforms&quot;);</span>
+<span class="nc" id="L230">                }</span>
+
+<span class="nc" id="L232">                Log.e(TAG, &quot;Form Data&quot; + formSubmission.instance());</span>
+<span class="nc" id="L233">                showBluetooth(formSubmission.entityId(), formSubmission.instanceId(), context.userService().getFormName(), formSubmission, subFormCount, risks, pncRisks, childSigns);</span>
+            }
+        }
+<span class="nc" id="L236">    }</span>
+
+    private void showBluetooth(final String entityId, final String instanceId, final String formName, FormSubmission formSubmission, int subFormCount, String risks, String pncRisks, String childSigns) {
+
+<span class="nc" id="L240">        Intent intent = new Intent(SecuredActivity.this, BlueToothInfoActivity.class);</span>
+<span class="nc" id="L241">        intent.putExtra(ENTITY_ID, entityId);</span>
+<span class="nc" id="L242">        intent.putExtra(INSTANCE_ID_PARAM, instanceId);</span>
+<span class="nc" id="L243">        intent.putExtra(FORM_NAME_PARAM, formName);</span>
+<span class="nc" id="L244">        intent.putExtra(SUB_FORM_COUNT, subFormCount);</span>
+<span class="nc bnc" id="L245" title="All 4 branches missed.">        intent.putExtra(AllConstants.ANCVisitFields.RISKS, risks != null &amp;&amp; risks.trim().length() != 0 ? risks : &quot;&quot;);</span>
+<span class="nc bnc" id="L246" title="All 4 branches missed.">        intent.putExtra(AllConstants.PNCVisitFields.PNC_RISKS, pncRisks != null &amp;&amp; pncRisks.trim().length() != 0 ? pncRisks : &quot;&quot;);</span>
+<span class="nc bnc" id="L247" title="All 4 branches missed.">        intent.putExtra(AllConstants.ChildIllnessFields.CHILD_SIGNS, childSigns != null &amp;&amp; childSigns.trim().length() != 0 ? childSigns : &quot;&quot;);</span>
+
+<span class="nc" id="L249">        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT);</span>
+<span class="nc" id="L250">        startActivity(intent);</span>
+
+<span class="nc" id="L252">    }</span>
+
+    private boolean isSuccessfulFormSubmission(int resultCode) {
+<span class="nc bnc" id="L255" title="All 2 branches missed.">        return resultCode == FORM_SUCCESSFULLY_SUBMITTED_RESULT_CODE;</span>
+    }
+
+    private boolean hasMetadata() {
+<span class="nc bnc" id="L259" title="All 4 branches missed.">        return this.metaData != null &amp;&amp; !this.metaData.equalsIgnoreCase(&quot;undefined&quot;);</span>
+    }
+
+    public String getDataFromJson(String jsonData, String keyValue) {
+<span class="nc bnc" id="L263" title="All 4 branches missed.">        if (jsonData != null &amp;&amp; !jsonData.equals(&quot;&quot;)) {</span>
+            try {
+<span class="nc" id="L265">                JSONObject jsonObject = new JSONObject(jsonData);</span>
+<span class="nc bnc" id="L266" title="All 6 branches missed.">                return jsonObject.has(keyValue) &amp;&amp; !jsonObject.getString(keyValue).equalsIgnoreCase(&quot;none&quot;) &amp;&amp; !jsonObject.getString(keyValue).equalsIgnoreCase(&quot;null&quot;) ? jsonObject.getString(keyValue) : &quot;&quot;;</span>
+<span class="nc" id="L267">            } catch (JSONException e) {</span>
+<span class="nc" id="L268">                e.printStackTrace();</span>
+            }
+
+        }
+<span class="nc" id="L272">        return &quot;&quot;;</span>
+    }
+
+    public String getDatafromArray(String jsonArray) {
+        try {
+<span class="nc" id="L277">            String result = &quot;&quot;;</span>
+<span class="nc bnc" id="L278" title="All 2 branches missed.">            if (jsonArray != null) {</span>
+<span class="nc" id="L279">                JSONArray jsonArray1 = new JSONArray(jsonArray);</span>
+<span class="nc bnc" id="L280" title="All 2 branches missed.">                for (int i = 0; i &lt; jsonArray1.length(); i++) {</span>
+<span class="nc bnc" id="L281" title="All 2 branches missed.">                    result = result + (!result.equals(&quot;&quot;) ? &quot;,&quot; : &quot;&quot;) + jsonArray1.getString(i);</span>
+                }
+<span class="nc" id="L283">                return result;</span>
+            }
+<span class="nc" id="L285">        } catch (Exception e) {</span>
+<span class="nc" id="L286">            e.printStackTrace();</span>
+<span class="nc" id="L287">        }</span>
+<span class="nc" id="L288">        return &quot;&quot;;</span>
+    }
+
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.1.201405082137</span></div></body></html>

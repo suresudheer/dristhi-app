@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>Cache.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">org.ei.telemedicine.util</a> &gt; <span class="el_source">Cache.java</span></div><h1>Cache.java</h1><pre class="source lang-java linenums">package org.ei.telemedicine.util;
+
+import org.ei.telemedicine.domain.FetchStatus;
+import org.ei.telemedicine.event.CapturedPhotoInformation;
+import org.ei.telemedicine.event.Listener;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import static java.text.MessageFormat.format;
+import static org.ei.telemedicine.domain.FetchStatus.fetched;
+import static org.ei.telemedicine.event.Event.*;
+import static org.ei.telemedicine.util.Log.logWarn;
+
+public class Cache&lt;T&gt; {
+<span class="fc" id="L16">    private Map&lt;String, T&gt; value = new HashMap&lt;String, T&gt;();</span>
+    private final Listener&lt;String&gt; formSubmittedListener;
+    private final Listener&lt;FetchStatus&gt; actionsFetchedListener;
+    private final Listener&lt;CapturedPhotoInformation&gt; photoCapturedListener;
+    private final Listener&lt;String&gt; actionHandledListener;
+
+<span class="fc" id="L22">    public Cache() {</span>
+<span class="fc" id="L23">        actionsFetchedListener = new Listener&lt;FetchStatus&gt;() {</span>
+            @Override
+            public void onEvent(FetchStatus data) {
+<span class="nc bnc" id="L26" title="All 2 branches missed.">                if (fetched.equals(data)) {</span>
+<span class="nc" id="L27">                    logWarn(&quot;List cache invalidated as new data was fetched from server.&quot;);</span>
+<span class="nc" id="L28">                    value.clear();</span>
+                }
+<span class="nc" id="L30">            }</span>
+        };
+<span class="fc" id="L32">        formSubmittedListener = new Listener&lt;String&gt;() {</span>
+            @Override
+            public void onEvent(String reason) {
+<span class="nc" id="L35">                logWarn(format(&quot;List cache invalidated: {0}.&quot;, reason));</span>
+<span class="nc" id="L36">                value.clear();</span>
+<span class="nc" id="L37">            }</span>
+        };
+<span class="fc" id="L39">        photoCapturedListener = new Listener&lt;CapturedPhotoInformation&gt;() {</span>
+            @Override
+            public void onEvent(CapturedPhotoInformation data) {
+<span class="nc" id="L42">                value.clear();</span>
+<span class="nc" id="L43">            }</span>
+        };
+<span class="fc" id="L45">        actionHandledListener = new Listener&lt;String&gt;() {</span>
+            @Override
+            public void onEvent(String data) {
+<span class="nc" id="L48">                logWarn(format(&quot;List cache invalidated as Action handled: {0}&quot;, data));</span>
+<span class="nc" id="L49">                value.clear();</span>
+<span class="nc" id="L50">            }</span>
+        };
+<span class="fc" id="L52">        ON_DATA_FETCHED.addListener(actionsFetchedListener);</span>
+<span class="fc" id="L53">        FORM_SUBMITTED.addListener(formSubmittedListener);</span>
+<span class="fc" id="L54">        ON_PHOTO_CAPTURED.addListener(photoCapturedListener);</span>
+<span class="fc" id="L55">        ACTION_HANDLED.addListener(actionHandledListener);</span>
+<span class="fc" id="L56">    }</span>
+
+    public T get(String key, CacheableData&lt;T&gt; cacheableData) {
+<span class="pc bpc" id="L59" title="1 of 2 branches missed.">        if (value.get(key) != null) {</span>
+<span class="nc" id="L60">            return value.get(key);</span>
+        }
+<span class="fc" id="L62">        T fetchedData = cacheableData.fetch();</span>
+<span class="fc" id="L63">        value.put(key, fetchedData);</span>
+<span class="fc" id="L64">        return fetchedData;</span>
+    }
+}
+
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.1.201405082137</span></div></body></html>

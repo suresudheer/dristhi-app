@@ -1,0 +1,237 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>HTTPAgent.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">org.ei.telemedicine.service</a> &gt; <span class="el_source">HTTPAgent.java</span></div><h1>HTTPAgent.java</h1><pre class="source lang-java linenums">package org.ei.telemedicine.service;
+
+import static org.ei.telemedicine.AllConstants.REALM;
+import static org.ei.telemedicine.domain.LoginResponse.NO_INTERNET_CONNECTIVITY;
+import static org.ei.telemedicine.domain.LoginResponse.SUCCESS;
+import static org.ei.telemedicine.domain.LoginResponse.UNAUTHORIZED;
+import static org.ei.telemedicine.domain.LoginResponse.UNKNOWN_RESPONSE;
+import static org.ei.telemedicine.util.HttpResponseUtil.getResponseBody;
+import static org.ei.telemedicine.util.Log.logError;
+import static org.ei.telemedicine.util.Log.logWarn;
+
+import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.security.KeyStore;
+
+import javax.net.ssl.SSLException;
+
+import org.apache.commons.io.IOUtils;
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.conn.scheme.PlainSocketFactory;
+import org.apache.http.conn.scheme.Scheme;
+import org.apache.http.conn.scheme.SchemeRegistry;
+import org.apache.http.conn.scheme.SocketFactory;
+import org.apache.http.conn.ssl.AbstractVerifier;
+import org.apache.http.conn.ssl.SSLSocketFactory;
+import org.apache.http.conn.ssl.X509HostnameVerifier;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.entity.mime.MultipartEntity;
+import org.apache.http.entity.mime.content.FileBody;
+import org.apache.http.entity.mime.content.StringBody;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.conn.SingleClientConnManager;
+import org.apache.http.params.BasicHttpParams;
+import org.apache.http.params.HttpConnectionParams;
+import org.apache.http.protocol.HTTP;
+import org.apache.http.util.EntityUtils;
+import org.ei.telemedicine.DristhiConfiguration;
+import org.ei.telemedicine.R;
+import org.ei.telemedicine.client.GZipEncodingHttpClient;
+import org.ei.telemedicine.domain.LoginResponse;
+import org.ei.telemedicine.domain.ProfileImage;
+import org.ei.telemedicine.domain.Response;
+import org.ei.telemedicine.domain.ResponseStatus;
+import org.ei.telemedicine.repository.AllSettings;
+import org.ei.telemedicine.repository.AllSharedPreferences;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import android.content.Context;
+import android.util.Log;
+
+public class HTTPAgent {
+    private final GZipEncodingHttpClient httpClient;
+    private Context context;
+    private AllSettings settings;
+    private AllSharedPreferences allSharedPreferences;
+    private DristhiConfiguration configuration;
+
+
+<span class="nc" id="L71">    public HTTPAgent(Context context, AllSettings settings, AllSharedPreferences allSharedPreferences, DristhiConfiguration configuration) {</span>
+<span class="nc" id="L72">        this.context = context;</span>
+<span class="nc" id="L73">        this.settings = settings;</span>
+<span class="nc" id="L74">        this.allSharedPreferences = allSharedPreferences;</span>
+<span class="nc" id="L75">        this.configuration = configuration;</span>
+
+<span class="nc" id="L77">        BasicHttpParams basicHttpParams = new BasicHttpParams();</span>
+<span class="nc" id="L78">        HttpConnectionParams.setConnectionTimeout(basicHttpParams, 30000);</span>
+<span class="nc" id="L79">        HttpConnectionParams.setSoTimeout(basicHttpParams, 60000);</span>
+
+<span class="nc" id="L81">        SchemeRegistry registry = new SchemeRegistry();</span>
+<span class="nc" id="L82">        registry.register(new Scheme(&quot;http&quot;, PlainSocketFactory.getSocketFactory(), 80));</span>
+<span class="nc" id="L83">        registry.register(new Scheme(&quot;https&quot;, sslSocketFactoryWithDrishtiCertificate(), 443));</span>
+
+<span class="nc" id="L85">        SingleClientConnManager connectionManager = new SingleClientConnManager(basicHttpParams, registry);</span>
+<span class="nc" id="L86">        httpClient = new GZipEncodingHttpClient(new DefaultHttpClient(connectionManager, basicHttpParams));</span>
+<span class="nc" id="L87">    }</span>
+
+    public Response&lt;String&gt; fetch(String requestURLPath) {
+        try {
+<span class="nc" id="L91">            Log.e(&quot;URLs&quot;, requestURLPath);</span>
+<span class="nc" id="L92">            setCredentials(allSharedPreferences.fetchRegisteredANM(), settings.fetchANMPassword());</span>
+<span class="nc" id="L93">            String responseContent = IOUtils.toString(httpClient.fetchContent(new HttpGet(requestURLPath)));</span>
+<span class="nc" id="L94">            return new Response&lt;String&gt;(ResponseStatus.success, responseContent);</span>
+<span class="nc" id="L95">        } catch (Exception e) {</span>
+<span class="nc" id="L96">            logWarn(e.toString());</span>
+<span class="nc" id="L97">            return new Response&lt;String&gt;(ResponseStatus.failure, null);</span>
+        }
+    }
+
+    public Response&lt;String&gt; post(String postURLPath, String jsonPayload) {
+        try {
+<span class="nc" id="L103">            setCredentials(allSharedPreferences.fetchRegisteredANM(), settings.fetchANMPassword());</span>
+<span class="nc" id="L104">            HttpPost httpPost = new HttpPost(postURLPath);</span>
+<span class="nc" id="L105">            StringEntity entity = new StringEntity(jsonPayload, HTTP.UTF_8);</span>
+<span class="nc" id="L106">            entity.setContentType(&quot;application/json; charset=utf-8&quot;);</span>
+<span class="nc" id="L107">            httpPost.setEntity(entity);</span>
+
+<span class="nc" id="L109">            HttpResponse response = httpClient.postContent(httpPost);</span>
+
+<span class="nc bnc" id="L111" title="All 2 branches missed.">            ResponseStatus responseStatus = response.getStatusLine().getStatusCode() == HttpStatus.SC_CREATED ? ResponseStatus.success : ResponseStatus.failure;</span>
+<span class="nc" id="L112">            response.getEntity().consumeContent();</span>
+<span class="nc" id="L113">            return new Response&lt;String&gt;(responseStatus, null);</span>
+<span class="nc" id="L114">        } catch (Exception e) {</span>
+<span class="nc" id="L115">            logWarn(e.toString());</span>
+<span class="nc" id="L116">            return new Response&lt;String&gt;(ResponseStatus.failure, null);</span>
+        }
+    }
+
+
+    public LoginResponse urlCanBeAccessWithGivenCredentials(String requestURL, String userName, String password) {
+//        setCredentials(userName, password);
+        try {
+<span class="nc" id="L124">            HttpResponse response = httpClient.execute(new HttpGet(requestURL));</span>
+<span class="nc" id="L125">            int statusCode = response.getStatusLine().getStatusCode();</span>
+<span class="nc bnc" id="L126" title="All 2 branches missed.">            if (statusCode == HttpStatus.SC_OK) {</span>
+<span class="nc" id="L127">                String responseBody = getResponseBody(response);</span>
+<span class="nc" id="L128">                JSONObject responseJson = new JSONObject(responseBody);</span>
+<span class="nc bnc" id="L129" title="All 4 branches missed.">                if (responseJson != null &amp;&amp; responseJson.has(&quot;status&quot;)) {</span>
+<span class="nc" id="L130">                    logError(&quot;Invalid credentials for: &quot; + userName + &quot; using &quot; + requestURL);</span>
+<span class="nc" id="L131">                    return UNAUTHORIZED;</span>
+<span class="nc bnc" id="L132" title="All 4 branches missed.">                } else if (responseJson != null &amp;&amp; !responseJson.has(&quot;status&quot;)) {</span>
+<span class="nc" id="L133">                    logError(&quot;Success &quot; + requestURL + &quot;\n result&quot; + responseBody);</span>
+<span class="nc" id="L134">                    return SUCCESS.withPayload(responseBody);</span>
+                }
+<span class="nc" id="L136">            } else {</span>
+<span class="nc" id="L137">                logError(&quot;Bad response from Dristhi. Status code:  &quot; + statusCode + &quot; username: &quot; + userName + &quot; using &quot; + requestURL);</span>
+<span class="nc" id="L138">                return UNKNOWN_RESPONSE;</span>
+            }
+
+
+<span class="nc" id="L142">        } catch (IOException e) {</span>
+<span class="nc" id="L143">            logError(&quot;Failed to check credentials of: &quot; + userName + &quot; using &quot; + requestURL + &quot;. Error: &quot; + e.toString());</span>
+<span class="nc" id="L144">            return NO_INTERNET_CONNECTIVITY;</span>
+<span class="nc" id="L145">        } catch (JSONException e) {</span>
+<span class="nc" id="L146">            e.printStackTrace();</span>
+<span class="nc" id="L147">            return NO_INTERNET_CONNECTIVITY;</span>
+<span class="nc" id="L148">        }</span>
+<span class="nc" id="L149">        return NO_INTERNET_CONNECTIVITY;</span>
+    }
+
+    private void setCredentials(String userName, String password) {
+<span class="nc" id="L153">        httpClient.getCredentialsProvider().setCredentials(new AuthScope(configuration.host(), configuration.port(), REALM),</span>
+                new UsernamePasswordCredentials(userName, password));
+<span class="nc" id="L155">    }</span>
+
+    private SocketFactory sslSocketFactoryWithDrishtiCertificate() {
+        try {
+<span class="nc" id="L159">            KeyStore trustedKeystore = KeyStore.getInstance(&quot;BKS&quot;);</span>
+<span class="nc" id="L160">            InputStream inputStream = context.getResources().openRawResource(R.raw.dristhi_client);</span>
+            try {
+<span class="nc" id="L162">                trustedKeystore.load(inputStream, &quot;phone red pen&quot;.toCharArray());</span>
+            } finally {
+<span class="nc" id="L164">                inputStream.close();</span>
+<span class="nc" id="L165">            }</span>
+<span class="nc" id="L166">            SSLSocketFactory socketFactory = new SSLSocketFactory(trustedKeystore);</span>
+<span class="nc" id="L167">            final X509HostnameVerifier oldVerifier = socketFactory.getHostnameVerifier();</span>
+<span class="nc" id="L168">            socketFactory.setHostnameVerifier(new AbstractVerifier() {</span>
+                @Override
+                public void verify(String host, String[] cns, String[] subjectAlts) throws SSLException {
+<span class="nc bnc" id="L171" title="All 2 branches missed.">                    for (String cn : cns) {</span>
+<span class="nc bnc" id="L172" title="All 4 branches missed.">                        if (!configuration.shouldVerifyCertificate() || host.equals(cn)) {</span>
+<span class="nc" id="L173">                            return;</span>
+                        }
+                    }
+<span class="nc" id="L176">                    oldVerifier.verify(host, cns, subjectAlts);</span>
+<span class="nc" id="L177">                }</span>
+            });
+<span class="nc" id="L179">            return socketFactory;</span>
+<span class="nc" id="L180">        } catch (Exception e) {</span>
+<span class="nc" id="L181">            throw new AssertionError(e);</span>
+        }
+    }
+
+    public String callingURL(String requestURL) {
+        try {
+
+<span class="nc" id="L188">            HttpResponse response = httpClient.execute(new HttpGet(requestURL));</span>
+<span class="nc" id="L189">            int statusCode = response.getStatusLine().getStatusCode();</span>
+<span class="nc bnc" id="L190" title="All 2 branches missed.">            if (statusCode == HttpStatus.SC_OK) {</span>
+<span class="nc" id="L191">                String responseBody = getResponseBody(response);</span>
+<span class="nc" id="L192">                logError(&quot;Success &quot; + requestURL + &quot;\n result&quot; + responseBody);</span>
+<span class="nc" id="L193">                return responseBody;</span>
+            } else {
+<span class="nc" id="L195">                logError(&quot;Bad response. Status code:  &quot; + statusCode + &quot; using &quot; + requestURL);</span>
+<span class="nc" id="L196">                return null;</span>
+            }
+<span class="nc" id="L198">        } catch (IOException e) {</span>
+<span class="nc" id="L199">            logError(&quot;Failed to get Information&quot;);</span>
+<span class="nc" id="L200">            return null;</span>
+        }
+    }
+
+    public String httpImagePost(String url, ProfileImage image) {
+
+<span class="nc" id="L206">        String responseString = &quot;&quot;;</span>
+        try {
+<span class="nc" id="L208">            setCredentials(allSharedPreferences.fetchRegisteredANM(), settings.fetchANMPassword());</span>
+<span class="nc" id="L209">            HttpPost httpost = new HttpPost(url);</span>
+<span class="nc" id="L210">            Log.e(&quot;Image URL&quot;, url + &quot;-------------&quot; + image.getContenttype());</span>
+<span class="nc" id="L211">            httpost.setHeader(&quot;Accept&quot;, &quot;multipart/form-data&quot;);</span>
+<span class="nc" id="L212">            File filetoupload = new File(image.getFilepath());</span>
+<span class="nc" id="L213">            Log.v(&quot;file to upload&quot;, &quot;&quot; + filetoupload.length());</span>
+<span class="nc" id="L214">            MultipartEntity entity = new MultipartEntity();</span>
+<span class="nc" id="L215">            entity.addPart(&quot;anm-id&quot;, new StringBody(image.getAnmId()));</span>
+<span class="nc" id="L216">            entity.addPart(&quot;entity-id&quot;, new StringBody(image.getEntityID()));</span>
+<span class="nc" id="L217">            entity.addPart(&quot;content-type&quot;, new StringBody(image.getContenttype()));</span>
+<span class="nc" id="L218">            entity.addPart(&quot;file-category&quot;, new StringBody(image.getEntityID()));</span>
+<span class="nc" id="L219">            entity.addPart(&quot;file&quot;, new FileBody(new File(image.getFilepath())));</span>
+<span class="nc" id="L220">            httpost.setEntity(entity);</span>
+<span class="nc" id="L221">            Log.e(&quot;File Data&quot;, new FileBody(new File(image.getFilepath())) + &quot;&quot;);</span>
+<span class="nc" id="L222">            HttpResponse response = httpClient.postContent(httpost);</span>
+<span class="nc" id="L223">            responseString = EntityUtils.toString(response.getEntity());</span>
+<span class="nc" id="L224">            int RESPONSE_OK = 200;</span>
+<span class="nc" id="L225">            int RESPONSE_OK_ = 201;</span>
+
+<span class="nc bnc" id="L227" title="All 4 branches missed.">            if (response.getStatusLine().getStatusCode() != RESPONSE_OK_ &amp;&amp; response.getStatusLine().getStatusCode() != RESPONSE_OK) {</span>
+<span class="nc" id="L228">                return &quot;&quot;;</span>
+            } else
+<span class="nc bnc" id="L230" title="All 2 branches missed.">                return responseString.contains(&quot;fails&quot;) ? &quot;&quot; : responseString;</span>
+<span class="nc" id="L231">        } catch (Exception e) {</span>
+<span class="nc" id="L232">            return &quot;&quot;;</span>
+        }
+
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.1.201405082137</span></div></body></html>

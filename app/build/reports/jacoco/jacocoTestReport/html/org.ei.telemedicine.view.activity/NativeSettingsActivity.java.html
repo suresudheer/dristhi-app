@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>NativeSettingsActivity.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">org.ei.telemedicine.view.activity</a> &gt; <span class="el_source">NativeSettingsActivity.java</span></div><h1>NativeSettingsActivity.java</h1><pre class="source lang-java linenums">package org.ei.telemedicine.view.activity;
+
+import android.app.Activity;
+import android.content.SharedPreferences;
+import android.os.Bundle;
+import android.view.MotionEvent;
+import android.view.View;
+import android.widget.FrameLayout;
+import android.widget.Toast;
+
+import org.ei.telemedicine.AllConstants;
+import org.ei.telemedicine.Context;
+import org.ei.telemedicine.R;
+import org.ei.telemedicine.repository.AllSharedPreferences;
+
+import static android.view.View.*;
+
+/**
+ * Created by naveen on 5/19/15.
+ */
+<span class="nc" id="L21">public class NativeSettingsActivity extends Activity implements OnClickListener {</span>
+    private FrameLayout frame_ec_reg, frame_fp_reg, frame_anc_reg, frame_pnc_reg, frame_child_reg;
+    AllSharedPreferences allSharedPreferences;
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+<span class="nc" id="L26">        super.onCreate(savedInstanceState);</span>
+<span class="nc" id="L27">        setContentView(R.layout.settings_layout);</span>
+<span class="nc" id="L28">        allSharedPreferences = Context.getInstance().allSharedPreferences();</span>
+<span class="nc" id="L29">        frame_ec_reg = (FrameLayout) findViewById(R.id.frame_ec_reg);</span>
+<span class="nc" id="L30">        frame_fp_reg = (FrameLayout) findViewById(R.id.frame_fp_reg);</span>
+<span class="nc" id="L31">        frame_anc_reg = (FrameLayout) findViewById(R.id.frame_anc_reg);</span>
+<span class="nc" id="L32">        frame_pnc_reg = (FrameLayout) findViewById(R.id.frame_pnc_reg);</span>
+<span class="nc" id="L33">        frame_child_reg = (FrameLayout) findViewById(R.id.frame_child_reg);</span>
+
+<span class="nc bnc" id="L35" title="All 2 branches missed.">        frame_ec_reg.setAlpha(allSharedPreferences.registerState(AllConstants.EC_REGISTERS_KEY)?1: (float) 0.25);</span>
+<span class="nc bnc" id="L36" title="All 2 branches missed.">        frame_fp_reg.setAlpha(allSharedPreferences.registerState(AllConstants.FP_REGISTERS_KEY)?1: (float) 0.25);</span>
+<span class="nc bnc" id="L37" title="All 2 branches missed.">        frame_anc_reg.setAlpha(allSharedPreferences.registerState(AllConstants.ANC_REGISTERS_KEY)?1: (float) 0.25);</span>
+<span class="nc bnc" id="L38" title="All 2 branches missed.">        frame_pnc_reg.setAlpha(allSharedPreferences.registerState(AllConstants.PNC_REGISTERS_KEY)?1: (float) 0.25);</span>
+<span class="nc bnc" id="L39" title="All 2 branches missed.">        frame_child_reg.setAlpha(allSharedPreferences.registerState(AllConstants.CHILD_REGISTERS_KEY)?1: (float) 0.25);</span>
+
+<span class="nc" id="L41">        frame_ec_reg.setOnClickListener(this);</span>
+<span class="nc" id="L42">        frame_fp_reg.setOnClickListener(this);</span>
+<span class="nc" id="L43">        frame_anc_reg.setOnClickListener(this);</span>
+<span class="nc" id="L44">        frame_pnc_reg.setOnClickListener(this);</span>
+<span class="nc" id="L45">        frame_child_reg.setOnClickListener(this);</span>
+
+
+<span class="nc" id="L48">    }</span>
+
+    @Override
+    public void onClick(View v) {
+<span class="nc bnc" id="L52" title="All 6 branches missed.">        switch (v.getId()) {</span>
+            case R.id.frame_ec_reg:
+<span class="nc bnc" id="L54" title="All 2 branches missed.">                frame_ec_reg.setAlpha((frame_ec_reg.getAlpha() == 0.25) ? 1 : (float) 0.25);</span>
+<span class="nc bnc" id="L55" title="All 2 branches missed.">                allSharedPreferences.saveECRegisterState(frame_ec_reg.getAlpha() == 1 ? true : false);</span>
+<span class="nc" id="L56">                break;</span>
+            case R.id.frame_fp_reg:
+<span class="nc bnc" id="L58" title="All 2 branches missed.">                frame_fp_reg.setAlpha((frame_fp_reg.getAlpha() == 0.25) ? 1 : (float) 0.25);</span>
+<span class="nc bnc" id="L59" title="All 2 branches missed.">                allSharedPreferences.saveFPRegisterState(frame_fp_reg.getAlpha() == 1 ? true : false);</span>
+<span class="nc" id="L60">                break;</span>
+            case R.id.frame_anc_reg:
+<span class="nc bnc" id="L62" title="All 2 branches missed.">                frame_anc_reg.setAlpha((frame_anc_reg.getAlpha() == 0.25) ? 1 : (float) 0.25);</span>
+<span class="nc bnc" id="L63" title="All 2 branches missed.">                allSharedPreferences.saveANCRegisterState(frame_anc_reg.getAlpha() == 1 ? true : false);</span>
+<span class="nc" id="L64">                break;</span>
+            case R.id.frame_pnc_reg:
+<span class="nc bnc" id="L66" title="All 2 branches missed.">                frame_pnc_reg.setAlpha((frame_pnc_reg.getAlpha() == 0.25) ? 1 : (float) 0.25);</span>
+<span class="nc bnc" id="L67" title="All 2 branches missed.">                allSharedPreferences.savePNCRegisterState(frame_pnc_reg.getAlpha() == 1 ? true : false);</span>
+<span class="nc" id="L68">                break;</span>
+            case R.id.frame_child_reg:
+<span class="nc bnc" id="L70" title="All 2 branches missed.">                frame_child_reg.setAlpha((frame_child_reg.getAlpha() == 0.25) ? 1 : (float) 0.25);</span>
+<span class="nc bnc" id="L71" title="All 2 branches missed.">                allSharedPreferences.saveCHILDRegisterState(frame_child_reg.getAlpha() == 1 ? true : false);</span>
+                break;
+
+        }
+<span class="nc" id="L75">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.1.201405082137</span></div></body></html>

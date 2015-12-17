@@ -1,0 +1,600 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>ChildClient.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">org.ei.telemedicine.view.contract</a> &gt; <span class="el_source">ChildClient.java</span></div><h1>ChildClient.java</h1><pre class="source lang-java linenums">package org.ei.telemedicine.view.contract;
+
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.ei.telemedicine.AllConstants;
+import org.ei.telemedicine.domain.ChildServiceType;
+import org.ei.telemedicine.util.DateUtil;
+import org.ei.telemedicine.util.Log;
+import org.joda.time.Days;
+import org.joda.time.LocalDate;
+import org.joda.time.Years;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
+
+import static org.apache.commons.lang3.StringUtils.isBlank;
+import static org.ei.telemedicine.AllConstants.ChildIllnessFields.*;
+import static org.ei.telemedicine.AllConstants.ECRegistrationFields.*;
+import static org.ei.telemedicine.AllConstants.*;
+import static org.ei.telemedicine.domain.ChildServiceType.*;
+import static org.ei.telemedicine.util.DateUtil.formatDate;
+import static org.ei.telemedicine.util.StringUtil.humanize;
+import static org.ei.telemedicine.view.contract.AlertDTO.emptyAlert;
+import static org.ei.telemedicine.view.contract.ServiceProvidedDTO.emptyService;
+
+public class ChildClient implements ChildSmartRegisterClient {
+    public static final String CATEGORY_BCG = &quot;bcg&quot;;
+    public static final String CATEGORY_MEASLES = &quot;measles&quot;;
+    public static final String CATEGORY_OPV = &quot;opv&quot;;
+    public static final String CATEGORY_OPVBOOSTER = &quot;opvbooster&quot;;
+    public static final String CATEGORY_DPT = &quot;dpt&quot;;
+    public static final String CATEGORY_PENTAVALENT = &quot;pentavalent&quot;;
+    public static final String CATEGORY_HEPB = &quot;hepb&quot;;
+    public static final String CATEGORY_VITAMIN_A = &quot;vitamin_a&quot;;
+    public static final String CATEGORY_CHILD_ILLNESS = &quot;child_illness&quot;;
+
+<span class="fc" id="L43">    private static final String[] SERVICE_CATEGORIES = {CATEGORY_BCG, CATEGORY_MEASLES, CATEGORY_OPV,</span>
+            CATEGORY_OPVBOOSTER, CATEGORY_DPT, CATEGORY_PENTAVALENT,
+            CATEGORY_HEPB, CATEGORY_VITAMIN_A, CATEGORY_CHILD_ILLNESS};
+
+<span class="fc" id="L47">    private static Map&lt;String, List&lt;ChildServiceType&gt;&gt; categoriesToServiceTypeMap = new HashMap&lt;String, List&lt;ChildServiceType&gt;&gt;();</span>
+
+    static {
+<span class="fc" id="L50">        categoriesToServiceTypeMap.put(CATEGORY_BCG, Arrays.asList(BCG));</span>
+<span class="fc" id="L51">        categoriesToServiceTypeMap.put(CATEGORY_MEASLES, Arrays.asList(MEASLES, MEASLESBOOSTER));</span>
+<span class="fc" id="L52">        categoriesToServiceTypeMap.put(CATEGORY_OPV, Arrays.asList(OPV_0, OPV_1, OPV_2, OPV_3));</span>
+<span class="fc" id="L53">        categoriesToServiceTypeMap.put(CATEGORY_OPVBOOSTER, Arrays.asList(OPV_BOOSTER));</span>
+<span class="fc" id="L54">        categoriesToServiceTypeMap.put(CATEGORY_DPT, Arrays.asList(DPTBOOSTER_1, DPTBOOSTER_2));</span>
+<span class="fc" id="L55">        categoriesToServiceTypeMap.put(CATEGORY_PENTAVALENT, Arrays.asList(PENTAVALENT_1, PENTAVALENT_2, PENTAVALENT_3));</span>
+<span class="fc" id="L56">        categoriesToServiceTypeMap.put(CATEGORY_HEPB, Arrays.asList(HEPB_0));</span>
+<span class="fc" id="L57">        categoriesToServiceTypeMap.put(CATEGORY_VITAMIN_A, Arrays.asList(VITAMIN_A));</span>
+<span class="fc" id="L58">        categoriesToServiceTypeMap.put(CATEGORY_CHILD_ILLNESS, Arrays.asList(ILLNESS_VISIT));</span>
+<span class="fc" id="L59">    }</span>
+
+<span class="fc" id="L61">    Map&lt;String, Treatments&gt; serviceToTreatmentMap = new HashMap&lt;String, Treatments&gt;();</span>
+
+    private final String entityId;
+    private String gender;
+    private String weight;
+    private final String thayiCardNumber;
+    private String name;
+    private String motherName;
+    private String dob;
+    private String motherAge;
+    private String fatherName;
+    private String village;
+    private String locationStatus;
+    private String economicStatus;
+    private String pocInfo;
+    private String caste;
+    private boolean isHighRisk;
+    private String photo_path;
+    private String ecNumber;
+    private List&lt;AlertDTO&gt; alerts;
+    private List&lt;ServiceProvidedDTO&gt; services_provided;
+    private String entityIdToSavePhoto;
+
+    private ServiceProvidedDTO lastService;
+    private ServiceProvidedDTO illnessVisitServiceProvided;
+
+<span class="nc" id="L87">    private class Treatments {</span>
+<span class="nc" id="L88">        public ServiceProvidedDTO provided = emptyService;</span>
+<span class="nc" id="L89">        public AlertDTO toProvide = emptyAlert;</span>
+    }
+
+<span class="fc" id="L92">    public ChildClient(String entityId, String gender, String weight, String thayiCardNumber) {</span>
+<span class="fc" id="L93">        this.entityId = entityId;</span>
+<span class="fc" id="L94">        this.gender = gender;</span>
+<span class="fc" id="L95">        this.weight = weight;</span>
+<span class="fc" id="L96">        this.thayiCardNumber = thayiCardNumber;</span>
+<span class="fc" id="L97">    }</span>
+
+    @Override
+    public String motherName() {
+<span class="fc" id="L101">        return humanize(motherName);</span>
+    }
+
+    @Override
+    public String village() {
+<span class="nc" id="L106">        return humanize(village);</span>
+    }
+
+    @Override
+    public String wifeName() {
+<span class="nc" id="L111">        return name();</span>
+    }
+
+    @Override
+    public String displayName() {
+<span class="nc bnc" id="L116" title="All 2 branches missed.">        return isBlank(name) ? &quot;B/o &quot; + motherName() : humanize(name);</span>
+    }
+
+    @Override
+    public String name() {
+<span class="nc bnc" id="L121" title="All 2 branches missed.">        return isBlank(name) ? &quot;&quot; : humanize(name);</span>
+    }
+
+    @Override
+    public String husbandName() {
+<span class="nc" id="L126">        return motherName() + &quot;, &quot; + fatherName();</span>
+    }
+
+    @Override
+    public String fatherName() {
+<span class="nc" id="L131">        return humanize(fatherName);</span>
+    }
+
+    @Override
+    public int age() {
+<span class="nc bnc" id="L136" title="All 2 branches missed.">        return isBlank(dob) ? 0 : Years.yearsBetween(LocalDate.parse(dob), LocalDate.now()).getYears();</span>
+    }
+
+    @Override
+    public String ageInString() {
+<span class="nc" id="L141">        return &quot;(&quot; + format(ageInDays()) + &quot;, &quot; + formatGender(gender()) + &quot;)&quot;;</span>
+    }
+
+    private String formatGender(String gender) {
+<span class="nc bnc" id="L145" title="All 2 branches missed.">        return FEMALE_GENDER.equalsIgnoreCase(gender) ? &quot;F&quot; : &quot;M&quot;;</span>
+    }
+
+    @Override
+    public String gender() {
+<span class="nc" id="L150">        return humanize(gender);</span>
+    }
+
+    @Override
+    public String weight() {
+<span class="nc" id="L155">        return weight;</span>
+    }
+
+    @Override
+    public String locationStatus() {
+<span class="nc" id="L160">        return locationStatus;</span>
+    }
+
+    @Override
+    public boolean isSC() {
+<span class="nc bnc" id="L165" title="All 4 branches missed.">        return caste != null &amp;&amp; caste.equalsIgnoreCase(SC_VALUE);</span>
+    }
+
+    @Override
+    public boolean isST() {
+<span class="nc bnc" id="L170" title="All 4 branches missed.">        return caste != null &amp;&amp; caste.equalsIgnoreCase(ST_VALUE);</span>
+    }
+
+    @Override
+    public boolean isHighRisk() {
+<span class="nc" id="L175">        return isHighRisk;</span>
+    }
+
+    @Override
+    public boolean isHighPriority() {
+<span class="nc" id="L180">        return false;</span>
+    }
+
+    @Override
+    public boolean isBPL() {
+<span class="nc bnc" id="L185" title="All 4 branches missed.">        return economicStatus != null &amp;&amp; economicStatus.equalsIgnoreCase(BPL_VALUE);</span>
+    }
+
+    @Override
+    public boolean isPOC() {
+<span class="nc bnc" id="L190" title="All 4 branches missed.">        return pocInfo != null &amp;&amp; !pocInfo.equals(&quot;&quot;);</span>
+    }
+
+    @Override
+    public boolean isPocPending() {
+        try {
+<span class="nc bnc" id="L196" title="All 4 branches missed.">            if (pocInfo != null &amp;&amp; !pocInfo.equals(&quot;&quot;)) {</span>
+<span class="nc" id="L197">                JSONArray docPocInfoArray = new JSONArray(pocInfo);</span>
+<span class="nc bnc" id="L198" title="All 2 branches missed.">                JSONObject pocInfo = docPocInfoArray.length() != 0 ? docPocInfoArray.getJSONObject(docPocInfoArray.length() - 1)</span>
+                        : new JSONObject();
+<span class="nc bnc" id="L200" title="All 2 branches missed.">                if (pocInfo.getString(&quot;pending&quot;).length() != 0) {</span>
+<span class="nc" id="L201">                    android.util.Log.e(&quot;pendin&quot;, pocInfo.getString(&quot;pending&quot;));</span>
+<span class="nc" id="L202">                    return true;</span>
+                }
+            }
+<span class="nc" id="L205">        } catch (JSONException e) {</span>
+<span class="nc" id="L206">            e.printStackTrace();</span>
+<span class="nc" id="L207">        }</span>
+
+<span class="nc" id="L209">        return false;</span>
+    }
+
+
+    @Override
+    public String entityId() {
+<span class="nc" id="L215">        return entityId;</span>
+    }
+
+    @Override
+    public String profilePhotoPath() {
+<span class="nc" id="L220">        return photo_path;</span>
+    }
+
+    @Override
+    public boolean satisfiesFilter(String filterCriterion) {
+<span class="nc bnc" id="L225" title="All 12 branches missed.">        return (!isBlank(name) &amp;&amp; name.toLowerCase().startsWith(filterCriterion.toLowerCase()))</span>
+                || (!isBlank(motherName) &amp;&amp; motherName.toLowerCase().startsWith(filterCriterion.toLowerCase()))
+                || String.valueOf(ecNumber).startsWith(filterCriterion)
+                || String.valueOf(thayiCardNumber).startsWith(filterCriterion);
+    }
+
+    @Override
+    public int ageInDays() {
+<span class="nc bnc" id="L233" title="All 2 branches missed.">        return isBlank(dob) ? 0 : Days.daysBetween(LocalDate.parse(dob), DateUtil.today()).getDays();</span>
+    }
+
+    @Override
+    public int compareName(SmartRegisterClient anotherClient) {
+
+<span class="nc" id="L239">        ChildSmartRegisterClient anotherChildClient = (ChildSmartRegisterClient) anotherClient;</span>
+<span class="nc bnc" id="L240" title="All 4 branches missed.">        if (this.motherName() != null &amp;&amp; anotherChildClient.motherName() != null)</span>
+<span class="nc" id="L241">            return this.motherName().compareTo(anotherChildClient.motherName());</span>
+<span class="nc" id="L242">        else return -1;</span>
+    }
+
+    public String format(int days_since) {
+<span class="nc" id="L246">        int DAYS_THRESHOLD = 28;</span>
+<span class="nc" id="L247">        int WEEKS_THRESHOLD = 119;</span>
+<span class="nc" id="L248">        int MONTHS_THRESHOLD = 720;</span>
+<span class="nc bnc" id="L249" title="All 2 branches missed.">        if (days_since &lt; DAYS_THRESHOLD) {</span>
+<span class="nc" id="L250">            return (int) Math.floor(days_since) + &quot;d&quot;;</span>
+<span class="nc bnc" id="L251" title="All 2 branches missed.">        } else if (days_since &lt; WEEKS_THRESHOLD) {</span>
+<span class="nc" id="L252">            return (int) Math.floor(days_since / 7) + &quot;w&quot;;</span>
+<span class="nc bnc" id="L253" title="All 2 branches missed.">        } else if (days_since &lt; MONTHS_THRESHOLD) {</span>
+<span class="nc" id="L254">            return (int) Math.floor(days_since / 30) + &quot;m&quot;;</span>
+        } else {
+<span class="nc" id="L256">            return (int) Math.floor(days_since / 365) + &quot;y&quot;;</span>
+        }
+    }
+
+    @Override
+    public String thayiCardNumber() {
+<span class="nc" id="L262">        return thayiCardNumber;</span>
+    }
+
+    @Override
+    public String motherEcNumber() {
+<span class="nc" id="L267">        return ecNumber;</span>
+    }
+
+    @Override
+    public String dateOfBirth() {
+<span class="nc bnc" id="L272" title="All 2 branches missed.">        return isBlank(dob) ? &quot;&quot; : formatDate(dob);</span>
+    }
+
+    @Override
+    public List&lt;ServiceProvidedDTO&gt; serviceProvided() {
+<span class="nc" id="L277">        return services_provided;</span>
+    }
+
+    @Override
+    public ServiceProvidedDTO lastServiceProvided() {
+<span class="nc bnc" id="L282" title="All 2 branches missed.">        if (lastService == null) {</span>
+<span class="nc bnc" id="L283" title="All 2 branches missed.">            lastService = serviceProvided().size() &gt; 0</span>
+                    ? serviceProvided().get(serviceProvided().size() - 1)
+                    : emptyService;
+        }
+<span class="nc" id="L287">        return lastService;</span>
+    }
+
+    @Override
+    public ServiceProvidedDTO illnessVisitServiceProvided() {
+<span class="nc bnc" id="L292" title="All 2 branches missed.">        if (illnessVisitServiceProvided == null) {</span>
+<span class="nc" id="L293">            illnessVisitServiceProvided = getIllnessVisitServiceProvided();</span>
+        }
+<span class="nc" id="L295">        return illnessVisitServiceProvided;</span>
+    }
+
+    private ServiceProvidedDTO getIllnessVisitServiceProvided() {
+<span class="nc" id="L299">        Collections.reverse(services_provided);</span>
+<span class="nc bnc" id="L300" title="All 2 branches missed.">        for (ServiceProvidedDTO service : services_provided) {</span>
+<span class="nc bnc" id="L301" title="All 2 branches missed.">            if (ILLNESS_VISIT.equals(service.type())) {</span>
+<span class="nc" id="L302">                return service;</span>
+            }
+<span class="nc" id="L304">        }</span>
+<span class="nc" id="L305">        return emptyService;</span>
+    }
+
+    @Override
+    public ChildSickStatus sickStatus() {
+<span class="nc" id="L310">        ServiceProvidedDTO service = illnessVisitServiceProvided();</span>
+<span class="nc bnc" id="L311" title="All 2 branches missed.">        if (service == emptyService) {</span>
+<span class="nc" id="L312">            return ChildSickStatus.noDiseaseStatus;</span>
+        } else {
+<span class="nc" id="L314">            final Map&lt;String, String&gt; data = service.data();</span>
+            String diseases;
+            String otherDiseases;
+            String date;
+<span class="nc bnc" id="L318" title="All 2 branches missed.">            if (data.containsKey(REPORT_CHILD_DISEASE)) {</span>
+<span class="nc" id="L319">                diseases = data.get(REPORT_CHILD_DISEASE);</span>
+<span class="nc" id="L320">                otherDiseases = data.get(REPORT_CHILD_DISEASE_OTHER);</span>
+<span class="nc" id="L321">                date = data.get(REPORT_CHILD_DISEASE_DATE);</span>
+            } else {
+<span class="nc" id="L323">                diseases = data.get(AllConstants.ChildIllnessFields.CHILD_SIGNS);</span>
+<span class="nc" id="L324">                otherDiseases = data.get(AllConstants.ChildIllnessFields.CHILD_SIGNS_OTHER);</span>
+<span class="nc" id="L325">                date = data.get(AllConstants.ChildIllnessFields.SICK_VISIT_DATE);</span>
+            }
+<span class="nc" id="L327">            return new ChildSickStatus(diseases, otherDiseases, date);</span>
+        }
+    }
+
+    public ChildClient withEntityIdToSavePhoto(String entityIdToSavePhoto) {
+<span class="fc" id="L332">        this.entityIdToSavePhoto = entityIdToSavePhoto;</span>
+<span class="fc" id="L333">        return this;</span>
+    }
+
+    public ChildClient withName(String name) {
+<span class="fc" id="L337">        this.name = name;</span>
+<span class="fc" id="L338">        return this;</span>
+    }
+
+    public ChildClient withMotherName(String motherName) {
+<span class="fc" id="L342">        this.motherName = motherName;</span>
+<span class="fc" id="L343">        return this;</span>
+    }
+
+    public ChildClient withDOB(String dob) {
+<span class="fc" id="L347">        this.dob = dob;</span>
+<span class="fc" id="L348">        return this;</span>
+    }
+
+    public ChildClient withPOC(String pocInfo) {
+<span class="fc" id="L352">        this.pocInfo = pocInfo;</span>
+<span class="fc" id="L353">        android.util.Log.e(&quot;Poc&quot;, pocInfo + &quot;---&quot; + name);</span>
+<span class="fc" id="L354">        return this;</span>
+    }
+
+    public ChildClient withMotherAge(String motherAge) {
+<span class="fc" id="L358">        this.motherAge = motherAge;</span>
+<span class="fc" id="L359">        return this;</span>
+    }
+
+    public ChildClient withFatherName(String fatherName) {
+<span class="fc" id="L363">        this.fatherName = fatherName;</span>
+<span class="fc" id="L364">        return this;</span>
+    }
+
+    public ChildClient withVillage(String village) {
+<span class="fc" id="L368">        this.village = village;</span>
+<span class="fc" id="L369">        return this;</span>
+    }
+
+    public ChildClient withOutOfArea(boolean outOfArea) {
+<span class="pc bpc" id="L373" title="1 of 2 branches missed.">        this.locationStatus = outOfArea ? OUT_OF_AREA : IN_AREA;</span>
+<span class="fc" id="L374">        return this;</span>
+    }
+
+    public ChildClient withEconomicStatus(String economicStatus) {
+<span class="fc" id="L378">        this.economicStatus = economicStatus;</span>
+<span class="fc" id="L379">        return this;</span>
+    }
+
+    public ChildClient withCaste(String caste) {
+<span class="fc" id="L383">        this.caste = caste;</span>
+<span class="fc" id="L384">        return this;</span>
+    }
+
+    public ChildClient withIsHighRisk(boolean isHighRisk) {
+<span class="fc" id="L388">        this.isHighRisk = isHighRisk;</span>
+<span class="fc" id="L389">        return this;</span>
+    }
+
+    public ChildClient withPhotoPath(String photoPath) {
+<span class="fc" id="L393">        this.photo_path = photoPath;</span>
+<span class="fc" id="L394">        return this;</span>
+    }
+
+    public ChildClient withECNumber(String ecNumber) {
+<span class="fc" id="L398">        this.ecNumber = ecNumber;</span>
+<span class="fc" id="L399">        return this;</span>
+    }
+
+    public ChildClient withAlerts(List&lt;AlertDTO&gt; alerts) {
+<span class="fc" id="L403">        this.alerts = alerts;</span>
+<span class="fc" id="L404">        return this;</span>
+    }
+
+    public ChildClient withServicesProvided(List&lt;ServiceProvidedDTO&gt; servicesProvided) {
+<span class="fc" id="L408">        Collections.sort(servicesProvided, new DateComparator());</span>
+<span class="fc" id="L409">        this.services_provided = servicesProvided;</span>
+<span class="fc" id="L410">        return this;</span>
+    }
+
+    @Override
+    public boolean equals(Object o) {
+<span class="fc" id="L415">        return EqualsBuilder.reflectionEquals(this, o);</span>
+    }
+
+    @Override
+    public int hashCode() {
+<span class="nc" id="L420">        return HashCodeBuilder.reflectionHashCode(this);</span>
+    }
+
+    @Override
+    public String toString() {
+<span class="nc" id="L425">        return ToStringBuilder.reflectionToString(this);</span>
+    }
+
+    public ChildClient withPreprocess() {
+<span class="nc" id="L429">        initialize(SERVICE_CATEGORIES, serviceToTreatmentMap);</span>
+<span class="nc" id="L430">        initializeAllServiceToProvideAndProvided(categoriesToServiceTypeMap);</span>
+<span class="nc" id="L431">        return this;</span>
+    }
+
+    private void initializeAllServiceToProvideAndProvided(Map&lt;String, List&lt;ChildServiceType&gt;&gt; categoriesToServiceTypeMap) {
+<span class="nc" id="L435">        Set&lt;String&gt; keys = categoriesToServiceTypeMap.keySet();</span>
+<span class="nc bnc" id="L436" title="All 2 branches missed.">        for (String key : keys) {</span>
+<span class="nc" id="L437">            initializeServiceToProvideAndProvided(categoriesToServiceTypeMap.get(key));</span>
+<span class="nc" id="L438">        }</span>
+<span class="nc" id="L439">    }</span>
+
+    private void initializeServiceToProvideAndProvided(List&lt;ChildServiceType&gt; types) {
+<span class="nc bnc" id="L442" title="All 2 branches missed.">        for (ChildServiceType type : types) {</span>
+<span class="nc" id="L443">            initializeServiceToProvideAndProvided(type);</span>
+<span class="nc" id="L444">        }</span>
+<span class="nc" id="L445">    }</span>
+
+    private void initializeServiceToProvideAndProvided(ChildServiceType type) {
+<span class="nc bnc" id="L448" title="All 2 branches missed.">        for (AlertDTO alert : alerts) {</span>
+<span class="nc bnc" id="L449" title="All 4 branches missed.">            if (!alert.isCompleted() &amp;&amp; type.equals(alert.type())) {</span>
+<span class="nc" id="L450">                serviceToTreatmentMap.get(type.category()).toProvide = alert;</span>
+            }
+<span class="nc" id="L452">        }</span>
+
+<span class="nc bnc" id="L454" title="All 2 branches missed.">        for (ServiceProvidedDTO service : services_provided) {</span>
+<span class="nc bnc" id="L455" title="All 2 branches missed.">            if (type.equals(service.type())) {</span>
+<span class="nc" id="L456">                serviceToTreatmentMap.get(type.category()).provided = service;</span>
+            }
+<span class="nc" id="L458">        }</span>
+<span class="nc" id="L459">    }</span>
+
+    private void initialize(String[] types, Map&lt;String, Treatments&gt; serviceToTreatmentMap) {
+<span class="nc bnc" id="L462" title="All 2 branches missed.">        for (String type : types) {</span>
+<span class="nc" id="L463">            serviceToTreatmentMap.put(type, new Treatments());</span>
+        }
+<span class="nc" id="L465">    }</span>
+
+    @Override
+    public boolean isBcgDone() {
+<span class="nc" id="L469">        return isServiceProvided(CATEGORY_BCG);</span>
+    }
+
+    @Override
+    public boolean isOpvDone() {
+<span class="nc" id="L474">        return isServiceProvided(CATEGORY_OPV);</span>
+    }
+
+    @Override
+    public boolean isHepBDone() {
+<span class="nc" id="L479">        return isServiceProvided(CATEGORY_HEPB);</span>
+    }
+
+    @Override
+    public boolean isPentavDone() {
+<span class="nc" id="L484">        return isServiceProvided(CATEGORY_PENTAVALENT);</span>
+    }
+
+    private boolean isServiceProvided(String category) {
+<span class="nc bnc" id="L488" title="All 2 branches missed.">        if (StringUtils.isBlank(category)) {</span>
+<span class="nc" id="L489">            return false;</span>
+        }
+<span class="nc bnc" id="L491" title="All 2 branches missed.">        return serviceToTreatmentMap.get(category).provided != emptyService;</span>
+    }
+
+    private ServiceProvidedDTO serviceProvided(String category) {
+<span class="nc bnc" id="L495" title="All 2 branches missed.">        if (StringUtils.isBlank(category)) {</span>
+<span class="nc" id="L496">            return emptyService;</span>
+        }
+<span class="nc" id="L498">        return serviceToTreatmentMap.get(category).provided;</span>
+    }
+
+    private AlertDTO serviceToProvide(String category) {
+<span class="nc bnc" id="L502" title="All 2 branches missed.">        if (StringUtils.isBlank(category)) {</span>
+<span class="nc" id="L503">            return emptyAlert;</span>
+        }
+<span class="nc" id="L505">        return serviceToTreatmentMap.get(category).toProvide;</span>
+    }
+
+    @Override
+    public String bcgDoneDate() {
+<span class="nc" id="L510">        return serviceProvided(CATEGORY_BCG).shortDate();</span>
+    }
+
+    @Override
+    public String opvDoneDate() {
+<span class="nc" id="L515">        return serviceProvided(CATEGORY_OPV).servicedOn();</span>
+    }
+
+    @Override
+    public String hepBDoneDate() {
+<span class="nc" id="L520">        return serviceProvided(CATEGORY_HEPB).servicedOn();</span>
+    }
+
+    @Override
+    public String pentavDoneDate() {
+<span class="nc" id="L525">        return serviceProvided(CATEGORY_PENTAVALENT).servicedOn();</span>
+    }
+
+    @Override
+    public AlertDTO getAlert(ChildServiceType type) {
+<span class="nc" id="L530">        return serviceToProvide(type.category());</span>
+    }
+
+    @Override
+    public boolean isMeaslesDone() {
+<span class="nc" id="L535">        return isServiceProvided(CATEGORY_MEASLES);</span>
+    }
+
+    @Override
+    public boolean isOpvBoosterDone() {
+<span class="nc" id="L540">        return isServiceProvided(CATEGORY_OPVBOOSTER);</span>
+    }
+
+    @Override
+    public boolean isDptBoosterDone() {
+<span class="nc" id="L545">        return isServiceProvided(CATEGORY_DPT);</span>
+    }
+
+    @Override
+    public boolean isVitaminADone() {
+<span class="nc" id="L550">        return isServiceProvided(CATEGORY_VITAMIN_A);</span>
+    }
+
+    @Override
+    public String measlesDoneDate() {
+<span class="nc" id="L555">        return serviceProvided(CATEGORY_MEASLES).servicedOn();</span>
+    }
+
+    @Override
+    public String opvBoosterDoneDate() {
+<span class="nc" id="L560">        return serviceProvided(CATEGORY_OPVBOOSTER).servicedOn();</span>
+    }
+
+    @Override
+    public String dptBoosterDoneDate() {
+<span class="nc" id="L565">        return serviceProvided(CATEGORY_DPT).servicedOn();</span>
+    }
+
+    @Override
+    public String vitaminADoneDate() {
+<span class="nc" id="L570">        return serviceProvided(CATEGORY_VITAMIN_A).servicedOn();</span>
+    }
+
+    @Override
+    public List&lt;AlertDTO&gt; alerts() {
+<span class="nc" id="L575">        return alerts;</span>
+    }
+
+
+<span class="fc" id="L579">    class DateComparator implements Comparator&lt;ServiceProvidedDTO&gt; {</span>
+
+        @Override
+        public int compare(ServiceProvidedDTO serviceProvidedDTO1, ServiceProvidedDTO serviceProvidedDTO2) {
+<span class="nc" id="L583">            SimpleDateFormat simpleDateFormat = new SimpleDateFormat(&quot;dd/MM/yyyy&quot;);</span>
+            Date date1;
+            Date date2;
+            try {
+<span class="nc" id="L587">                date1 = simpleDateFormat.parse(serviceProvidedDTO1.date());</span>
+<span class="nc" id="L588">                date2 = simpleDateFormat.parse(serviceProvidedDTO2.date());</span>
+<span class="nc bnc" id="L589" title="All 2 branches missed.">                if (date1.equals(date2)) {</span>
+<span class="nc" id="L590">                    return -1;</span>
+                }
+<span class="nc" id="L592">                return date1.compareTo(date2);</span>
+<span class="nc" id="L593">            } catch (ParseException e) {</span>
+                //TODO
+            }
+<span class="nc" id="L596">            return -1;</span>
+        }
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.1.201405082137</span></div></body></html>

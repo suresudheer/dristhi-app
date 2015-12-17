@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>FPMethod.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">org.ei.telemedicine.domain</a> &gt; <span class="el_source">FPMethod.java</span></div><h1>FPMethod.java</h1><pre class="source lang-java linenums">package org.ei.telemedicine.domain;
+
+import static org.ei.telemedicine.domain.TimelineEvent.forFPCondomRenew;
+import static org.ei.telemedicine.domain.TimelineEvent.forFPDMPARenew;
+import static org.ei.telemedicine.domain.TimelineEvent.forFPIUDRenew;
+import static org.ei.telemedicine.domain.TimelineEvent.forFPOCPRenew;
+import static org.ei.telemedicine.util.Log.logWarn;
+
+import java.util.Locale;
+import java.util.Map;
+
+import org.apache.commons.lang3.StringUtils;
+import org.ei.telemedicine.Context;
+import org.ei.telemedicine.R;
+
+<span class="fc" id="L16">public enum FPMethod {</span>
+<span class="fc" id="L17">    CONDOM {</span>
+        public TimelineEvent getTimelineEventForRenew(String caseId, Map&lt;String, String&gt; details) {
+<span class="nc" id="L19">            return forFPCondomRenew(caseId, details);</span>
+        }
+
+        @Override
+        public String displayName() {
+<span class="nc" id="L24">            return Context.getInstance().applicationContext().getString(R.string.fp_register_service_mode_condom);</span>
+        }
+    },
+<span class="fc" id="L27">    IUD {</span>
+        public TimelineEvent getTimelineEventForRenew(String caseId, Map&lt;String, String&gt; details) {
+<span class="nc" id="L29">            return forFPIUDRenew(caseId, details);</span>
+        }
+
+        @Override
+        public String displayName() {
+<span class="nc" id="L34">            return Context.getInstance().applicationContext().getString(R.string.fp_register_service_mode_iucd);</span>
+        }
+    },
+<span class="fc" id="L37">    OCP {</span>
+        public TimelineEvent getTimelineEventForRenew(String caseId, Map&lt;String, String&gt; details) {
+<span class="nc" id="L39">            return forFPOCPRenew(caseId, details);</span>
+        }
+
+        @Override
+        public String displayName() {
+<span class="nc" id="L44">            return Context.getInstance().applicationContext().getString(R.string.fp_register_service_mode_ocp);</span>
+        }
+    },
+<span class="fc" id="L47">    DMPA_INJECTABLE {</span>
+        public TimelineEvent getTimelineEventForRenew(String caseId, Map&lt;String, String&gt; details) {
+<span class="nc" id="L49">            return forFPDMPARenew(caseId, details);</span>
+        }
+
+        @Override
+        public String displayName() {
+<span class="nc" id="L54">            return Context.getInstance().applicationContext().getString(R.string.fp_register_service_mode_dmpa);</span>
+        }
+    },
+<span class="fc" id="L57">    MALE_STERILIZATION {</span>
+        public TimelineEvent getTimelineEventForRenew(String caseId, Map&lt;String, String&gt; details) {
+<span class="nc" id="L59">            return null;</span>
+        }
+
+        @Override
+        public String displayName() {
+<span class="nc" id="L64">            return Context.getInstance().applicationContext().getString(R.string.fp_register_service_mode_male_sterilization);</span>
+        }
+    },
+<span class="fc" id="L67">    FEMALE_STERILIZATION {</span>
+        public TimelineEvent getTimelineEventForRenew(String caseId, Map&lt;String, String&gt; details) {
+<span class="nc" id="L69">            return null;</span>
+        }
+
+        @Override
+        public String displayName() {
+<span class="nc" id="L74">            return Context.getInstance().applicationContext().getString(R.string.fp_register_service_mode_female_sterilization);</span>
+        }
+    },
+<span class="fc" id="L77">    ECP {</span>
+        public TimelineEvent getTimelineEventForRenew(String caseId, Map&lt;String, String&gt; details) {
+<span class="nc" id="L79">            return null;</span>
+        }
+
+        @Override
+        public String displayName() {
+<span class="nc" id="L84">            return Context.getInstance().applicationContext().getString(R.string.fp_register_service_mode_ecp);</span>
+        }
+    },
+<span class="fc" id="L87">    TRADITIONAL_METHODS {</span>
+        public TimelineEvent getTimelineEventForRenew(String caseId, Map&lt;String, String&gt; details) {
+<span class="nc" id="L89">            return null;</span>
+        }
+
+        @Override
+        public String displayName() {
+<span class="nc" id="L94">            return Context.getInstance().applicationContext().getString(R.string.fp_register_service_mode_traditional);</span>
+        }
+    },
+<span class="fc" id="L97">    LAM {</span>
+        public TimelineEvent getTimelineEventForRenew(String caseId, Map&lt;String, String&gt; details) {
+<span class="nc" id="L99">            return null;</span>
+        }
+
+        @Override
+        public String displayName() {
+<span class="nc" id="L104">            return Context.getInstance().applicationContext().getString(R.string.fp_register_service_mode_lam);</span>
+        }
+    },
+<span class="fc" id="L107">    CENTCHROMAN {</span>
+        public TimelineEvent getTimelineEventForRenew(String caseId, Map&lt;String, String&gt; details) {
+<span class="nc" id="L109">            return null;</span>
+        }
+
+        @Override
+        public String displayName() {
+<span class="nc" id="L114">            return Context.getInstance().applicationContext().getString(R.string.fp_register_service_mode_centchroman);</span>
+        }
+    },
+<span class="fc" id="L117">    NONE_PS {</span>
+        public TimelineEvent getTimelineEventForRenew(String caseId, Map&lt;String, String&gt; details) {
+<span class="nc" id="L119">            return null;</span>
+        }
+
+        @Override
+        public String displayName() {
+<span class="nc" id="L124">            return Context.getInstance().applicationContext().getString(R.string.fp_register_service_mode_none_ps);</span>
+        }
+    },
+<span class="fc" id="L127">    NONE_SS {</span>
+        public TimelineEvent getTimelineEventForRenew(String caseId, Map&lt;String, String&gt; details) {
+<span class="nc" id="L129">            return null;</span>
+        }
+
+        @Override
+        public String displayName() {
+<span class="nc" id="L134">            return Context.getInstance().applicationContext().getString(R.string.fp_register_service_mode_none_ss);</span>
+        }
+    },
+<span class="fc" id="L137">    NONE {</span>
+        public TimelineEvent getTimelineEventForRenew(String caseId, Map&lt;String, String&gt; details) {
+<span class="nc" id="L139">            return null;</span>
+        }
+
+        @Override
+        public String displayName() {
+<span class="nc" id="L144">            return Context.getInstance().applicationContext().getString(R.string.ec_register_no_fp);</span>
+        }
+    };
+
+    public abstract TimelineEvent getTimelineEventForRenew(String caseId, Map&lt;String, String&gt; details);
+
+    public abstract String displayName();
+
+    public static FPMethod tryParse(String method, FPMethod defaultMethod) {
+        try {
+<span class="fc bfc" id="L154" title="All 2 branches covered.">            return StringUtils.isBlank(method) ? defaultMethod : FPMethod.valueOf(method.toUpperCase(Locale.getDefault()));</span>
+<span class="fc" id="L155">        } catch (IllegalArgumentException e) {</span>
+<span class="fc" id="L156">            logWarn(&quot;Unknown current FP method : &quot; + method + &quot; Exception : &quot; + e);</span>
+<span class="fc" id="L157">            return defaultMethod;</span>
+        }
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.1.201405082137</span></div></body></html>

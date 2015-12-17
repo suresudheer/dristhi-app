@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>PNCDetailActivity.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">org.ei.telemedicine.view.activity</a> &gt; <span class="el_source">PNCDetailActivity.java</span></div><h1>PNCDetailActivity.java</h1><pre class="source lang-java linenums">package org.ei.telemedicine.view.activity;
+
+import org.ei.telemedicine.event.CapturedPhotoInformation;
+import org.ei.telemedicine.event.Event;
+import org.ei.telemedicine.event.Listener;
+import org.ei.telemedicine.view.controller.PNCDetailController;
+
+<span class="nc" id="L8">public class PNCDetailActivity extends SecuredWebActivity {</span>
+    private Listener&lt;CapturedPhotoInformation&gt; photoCaptureListener;
+
+    @Override
+    protected void onInitialization() {
+<span class="nc" id="L13">        String caseId = (String) getIntent().getExtras().get(&quot;caseId&quot;);</span>
+
+<span class="nc" id="L15">        webView.addJavascriptInterface(new PNCDetailController(this, caseId, context.allEligibleCouples(), context.allBeneficiaries(), context.allTimelineEvents()), &quot;context&quot;);</span>
+<span class="nc" id="L16">        webView.loadUrl(&quot;file:///android_asset/www/pnc_detail.html&quot;);</span>
+
+<span class="nc" id="L18">        photoCaptureListener = new Listener&lt;CapturedPhotoInformation&gt;() {</span>
+            @Override
+            public void onEvent(CapturedPhotoInformation data) {
+<span class="nc bnc" id="L21" title="All 2 branches missed.">                if (webView != null) {</span>
+<span class="nc" id="L22">                    webView.loadUrl(&quot;javascript:pageView.reloadPhoto('&quot; + data.entityId() + &quot;', '&quot; + data.photoPath() + &quot;')&quot;);</span>
+                }
+<span class="nc" id="L24">            }</span>
+        };
+<span class="nc" id="L26">        Event.ON_PHOTO_CAPTURED.addListener(photoCaptureListener);</span>
+<span class="nc" id="L27">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.1.201405082137</span></div></body></html>

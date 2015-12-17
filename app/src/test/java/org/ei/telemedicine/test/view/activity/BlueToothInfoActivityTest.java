@@ -1,3 +1,4 @@
+/*
 package org.ei.telemedicine.test.view.activity;
 
 import android.test.ActivityInstrumentationTestCase2;
@@ -44,3 +45,4 @@ public class BlueToothInfoActivityTest extends ActivityInstrumentationTestCase2<
         solo.finishOpenedActivities();
     }
 }
+*/

@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>DateUtil.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">org.ei.telemedicine.util</a> &gt; <span class="el_source">DateUtil.java</span></div><h1>DateUtil.java</h1><pre class="source lang-java linenums">package org.ei.telemedicine.util;
+
+import org.joda.time.Days;
+import org.joda.time.LocalDate;
+import org.joda.time.LocalDateTime;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+<span class="nc" id="L10">public class DateUtil {</span>
+<span class="fc" id="L11">    private static String DEFAULT_DATE_FORMAT = &quot;dd/MM/yyyy&quot;;</span>
+<span class="fc" id="L12">    private static String DATE_FORMAT_FOR_TIMELINE_EVENT = &quot;dd-MM-yyyy&quot;;</span>
+
+<span class="fc" id="L14">    private static DateUtility dateUtility = new RealDate();</span>
+
+    public static void fakeIt(LocalDate fakeDayAsToday) {
+<span class="fc" id="L17">        dateUtility = new MockDate(fakeDayAsToday);</span>
+<span class="fc" id="L18">    }</span>
+
+    public static LocalDate today() {
+<span class="fc" id="L21">        return dateUtility.today();</span>
+    }
+
+    public static String formatDateForTimelineEvent(String unformattedDate) {
+<span class="fc" id="L25">        return formatDate(unformattedDate, DATE_FORMAT_FOR_TIMELINE_EVENT);</span>
+    }
+
+    public static String formatDate(String unformattedDate) {
+<span class="fc" id="L29">        return formatDate(unformattedDate, DEFAULT_DATE_FORMAT);</span>
+    }
+
+    public static String formatDate(String date, String pattern) {
+        try {
+<span class="fc" id="L34">            return LocalDate.parse(date).toString(pattern);</span>
+<span class="nc" id="L35">        } catch (Exception e) {</span>
+<span class="nc" id="L36">            return &quot;&quot;;</span>
+        }
+    }
+
+    public static String formatDate(LocalDate date, String pattern) {
+        try {
+<span class="fc" id="L42">            return date.toString(pattern);</span>
+<span class="nc" id="L43">        } catch (Exception e) {</span>
+<span class="nc" id="L44">            return &quot;&quot;;</span>
+        }
+    }
+
+    public static String formatFromISOString(String date, String pattern) {
+        try {
+<span class="nc" id="L50">            return getLocalDateFromISOString(date).toString(pattern);</span>
+<span class="nc" id="L51">        } catch (Exception e) {</span>
+<span class="nc" id="L52">            return &quot;&quot;;</span>
+        }
+    }
+
+    public static LocalDate getLocalDate(String date) {
+        try {
+<span class="fc" id="L58">            SimpleDateFormat format = new SimpleDateFormat(DEFAULT_DATE_FORMAT);</span>
+<span class="fc" id="L59">            Date formattedDate = format.parse(date);</span>
+<span class="fc" id="L60">            return new LocalDate(formattedDate);</span>
+<span class="nc" id="L61">        } catch (Exception e) {</span>
+<span class="nc" id="L62">            return null;</span>
+        }
+    }
+
+    public static LocalDate getLocalDateFromISOString(String date) {
+        try {
+<span class="fc" id="L68">            return LocalDateTime.parse(date).toLocalDate();</span>
+<span class="nc" id="L69">        } catch (Exception e) {</span>
+<span class="nc" id="L70">            return null;</span>
+        }
+    }
+
+    public static int dayDifference(LocalDate startDate, LocalDate endDate) {
+        try {
+<span class="fc" id="L76">            return Math.abs(Days.daysBetween(startDate, endDate).getDays());</span>
+<span class="nc" id="L77">        } catch (Exception e) {</span>
+<span class="nc" id="L78">            return 0;</span>
+        }
+    }
+
+}
+
+interface DateUtility {
+    LocalDate today();
+}
+
+<span class="fc" id="L88">class RealDate implements DateUtility {</span>
+    @Override
+    public LocalDate today() {
+<span class="nc" id="L91">        return LocalDate.now();</span>
+    }
+}
+
+class MockDate implements DateUtility {
+    private LocalDate fakeDay;
+
+<span class="fc" id="L98">    MockDate(LocalDate fakeDay) {</span>
+<span class="fc" id="L99">        this.fakeDay = fakeDay;</span>
+<span class="fc" id="L100">    }</span>
+
+    @Override
+    public LocalDate today() {
+<span class="fc" id="L104">        return fakeDay;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.1.201405082137</span></div></body></html>

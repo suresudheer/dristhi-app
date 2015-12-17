@@ -1,0 +1,356 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>ECClient.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">org.ei.telemedicine.view.contract</a> &gt; <span class="el_source">ECClient.java</span></div><h1>ECClient.java</h1><pre class="source lang-java linenums">package org.ei.telemedicine.view.contract;
+
+import android.util.Log;
+
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.ei.telemedicine.domain.FPMethod;
+import org.ei.telemedicine.util.DateUtil;
+import org.joda.time.Days;
+import org.joda.time.LocalDate;
+import org.joda.time.Years;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+
+import static org.ei.telemedicine.AllConstants.ECRegistrationFields.BPL_VALUE;
+import static org.ei.telemedicine.AllConstants.ECRegistrationFields.SC_VALUE;
+import static org.ei.telemedicine.AllConstants.ECRegistrationFields.ST_VALUE;
+import static org.ei.telemedicine.AllConstants.IN_AREA;
+import static org.ei.telemedicine.AllConstants.OUT_OF_AREA;
+import static org.ei.telemedicine.util.DateUtil.formatDate;
+import static org.ei.telemedicine.util.StringUtil.humanize;
+import static org.ei.telemedicine.util.StringUtil.humanizeAndDoUPPERCASE;
+
+public class ECClient implements ECSmartRegisterClient {
+
+    private String entityId;
+    private String entityIdToSavePhoto;
+    private String name;
+    private String husbandName;
+    private String dateOfBirth;
+    private long ecNumber;
+    private String village;
+    private String fpMethod;
+    private String numPregnancies;
+    private String parity;
+    private String numLivingChildren;
+    private String numStillbirths;
+    private String numAbortions;
+    private boolean isHighPriority;
+    private String familyPlanningMethodChangeDate;
+    private String photo_path;
+    private String caste;
+    private String economicStatus;
+    private String iudPlace;
+    private String iudPerson;
+    private String numberOfCondomsSupplied;
+    private String numberOfCentchromanPillsDelivered;
+    private String numberOfOCPDelivered;
+    private String highPriorityReason;
+    private String locationStatus;
+    private List&lt;ECChildClient&gt; children;
+<span class="fc" id="L58">    private Map&lt;String, String&gt; status = new HashMap&lt;String, String&gt;();</span>
+
+<span class="fc" id="L60">    public ECClient(String entityId, String name, String husbandName, String village, long ecNumber) {</span>
+<span class="fc" id="L61">        this.entityId = entityId;</span>
+<span class="fc" id="L62">        this.entityIdToSavePhoto = entityId;</span>
+<span class="fc" id="L63">        this.name = name;</span>
+<span class="fc" id="L64">        this.husbandName = husbandName;</span>
+<span class="fc" id="L65">        this.village = village;</span>
+<span class="fc" id="L66">        this.ecNumber = ecNumber;</span>
+<span class="fc" id="L67">        this.children = new ArrayList&lt;ECChildClient&gt;();</span>
+<span class="fc" id="L68">    }</span>
+
+
+
+    public String wifeName() {
+<span class="fc" id="L73">        return name;</span>
+    }
+
+    @Override
+    public String village() {
+<span class="fc" id="L78">        return humanize(village);</span>
+    }
+
+    @Override
+    public String name() {
+<span class="fc" id="L83">        return humanize(name);</span>
+    }
+
+    @Override
+    public String husbandName() {
+<span class="nc" id="L88">        return humanize(husbandName);</span>
+    }
+
+    @Override
+    public String ageInString() {
+<span class="nc" id="L93">        return &quot;(&quot; + age() + &quot;)&quot;;</span>
+    }
+
+    @Override
+    public int age() {
+<span class="pc bpc" id="L98" title="1 of 2 branches missed.">        return StringUtils.isBlank(dateOfBirth) ? 0 : Years.yearsBetween(LocalDate.parse(dateOfBirth), LocalDate.now()).getYears();</span>
+    }
+
+    @Override
+    public int ageInDays() {
+<span class="nc bnc" id="L103" title="All 2 branches missed.">        return StringUtils.isBlank(dateOfBirth) ? 0 : Days.daysBetween(LocalDate.parse(dateOfBirth), DateUtil.today()).getDays();</span>
+    }
+
+    @Override
+    public String displayName() {
+<span class="nc" id="L108">        return name();</span>
+    }
+
+    @Override
+    public int compareName(SmartRegisterClient client) {
+<span class="fc" id="L113">        return this.name().compareToIgnoreCase(client.name());</span>
+    }
+
+    public Long ecNumber() {
+<span class="fc" id="L117">        return ecNumber;</span>
+    }
+
+    public String locationStatus() {
+<span class="fc" id="L121">        return locationStatus;</span>
+    }
+
+    @Override
+    public boolean isSC() {
+<span class="fc bfc" id="L126" title="All 4 branches covered.">        return caste != null &amp;&amp; caste.equalsIgnoreCase(SC_VALUE);</span>
+    }
+
+    @Override
+    public boolean isST() {
+<span class="fc bfc" id="L131" title="All 4 branches covered.">        return caste != null &amp;&amp; caste.equalsIgnoreCase(ST_VALUE);</span>
+    }
+
+    @Override
+    public boolean isHighRisk() {
+<span class="nc" id="L136">        return false;</span>
+    }
+
+    @Override
+    public boolean isHighPriority() {
+<span class="fc" id="L141">        return isHighPriority;</span>
+    }
+
+    @Override
+    public boolean isBPL() {
+<span class="fc bfc" id="L146" title="All 4 branches covered.">        return economicStatus != null &amp;&amp; economicStatus.equalsIgnoreCase(BPL_VALUE);</span>
+    }
+
+    @Override
+    public boolean isPOC() {
+<span class="nc" id="L151">        return false;</span>
+    }
+
+    @Override
+    public boolean isPocPending() {
+<span class="nc" id="L156">        return false;</span>
+    }
+
+    @Override
+    public String profilePhotoPath() {
+<span class="nc" id="L161">        return photo_path;</span>
+    }
+
+    public FPMethod fpMethod() {
+<span class="nc" id="L165">        return FPMethod.tryParse(this.fpMethod, FPMethod.NONE);</span>
+    }
+
+    public List&lt;ECChildClient&gt; children() {
+<span class="nc" id="L169">        return children;</span>
+    }
+
+    public Map&lt;String, String&gt; status() {
+<span class="nc" id="L173">        return status;</span>
+    }
+
+    public String entityId() {
+<span class="fc" id="L177">        return entityId;</span>
+    }
+
+    public String numberOfPregnancies() {
+<span class="nc" id="L181">        return numPregnancies;</span>
+    }
+
+    public String parity() {
+<span class="nc" id="L185">        return parity;</span>
+    }
+
+    public String numberOfLivingChildren() {
+<span class="nc" id="L189">        return numLivingChildren;</span>
+    }
+
+    public String numberOfStillbirths() {
+<span class="nc" id="L193">        return numStillbirths;</span>
+    }
+
+    public String numberOfAbortions() {
+<span class="nc" id="L197">        return numAbortions;</span>
+    }
+
+    public String familyPlanningMethodChangeDate() {
+<span class="nc" id="L201">        return formatDate(familyPlanningMethodChangeDate);</span>
+    }
+
+    public String numberOfOCPDelivered() {
+<span class="nc" id="L205">        return numberOfOCPDelivered;</span>
+    }
+
+    public String numberOfCondomsSupplied() {
+<span class="nc" id="L209">        return numberOfCondomsSupplied;</span>
+    }
+
+    public String numberOfCentchromanPillsDelivered() {
+<span class="nc" id="L213">        return numberOfCentchromanPillsDelivered;</span>
+    }
+
+    public String iudPerson() {
+<span class="fc" id="L217">        return humanizeAndDoUPPERCASE(iudPerson);</span>
+    }
+
+    public String iudPlace() {
+<span class="nc" id="L221">        return humanizeAndDoUPPERCASE(iudPlace);</span>
+    }
+
+    public ECClient withDateOfBirth(String dateOfBirth) {
+<span class="fc" id="L225">        this.dateOfBirth = dateOfBirth;</span>
+<span class="fc" id="L226">        return this;</span>
+    }
+
+    public ECClient withIsOutOfArea(boolean outOfArea) {
+<span class="fc bfc" id="L230" title="All 2 branches covered.">        this.locationStatus = outOfArea ? OUT_OF_AREA : IN_AREA;</span>
+<span class="fc" id="L231">        return this;</span>
+    }
+
+
+    public ECClient withFPMethod(String fp_method) {
+<span class="fc" id="L236">        this.fpMethod = fp_method;</span>
+<span class="fc" id="L237">        return this;</span>
+    }
+
+    public ECClient withNumberOfPregnancies(String num_pregnancies) {
+<span class="fc" id="L241">        this.numPregnancies = num_pregnancies;</span>
+<span class="fc" id="L242">        return this;</span>
+    }
+
+    public ECClient withParity(String parity) {
+<span class="fc" id="L246">        this.parity = parity;</span>
+<span class="fc" id="L247">        return this;</span>
+    }
+
+    public ECClient withNumberOfLivingChildren(String num_living_children) {
+<span class="fc" id="L251">        this.numLivingChildren = num_living_children;</span>
+<span class="fc" id="L252">        return this;</span>
+    }
+
+    public ECClient withNumberOfStillBirths(String num_stillbirths) {
+<span class="fc" id="L256">        this.numStillbirths = num_stillbirths;</span>
+<span class="fc" id="L257">        return this;</span>
+    }
+
+    public ECClient withNumberOfAbortions(String num_abortions) {
+<span class="fc" id="L261">        this.numAbortions = num_abortions;</span>
+<span class="fc" id="L262">        return this;</span>
+    }
+
+    public ECClient withIsHighPriority(boolean highPriority) {
+<span class="fc" id="L266">        isHighPriority = highPriority;</span>
+<span class="fc" id="L267">        return this;</span>
+    }
+
+    public ECClient withFamilyPlanningMethodChangeDate(String family_planning_method_change_date) {
+<span class="fc" id="L271">        this.familyPlanningMethodChangeDate = family_planning_method_change_date;</span>
+<span class="fc" id="L272">        return this;</span>
+    }
+
+    public ECClient withPhotoPath(String photo_path) {
+<span class="fc" id="L276">        Log.e(&quot;Photo path&quot;, photo_path + &quot;---&quot;);</span>
+<span class="fc" id="L277">        this.photo_path = photo_path;</span>
+<span class="fc" id="L278">        return this;</span>
+    }
+
+    public ECClient withCaste(String caste) {
+<span class="fc" id="L282">        this.caste = caste;</span>
+<span class="fc" id="L283">        return this;</span>
+    }
+
+    public ECClient withEconomicStatus(String economicStatus) {
+<span class="fc" id="L287">        this.economicStatus = economicStatus;</span>
+<span class="fc" id="L288">        return this;</span>
+    }
+
+    public ECClient withIUDPlace(String iudPlace) {
+<span class="fc" id="L292">        this.iudPlace = iudPlace;</span>
+<span class="fc" id="L293">        return this;</span>
+    }
+
+    public ECClient withIUDPerson(String iudPerson) {
+<span class="fc" id="L297">        this.iudPerson = iudPerson;</span>
+<span class="fc" id="L298">        return this;</span>
+    }
+
+    public ECClient withNumberOfCondomsSupplied(String numberOfCondomsSupplied) {
+<span class="fc" id="L302">        this.numberOfCondomsSupplied = numberOfCondomsSupplied;</span>
+<span class="fc" id="L303">        return this;</span>
+    }
+
+    public ECClient withNumberOfCentchromanPillsDelivered(String numberOfCentchromanPillsDelivered) {
+<span class="fc" id="L307">        this.numberOfCentchromanPillsDelivered = numberOfCentchromanPillsDelivered;</span>
+<span class="fc" id="L308">        return this;</span>
+    }
+
+    public ECClient withNumberOfOCPDelivered(String numberOfOCPDelivered) {
+<span class="fc" id="L312">        this.numberOfOCPDelivered = numberOfOCPDelivered;</span>
+<span class="fc" id="L313">        return this;</span>
+    }
+
+    public ECClient withHighPriorityReason(String highPriorityReason) {
+<span class="fc" id="L317">        this.highPriorityReason = highPriorityReason;</span>
+<span class="fc" id="L318">        return this;</span>
+    }
+
+    public ECClient withChildren(List&lt;ECChildClient&gt; children) {
+<span class="fc" id="L322">        this.children = children;</span>
+<span class="fc" id="L323">        return this;</span>
+    }
+
+    public ECClient addChild(ECChildClient childClient) {
+<span class="fc" id="L327">        children.add(childClient);</span>
+<span class="fc" id="L328">        return this;</span>
+    }
+
+    public ECClient withStatus(Map&lt;String, String&gt; status) {
+<span class="fc" id="L332">        this.status = status;</span>
+<span class="fc" id="L333">        return this;</span>
+    }
+
+    public boolean satisfiesFilter(String filter) {
+<span class="fc bfc" id="L337" title="All 4 branches covered.">        return name.toLowerCase(Locale.getDefault()).startsWith(filter.toLowerCase())</span>
+                || String.valueOf(ecNumber).startsWith(filter);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+<span class="fc" id="L343">        return EqualsBuilder.reflectionEquals(this, o);</span>
+    }
+
+    @Override
+    public int hashCode() {
+<span class="nc" id="L348">        return HashCodeBuilder.reflectionHashCode(this);</span>
+    }
+
+    @Override
+    public String toString() {
+<span class="nc" id="L353">        return ToStringBuilder.reflectionToString(this);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.1.201405082137</span></div></body></html>

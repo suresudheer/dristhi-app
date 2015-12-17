@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>NativeFPSmartRegisterViewHolder.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">org.ei.telemedicine.view.viewHolder</a> &gt; <span class="el_source">NativeFPSmartRegisterViewHolder.java</span></div><h1>NativeFPSmartRegisterViewHolder.java</h1><pre class="source lang-java linenums">package org.ei.telemedicine.view.viewHolder;
+
+import org.ei.telemedicine.R;
+import org.ei.telemedicine.view.customControls.ClientFpMethodView;
+import org.ei.telemedicine.view.customControls.ClientGplsaChildView;
+import org.ei.telemedicine.view.customControls.ClientProfileView;
+import org.ei.telemedicine.view.customControls.ClientSideEffectsView;
+
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+
+public class NativeFPSmartRegisterViewHolder {
+    private final ClientProfileView profileInfoLayout;
+    private final TextView txtECNumberView;
+    private final ClientGplsaChildView gplsaChildLayout;
+    private final ViewGroup serviceModeFPMethodView;
+    private final ViewGroup serviceModeFPPrioritizationView;
+    private final ClientFpMethodView fpMethodview;
+    private final Button btnUpdateView;
+    private final ClientSideEffectsView clientSideEffectsView;
+    private final Button btnSideEffectsView;
+    private final LinearLayout fpAlertLayout;
+    private final TextView txtAlertTypeView;
+    private final TextView txtAlertDateView;
+    private final TextView txtPrioritizationRisksView;
+    private final LinearLayout lytAddFPView;
+//    private final LinearLayout lytFPVideosView;
+
+
+<span class="nc" id="L33">    public NativeFPSmartRegisterViewHolder(ViewGroup itemView) {</span>
+<span class="nc" id="L34">        this.profileInfoLayout = (ClientProfileView) itemView.findViewById(R.id.profile_info_layout);</span>
+<span class="nc" id="L35">        this.profileInfoLayout.initialize();</span>
+
+<span class="nc" id="L37">        this.txtECNumberView = (TextView) itemView.findViewById(R.id.txt_ec_number);</span>
+
+<span class="nc" id="L39">        this.gplsaChildLayout = (ClientGplsaChildView) itemView.findViewById(R.id.gplsa_child_layout);</span>
+<span class="nc" id="L40">        this.gplsaChildLayout.initialize();</span>
+
+<span class="nc" id="L42">        this.serviceModeFPMethodView = ((ViewGroup) itemView.findViewById(R.id.fp_method_service_mode_views));</span>
+<span class="nc" id="L43">        this.serviceModeFPPrioritizationView = ((ViewGroup) itemView.findViewById(R.id.fp_prioritization_service_mode_views));</span>
+
+<span class="nc" id="L45">        fpMethodview = (ClientFpMethodView) serviceModeFPMethodView.findViewById(R.id.fp_method_layout);</span>
+<span class="nc" id="L46">        fpMethodview.initialize();</span>
+<span class="nc" id="L47">        fpMethodview.setLayoutParams();</span>
+
+<span class="nc" id="L49">        btnUpdateView = (Button) serviceModeFPMethodView.findViewById(R.id.btn_fp_method_update);</span>
+
+<span class="nc" id="L51">        clientSideEffectsView = (ClientSideEffectsView) serviceModeFPMethodView.findViewById(R.id.side_effects_layout);</span>
+
+<span class="nc" id="L53">        clientSideEffectsView.initialize();</span>
+
+<span class="nc" id="L55">        btnSideEffectsView = (Button) serviceModeFPMethodView.findViewById(R.id.btn_side_effects);</span>
+
+<span class="nc" id="L57">        fpAlertLayout = (LinearLayout) serviceModeFPMethodView.findViewById(R.id.fp_alert_layout);</span>
+
+<span class="nc" id="L59">        txtAlertTypeView = (TextView) serviceModeFPMethodView.findViewById(R.id.txt_fp_alert_type);</span>
+
+<span class="nc" id="L61">        txtAlertDateView = (TextView) serviceModeFPMethodView.findViewById(R.id.txt_fp_alert_date);</span>
+
+<span class="nc" id="L63">        txtPrioritizationRisksView = (TextView) serviceModeFPPrioritizationView.findViewById(R.id.txt_fp_prioritization_risks);</span>
+
+<span class="nc" id="L65">        lytAddFPView = (LinearLayout) serviceModeFPPrioritizationView.findViewById(R.id.lyt_fp_add);</span>
+
+//        lytFPVideosView = (LinearLayout) serviceModeFPPrioritizationView.findViewById(R.id.lyt_fp_videos);
+<span class="nc" id="L68">    }</span>
+
+    public void hideAllServiceModeOptions() {
+<span class="nc" id="L71">        serviceModeFPMethod().setVisibility(View.GONE);</span>
+<span class="nc" id="L72">        serviceModeFPPrioritization().setVisibility(View.GONE);</span>
+<span class="nc" id="L73">    }</span>
+
+    public ClientProfileView profileInfoLayout() {
+<span class="nc" id="L76">        return profileInfoLayout;</span>
+    }
+
+    public TextView txtECNumberView() {
+<span class="nc" id="L80">        return txtECNumberView;</span>
+    }
+
+    public ClientGplsaChildView gplsaAndChildLayout() {
+<span class="nc" id="L84">        return gplsaChildLayout;</span>
+    }
+
+    public ViewGroup serviceModeFPMethod() {
+<span class="nc" id="L88">        return serviceModeFPMethodView;</span>
+    }
+
+    public ViewGroup serviceModeFPPrioritization() {
+<span class="nc" id="L92">        return serviceModeFPPrioritizationView;</span>
+    }
+
+    public ClientFpMethodView fpMethodView() {
+<span class="nc" id="L96">        return fpMethodview;</span>
+    }
+
+    public Button btnUpdateView() {
+<span class="nc" id="L100">        return btnUpdateView;</span>
+    }
+
+    public ClientSideEffectsView clientSideEffectsView() {
+<span class="nc" id="L104">        return clientSideEffectsView;</span>
+    }
+
+    public Button btnSideEffectsView() {
+<span class="nc" id="L108">        return btnSideEffectsView;</span>
+    }
+
+    public LinearLayout fpAlertLayout() {
+<span class="nc" id="L112">        return fpAlertLayout;</span>
+    }
+
+    public TextView txtAlertTypeView() {
+<span class="nc" id="L116">        return txtAlertTypeView;</span>
+    }
+
+    public TextView txtAlertDateView() {
+<span class="nc" id="L120">        return txtAlertDateView;</span>
+    }
+
+    public TextView txtPrioritizationRiskView() {
+<span class="nc" id="L124">        return txtPrioritizationRisksView;</span>
+    }
+
+    public LinearLayout lytAddFPView() {
+<span class="nc" id="L128">        return lytAddFPView;</span>
+    }
+
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.1.201405082137</span></div></body></html>

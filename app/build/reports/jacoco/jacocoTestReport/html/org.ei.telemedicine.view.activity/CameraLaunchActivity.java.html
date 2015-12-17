@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>CameraLaunchActivity.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">org.ei.telemedicine.view.activity</a> &gt; <span class="el_source">CameraLaunchActivity.java</span></div><h1>CameraLaunchActivity.java</h1><pre class="source lang-java linenums">package org.ei.telemedicine.view.activity;
+
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
+import android.provider.MediaStore;
+import android.widget.Toast;
+
+import org.ei.telemedicine.AllConstants;
+import org.ei.telemedicine.event.CapturedPhotoInformation;
+import org.ei.telemedicine.util.Log;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.UUID;
+
+import static android.os.Environment.DIRECTORY_PICTURES;
+import static android.os.Environment.getExternalStoragePublicDirectory;
+import static org.ei.telemedicine.AllConstants.CHILD_TYPE;
+import static org.ei.telemedicine.AllConstants.ENTITY_ID;
+import static org.ei.telemedicine.AllConstants.WOMAN_TYPE;
+import static org.ei.telemedicine.event.Event.ON_PHOTO_CAPTURED;
+
+<span class="nc" id="L26">public class CameraLaunchActivity extends SecuredActivity {</span>
+    private static final int TAKE_PHOTO_REQUEST_CODE = 111;
+    private static final String JPG_FILE_SUFFIX = &quot;.jpg&quot;;
+
+    private File imageFile;
+    private String entityType;
+    private String entityId;
+
+    @Override
+    public void onCreation() {
+<span class="nc" id="L36">        Intent intent = getIntent();</span>
+<span class="nc" id="L37">        entityId = intent.getStringExtra(ENTITY_ID);</span>
+<span class="nc" id="L38">        entityType = intent.getStringExtra(AllConstants.TYPE);</span>
+<span class="nc" id="L39">        startCamera();</span>
+<span class="nc" id="L40">    }</span>
+
+    @Override
+    public void onResumption() {
+<span class="nc" id="L44">    }</span>
+
+    public void startCamera() {
+<span class="nc" id="L47">        Intent takePhotoIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);</span>
+        try {
+<span class="nc" id="L49">            imageFile = createImageFile();</span>
+<span class="nc" id="L50">        } catch (IOException e) {</span>
+<span class="nc" id="L51">            Log.logError(&quot;Could not create temp file for storing image. Not taking photo. &quot; + e);</span>
+<span class="nc" id="L52">            return;</span>
+<span class="nc" id="L53">        }</span>
+<span class="nc" id="L54">        takePhotoIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(imageFile));</span>
+<span class="nc" id="L55">        startActivityForResult(takePhotoIntent, TAKE_PHOTO_REQUEST_CODE);</span>
+
+<span class="nc" id="L57">    }</span>
+
+    private File createImageFile() throws IOException {
+<span class="nc" id="L60">        String imageFileName = UUID.randomUUID().toString();</span>
+<span class="nc" id="L61">        File directory = new File(getExternalStoragePublicDirectory(DIRECTORY_PICTURES), AllConstants.DRISTHI_DIRECTORY_NAME);</span>
+<span class="nc bnc" id="L62" title="All 2 branches missed.">        if (!directory.exists()) {</span>
+<span class="nc" id="L63">            directory.mkdir();</span>
+        }
+<span class="nc" id="L65">        return new File(directory, imageFileName + JPG_FILE_SUFFIX);</span>
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+<span class="nc" id="L70">        super.onActivityResult(requestCode, resultCode, data);</span>
+<span class="nc bnc" id="L71" title="All 2 branches missed.">        if (requestCode != TAKE_PHOTO_REQUEST_CODE)</span>
+<span class="nc" id="L72">            return;</span>
+<span class="nc bnc" id="L73" title="All 2 branches missed.">        if (imageFile.exists()) {</span>
+<span class="nc" id="L74">            String imageFilePath = imageFile.getAbsolutePath();</span>
+<span class="nc" id="L75">            setPic(imageFilePath);</span>
+<span class="nc" id="L76">            updateEntity(&quot;file://&quot; + imageFilePath);</span>
+<span class="nc" id="L77">            Toast.makeText(this, &quot;Photo captured&quot;, Toast.LENGTH_SHORT).show();</span>
+        }
+<span class="nc" id="L79">        super.onBackPressed();</span>
+<span class="nc" id="L80">    }</span>
+
+    private void setPic(String mCurrentPhotoPath) {
+<span class="nc" id="L83">        int targetWidth = 100;</span>
+<span class="nc" id="L84">        int targetHeight = 100;</span>
+
+<span class="nc" id="L86">        BitmapFactory.Options bitmapOptions = new BitmapFactory.Options();</span>
+<span class="nc" id="L87">        bitmapOptions.inJustDecodeBounds = true;</span>
+<span class="nc" id="L88">        BitmapFactory.decodeFile(mCurrentPhotoPath, bitmapOptions);</span>
+<span class="nc" id="L89">        int originalWidth = bitmapOptions.outWidth;</span>
+<span class="nc" id="L90">        int originalHeight = bitmapOptions.outHeight;</span>
+
+<span class="nc" id="L92">        int scaleFactor = Math.min(originalWidth / targetWidth, originalHeight / targetHeight);</span>
+<span class="nc" id="L93">        bitmapOptions.inJustDecodeBounds = false;</span>
+<span class="nc" id="L94">        bitmapOptions.inSampleSize = scaleFactor;</span>
+<span class="nc" id="L95">        bitmapOptions.inPurgeable = true;</span>
+
+<span class="nc" id="L97">        Bitmap bitmap = BitmapFactory.decodeFile(mCurrentPhotoPath, bitmapOptions);</span>
+<span class="nc" id="L98">        saveBitmap(bitmap, mCurrentPhotoPath);</span>
+<span class="nc" id="L99">    }</span>
+
+    private void updateEntity(String imagePath) {
+<span class="nc bnc" id="L102" title="All 2 branches missed.">        if (WOMAN_TYPE.equals(entityType)) {</span>
+<span class="nc" id="L103">            context.allEligibleCouples().updatePhotoPath(entityId, imagePath);</span>
+        }
+<span class="nc bnc" id="L105" title="All 2 branches missed.">        if (CHILD_TYPE.equals(entityType)) {</span>
+<span class="nc" id="L106">            context.childService().updatePhotoPath(entityId, imagePath);</span>
+        }
+<span class="nc" id="L108">        ON_PHOTO_CAPTURED.notifyListeners(new CapturedPhotoInformation(entityId, imagePath));</span>
+<span class="nc" id="L109">    }</span>
+
+    private void saveBitmap(Bitmap bitmap, String location) {
+        try {
+<span class="nc" id="L113">            FileOutputStream out = new FileOutputStream(location);</span>
+<span class="nc" id="L114">            bitmap.compress(Bitmap.CompressFormat.JPEG, 90, out);</span>
+<span class="nc" id="L115">            out.flush();</span>
+<span class="nc" id="L116">            out.close();</span>
+<span class="nc" id="L117">        } catch (Exception e) {</span>
+<span class="nc" id="L118">            Log.logError(&quot;Could not save resized image. &quot; + e);</span>
+<span class="nc" id="L119">        }</span>
+<span class="nc" id="L120">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.1.201405082137</span></div></body></html>

@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>ZiggyService.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">org.ei.telemedicine.service</a> &gt; <span class="el_source">ZiggyService.java</span></div><h1>ZiggyService.java</h1><pre class="source lang-java linenums">package org.ei.telemedicine.service;
+
+import android.util.Log;
+
+import org.ei.telemedicine.repository.FormDataRepository;
+import org.ei.telemedicine.service.formSubmissionHandler.FormSubmissionRouter;
+import org.mozilla.javascript.Context;
+import org.mozilla.javascript.Function;
+import org.mozilla.javascript.ScriptableObject;
+
+import java.util.Map;
+
+import static java.text.MessageFormat.format;
+import static org.ei.telemedicine.AllConstants.*;
+import static org.ei.telemedicine.util.Log.logError;
+import static org.ei.telemedicine.util.Log.logInfo;
+import static org.mozilla.javascript.Context.*;
+
+public class ZiggyService {
+    private static final String SAVE_METHOD_NAME = &quot;save&quot;;
+    private static final String JS_INIT_SCRIPT = &quot;require([\&quot;ziggy/FormDataController\&quot;], function (FormDataController) {\n&quot; +
+            &quot;    controller = FormDataController;\n&quot; +
+            &quot;});&quot;;
+
+    private ZiggyFileLoader ziggyFileLoader;
+    private FormDataRepository dataRepository;
+    private FormSubmissionRouter formSubmissionRouter;
+    private Context context;
+    private ScriptableObject scope;
+    private Function saveFunction;
+
+<span class="nc" id="L32">    public ZiggyService(ZiggyFileLoader ziggyFileLoader, FormDataRepository dataRepository, FormSubmissionRouter formSubmissionRouter) {</span>
+<span class="nc" id="L33">        this.ziggyFileLoader = ziggyFileLoader;</span>
+<span class="nc" id="L34">        this.dataRepository = dataRepository;</span>
+<span class="nc" id="L35">        this.formSubmissionRouter = formSubmissionRouter;</span>
+<span class="nc" id="L36">        initRhino();</span>
+<span class="nc" id="L37">    }</span>
+
+    public void saveForm(String params, String formInstance) throws Exception {
+<span class="nc" id="L40">        context = enter();</span>
+<span class="nc" id="L41">        saveFunction.call(context, scope, scope, new Object[]{params, formInstance});</span>
+<span class="nc" id="L42">        logInfo(format(&quot;Saving form successful, with params: {0}, with instance {1}.&quot;, params, formInstance));</span>
+<span class="nc" id="L43">        exit();</span>
+<span class="nc" id="L44">    }</span>
+
+    private void initRhino() {
+        try {
+<span class="nc" id="L48">            context = enter();</span>
+<span class="nc" id="L49">            context.setOptimizationLevel(-1);</span>
+<span class="nc" id="L50">            scope = context.initStandardObjects();</span>
+<span class="nc" id="L51">            String jsFiles = ziggyFileLoader.getJSFiles();</span>
+<span class="nc" id="L52">            scope.put(REPOSITORY, scope, toObject(dataRepository, scope));</span>
+<span class="nc" id="L53">            scope.put(ZIGGY_FILE_LOADER, scope, toObject(ziggyFileLoader, scope));</span>
+<span class="nc" id="L54">            scope.put(FORM_SUBMISSION_ROUTER, scope, toObject(formSubmissionRouter, scope));</span>
+<span class="nc" id="L55">            context.evaluateString(scope, jsFiles + JS_INIT_SCRIPT, &quot;code&quot;, 1, null);</span>
+<span class="nc" id="L56">            saveFunction = ((Function) ((Map) scope.get(&quot;controller&quot;, scope)).get(SAVE_METHOD_NAME));</span>
+<span class="nc" id="L57">        } catch (Exception e) {</span>
+<span class="nc" id="L58">            logError(&quot;Rhino initialization failed. We are screwed. EOW!!!. Evil: &quot; + e);</span>
+        } finally {
+<span class="nc" id="L60">            exit();</span>
+<span class="nc" id="L61">        }</span>
+<span class="nc" id="L62">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.1.201405082137</span></div></body></html>

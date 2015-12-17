@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>PNCWebViewClient.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">org.ei.telemedicine.view.customControls</a> &gt; <span class="el_source">PNCWebViewClient.java</span></div><h1>PNCWebViewClient.java</h1><pre class="source lang-java linenums">package org.ei.telemedicine.view.customControls;
+
+
+import android.net.http.SslError;
+import android.webkit.SslErrorHandler;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
+
+<span class="nc" id="L9">public class PNCWebViewClient extends WebViewClient {</span>
+    @Override
+    public void onPageFinished(WebView view, String url) {
+<span class="nc" id="L12">        super.onPageFinished(view, url);</span>
+<span class="nc" id="L13">    }</span>
+
+    @Override
+    public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
+<span class="nc" id="L17">        view.loadUrl(&quot;file:///android_asset/www/pnc_graph/pnc_visit_graph_error.html&quot;);</span>
+<span class="nc" id="L18">    }</span>
+
+    @Override
+    public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error) {
+<span class="nc" id="L22">        super.onReceivedSslError(view, handler, error);</span>
+<span class="nc" id="L23">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.1.201405082137</span></div></body></html>

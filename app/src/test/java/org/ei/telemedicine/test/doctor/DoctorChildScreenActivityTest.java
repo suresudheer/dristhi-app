@@ -1,3 +1,4 @@
+/*
 package org.ei.telemedicine.test.doctor;
 
 
@@ -80,3 +81,4 @@ public class DoctorChildScreenActivityTest  extends ActivityUnitTestCase<DoctorC
         super.tearDown();
     }
 }
+*/

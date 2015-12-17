@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>ReportsCategory.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">org.ei.telemedicine.domain</a> &gt; <span class="el_source">ReportsCategory.java</span></div><h1>ReportsCategory.java</h1><pre class="source lang-java linenums">package org.ei.telemedicine.domain;
+
+import java.util.List;
+
+import static java.util.Arrays.asList;
+import static org.ei.telemedicine.domain.ReportIndicator.*;
+
+<span class="fc" id="L8">public enum ReportsCategory {</span>
+<span class="fc" id="L9">    FPS(&quot;Family Planning Services&quot;, asList(IUD, CONDOM, CONDOM_QTY, OCP, OCP_SC, OCP_ST, OCP_C_OTHERS,</span>
+            MALE_STERILIZATION, FEMALE_STERILIZATION, FS_BPL, FS_APL)),
+
+<span class="fc" id="L12">    ANC_SERVICES(&quot;ANC Services&quot;, asList(EARLY_ANC_REGISTRATIONS, LATE_ANC_REGISTRATIONS, TOTAL_ANC_REGISTRATIONS, SUB_TT, TT1, TT2, TTB, ANC4)),</span>
+
+<span class="fc" id="L14">    PREGNANCY_OUTCOMES(&quot;Pregnancy Outcomes&quot;, asList(LIVE_BIRTH, STILL_BIRTH, EARLY_ABORTIONS, LATE_ABORTIONS,</span>
+            SPONTANEOUS_ABORTION, DELIVERY, INSTITUTIONAL_DELIVERY, D_HOM, D_SC, D_PHC, D_CHC, D_SDH, D_DH, D_PRI,
+            CESAREAN, CESAREAN_GOV, CESAREAN_PRI)),
+
+<span class="fc" id="L18">    PNC_SERVICES(&quot;PNC Services&quot;, asList(PNC3)),</span>
+
+<span class="fc" id="L20">    CHILD_SERVICES(&quot;Child Services&quot;, asList(INFANT_BALANCE_ON_HAND, INFANT_REG, INFANT_BALANCE_TOTAL, INFANT_LEFT,</span>
+            INFANT_MORTALITY, INFANT_BALANCE_BALANCE, INFANT_BALANCE_OA_CHILDREN, INFANT_BALANCE_LESS_THAN_ONE_YEAR, INFANT_BALANCE_LESS_THAN_FIVE_YEAR,
+            PENTAVALENT3_OR_OPV3, DPT_BOOSTER_OR_OPV_BOOSTER, DPT_BOOSTER2, HEP, OPV, MEASLES,
+            PENTAVALENT_1, PENTAVALENT_2, PENTAVALENT_3,
+            BCG, LBW, BF_POST_BIRTH, WEIGHED_AT_BIRTH,
+            VIT_A_1, VIT_A_1_FOR_FEMALE_CHILD, VIT_A_1_FOR_MALE_CHILD,
+            VIT_A_2, VIT_A_2_FOR_FEMALE_CHILD, VIT_A_2_FOR_MALE_CHILD,
+            VIT_A_5_FOR_FEMALE_CHILD, VIT_A_5_FOR_MALE_CHILD, VIT_A_9_FOR_FEMALE_CHILD, VIT_A_9_FOR_MALE_CHILD,
+            VIT_A_FOR_FEMALE, VIT_A_FOR_MALE,
+            CHILD_DIARRHEA,
+            CHILD_MORTALITY_DUE_TO_DIARRHEA,
+            IB_1Y, OPV3, OPV_BOOSTER, JE, DPT_BOOSTER1)),
+
+<span class="fc" id="L33">    MORTALITY(&quot;Mortality&quot;, asList(ENM, NM, LNM, INFANT_MORTALITY, CHILD_MORTALITY, MMA, MMD, MMP, MM)),</span>
+
+<span class="fc" id="L35">    BENEFICIARY_SCHEMES(&quot;Beneficiary Schemes&quot;, asList(ANCS_AND_PNCS_WITH_BPL));</span>
+
+    private String description;
+    private List&lt;ReportIndicator&gt; indicators;
+
+<span class="fc" id="L40">    ReportsCategory(String description, List&lt;ReportIndicator&gt; indicators) {</span>
+<span class="fc" id="L41">        this.description = description;</span>
+<span class="fc" id="L42">        this.indicators = indicators;</span>
+<span class="fc" id="L43">    }</span>
+
+    public List&lt;ReportIndicator&gt; indicators() {
+<span class="fc" id="L46">        return indicators;</span>
+    }
+
+    public String description() {
+<span class="fc" id="L50">        return description;</span>
+    }
+
+    public String value() {
+<span class="fc" id="L54">        return name();</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.1.201405082137</span></div></body></html>

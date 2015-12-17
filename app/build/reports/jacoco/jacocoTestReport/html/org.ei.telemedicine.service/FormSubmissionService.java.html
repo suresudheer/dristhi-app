@@ -1,0 +1,241 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>FormSubmissionService.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">org.ei.telemedicine.service</a> &gt; <span class="el_source">FormSubmissionService.java</span></div><h1>FormSubmissionService.java</h1><pre class="source lang-java linenums">package org.ei.telemedicine.service;
+
+import android.util.Log;
+import android.widget.Toast;
+
+import com.google.gson.Gson;
+
+import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.ei.telemedicine.Context;
+import org.ei.telemedicine.doctor.DoctorData;
+import org.ei.telemedicine.doctor.DoctorFormDataConstants;
+import org.ei.telemedicine.doctor.PendingConsultantBaseAdapter;
+import org.ei.telemedicine.domain.form.FormSubmission;
+import org.ei.telemedicine.repository.AllDoctorRepository;
+import org.ei.telemedicine.repository.AllSettings;
+import org.ei.telemedicine.repository.FormDataRepository;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static java.text.MessageFormat.format;
+import static org.ei.telemedicine.AllConstants.*;
+import static org.ei.telemedicine.doctor.DoctorFormDataConstants.*;
+import static org.ei.telemedicine.domain.SyncStatus.SYNCED;
+import static org.ei.telemedicine.util.EasyMap.create;
+import static org.ei.telemedicine.util.Log.logError;
+
+public class FormSubmissionService {
+    private ZiggyService ziggyService;
+    private FormDataRepository formDataRepository;
+    private AllSettings allSettings;
+<span class="fc" id="L35">    private String TAG = &quot;FormSubmissionService&quot;;</span>
+    List&lt;DoctorData&gt; doctorDatas;
+    Context context;
+    AllDoctorRepository allDoctorRepository;
+
+<span class="fc" id="L40">    public FormSubmissionService(ZiggyService ziggyService, FormDataRepository formDataRepository, AllSettings allSettings) {</span>
+<span class="fc" id="L41">        this.ziggyService = ziggyService;</span>
+<span class="fc" id="L42">        this.formDataRepository = formDataRepository;</span>
+<span class="fc" id="L43">        this.allSettings = allSettings;</span>
+<span class="fc" id="L44">    }</span>
+
+    public void processSubmissions(List&lt;FormSubmission&gt; formSubmissions, String villageName) {
+<span class="fc bfc" id="L47" title="All 2 branches covered.">        for (FormSubmission submission : formSubmissions) {</span>
+<span class="fc" id="L48">            logError(&quot;Entity Id &quot; + submission.entityId() + &quot;\n Form Name&quot; + submission.formName() + &quot;\n Instance= &quot; + submission.instance());</span>
+<span class="fc bfc" id="L49" title="All 2 branches covered.">            if (formDataRepository.submissionExists(submission.instanceId())) {</span>
+<span class="fc" id="L50">                formDataRepository.removeForm(submission.instanceId());</span>
+            }
+            try {
+<span class="fc" id="L53">                logError(&quot;Params== &quot; + getParams(submission));</span>
+<span class="fc" id="L54">                ziggyService.saveForm(getParams(submission), submission.instance());</span>
+<span class="nc" id="L55">            } catch (Exception e) {</span>
+<span class="nc" id="L56">                logError(format(&quot;Form submission processing failed, with instanceId: {0}. Exception: {1}, StackTrace: {2}&quot;,</span>
+                        submission.instanceId(), e.getMessage(), ExceptionUtils.getStackTrace(e)));
+<span class="fc" id="L58">            }</span>
+<span class="fc" id="L59">            formDataRepository.updateServerVersion(submission.instanceId(), submission.serverVersion(), villageName);</span>
+<span class="fc" id="L60">            allSettings.savePreviousFormSyncIndex(submission.serverVersion());</span>
+<span class="fc" id="L61">        }</span>
+<span class="fc" id="L62">    }</span>
+
+    private String getParams(FormSubmission submission) {
+<span class="fc" id="L65">        return new Gson().toJson(</span>
+                create(INSTANCE_ID_PARAM, submission.instanceId())
+                        .put(ENTITY_ID_PARAM, submission.entityId())
+                        .put(FORM_NAME_PARAM, submission.formName())
+                        .put(VERSION_PARAM, submission.version())
+                        .put(SYNC_STATUS, SYNCED.value())
+                        .map());
+    }
+
+    public void processDoctorRecords(String data) {
+<span class="nc" id="L75">        context = Context.getInstance();</span>
+<span class="nc" id="L76">        allDoctorRepository = context.allDoctorRepository();</span>
+<span class="nc" id="L77">        JSONObject formData = new JSONObject();</span>
+        try {
+<span class="nc bnc" id="L79" title="All 2 branches missed.">            if (data != null) {</span>
+<span class="nc" id="L80">                Log.e(TAG, &quot;Data &quot; + data);</span>
+<span class="nc" id="L81">                JSONArray dataArray = new JSONArray(data);</span>
+<span class="nc bnc" id="L82" title="All 2 branches missed.">                for (int i = 0; i &lt; dataArray.length(); i++) {</span>
+<span class="nc" id="L83">                    JSONObject datajsonObject = dataArray.getJSONObject(i);</span>
+<span class="nc" id="L84">                    JSONArray visitsArray = datajsonObject.getJSONArray(&quot;riskinfo&quot;);</span>
+
+<span class="nc bnc" id="L86" title="All 2 branches missed.">                    for (int j = 0; j &lt; visitsArray.length(); j++) {</span>
+
+<span class="nc" id="L88">                        JSONObject riskJson = visitsArray.getJSONObject(j);</span>
+<span class="nc" id="L89">                        formData.put(wife_name, getDataFromJson(&quot;wifeName&quot;, datajsonObject));</span>
+<span class="nc" id="L90">                        formData.put(husband_name, getDataFromJson(&quot;husbandName&quot;, datajsonObject));</span>
+<span class="nc" id="L91">                        formData.put(DoctorFormDataConstants.village_name, getDataFromJson(&quot;village&quot;, datajsonObject));</span>
+<span class="nc" id="L92">                        formData.put(age, getDataFromJson(&quot;wifeAge&quot;, datajsonObject));</span>
+<span class="nc" id="L93">                        formData.put(phoneNumber, getDataFromJson(&quot;phoneNumber&quot;, datajsonObject));</span>
+<span class="nc" id="L94">                        formData.put(entityId, getDataFromJson(&quot;entityidec&quot;, datajsonObject));</span>
+
+<span class="nc" id="L96">                        formData.put(poc_pending, getDataFromJson(&quot;pending&quot;, datajsonObject));</span>
+<span class="nc" id="L97">                        formData.put(anmId, getDataFromJson(&quot;anmId&quot;, datajsonObject));</span>
+<span class="nc" id="L98">                        formData.put(visit_type, getDataFromJson(&quot;visit_type&quot;, riskJson));</span>
+<span class="nc" id="L99">                        formData.put(documentId, getDataFromJson(&quot;id&quot;, riskJson));</span>
+<span class="nc" id="L100">                        formData.put(isHighRisk, getDataFromJson(&quot;isHighRisk&quot;, riskJson));</span>
+<span class="nc" id="L101">                        formData.put(anmPoc, getDataFromJson(&quot;anmPoc&quot;, riskJson));</span>
+<span class="nc" id="L102">                        String visit_typ2e = getDataFromJson(&quot;visit_type&quot;, riskJson);</span>
+<span class="nc bnc" id="L103" title="All 2 branches missed.">                        if (getDataFromJson(visit_type, riskJson).equals(ancvisit)) {</span>
+<span class="nc" id="L104">                            formData.put(id_no, getDataFromJson(&quot;ancNumber&quot;, riskJson));</span>
+//                                            formData.put(status, &quot;LMP: &quot; + getData(&quot;lmp&quot;, riskJson) + &quot;EDD: &quot; + getData(&quot;edd&quot;, riskJson));
+
+<span class="nc" id="L107">                            formData.put(lmp, getDataFromJson(&quot;lmp&quot;, riskJson));</span>
+<span class="nc" id="L108">                            formData.put(edd, getDataFromJson(&quot;edd&quot;, riskJson));</span>
+
+<span class="nc" id="L110">                            formData.put(anc_number, getDataFromJson(&quot;ancNumber&quot;, riskJson));</span>
+<span class="nc" id="L111">                            formData.put(anc_visit_number, getDataFromJson(&quot;ancVisitNumber&quot;, riskJson));</span>
+<span class="nc" id="L112">                            formData.put(anc_visit_date, getDataFromJson(&quot;ancVisitDate&quot;, riskJson));</span>
+//                            formData.put(anc_entityId, getDataFromJson(&quot;entityid&quot;, riskJson));
+<span class="nc" id="L114">                            formData.put(visitId, getDataFromJson(&quot;entityid&quot;, riskJson));</span>
+<span class="nc" id="L115">                            formData.put(risk_symptoms, getDataFromJson(&quot;riskObservedDuringANC&quot;, riskJson));</span>
+<span class="nc" id="L116">                            formData.put(bp_sys, getDataFromJson(&quot;bpSystolic&quot;, riskJson));</span>
+<span class="nc" id="L117">                            formData.put(bp_dia, getDataFromJson(&quot;bpDiastolic&quot;, riskJson));</span>
+<span class="nc" id="L118">                            formData.put(DoctorFormDataConstants.bp_pulse, getDataFromJson(&quot;pulseRate&quot;, riskJson));</span>
+
+<span class="nc" id="L120">                            formData.put(temp_data, getDataFromJson(&quot;temperature&quot;, riskJson));</span>
+<span class="nc" id="L121">                            formData.put(weight_data, getDataFromJson(&quot;weight&quot;, riskJson));</span>
+<span class="nc" id="L122">                            formData.put(blood_glucose, getDataFromJson(&quot;bloodGlucoseData&quot;, riskJson));</span>
+<span class="nc" id="L123">                            formData.put(fetal_data, getDataFromJson(&quot;fetalData&quot;, riskJson));</span>
+<span class="nc" id="L124">                            formData.put(stethoscope_data, getDataFromJson(&quot;pstechoscopeData&quot;, riskJson));</span>
+<span class="nc bnc" id="L125" title="All 2 branches missed.">                        } else if (getDataFromJson(visit_type, riskJson).equals(pncVisit)) {</span>
+//                                            formData.put(status, &quot;Place: &quot; + getData(&quot;pncVisitPlace&quot;, riskJson) + &quot;Date: &quot; + getData(&quot;pncVisitDate&quot;, riskJson));
+<span class="nc" id="L127">                            formData.put(id_no, getDataFromJson(&quot;pncNumber&quot;, riskJson));</span>
+<span class="nc" id="L128">                            formData.put(pnc_number, getDataFromJson(&quot;pncNumber&quot;, riskJson));</span>
+<span class="nc" id="L129">                            formData.put(pnc_visit_date, getDataFromJson(&quot;pncVisitDate&quot;, riskJson));</span>
+<span class="nc" id="L130">                            formData.put(pnc_visit_place, getDataFromJson(&quot;pncVisitPlace&quot;, riskJson));</span>
+<span class="nc" id="L131">                            formData.put(visitId, getDataFromJson(&quot;entityid&quot;, riskJson));</span>
+//                            formData.put(pnc_entityId, getDataFromJson(&quot;entityid&quot;, riskJson));
+
+<span class="nc" id="L134">                            formData.put(pnc_difficulties, getDataFromJson(&quot;difficulties1&quot;, riskJson));</span>
+<span class="nc" id="L135">                            formData.put(pnc_vaginal_problems, getDataFromJson(&quot;vaginalProblems&quot;, riskJson));</span>
+<span class="nc" id="L136">                            formData.put(pnc_abdominal_problems, getDataFromJson(&quot;abdominalProblems&quot;, riskJson));</span>
+<span class="nc" id="L137">                            formData.put(pnc_breast_problems, getDataFromJson(&quot;breastProblems&quot;, riskJson));</span>
+<span class="nc" id="L138">                            formData.put(pnc_urinating_problems, getDataFromJson(&quot;difficulties2&quot;, riskJson));</span>
+<span class="nc" id="L139">                            formData.put(kopfeel_heat_or_chills, getDataFromJson(&quot;hasFeverSymptoms&quot;, riskJson));</span>
+
+<span class="nc" id="L141">                            formData.put(bp_sys, getDataFromJson(&quot;bpSystolic&quot;, riskJson));</span>
+<span class="nc" id="L142">                            formData.put(bp_dia, getDataFromJson(&quot;bpDiastolic&quot;, riskJson));</span>
+<span class="nc" id="L143">                            formData.put(DoctorFormDataConstants.bp_pulse, getDataFromJson(&quot;pulseRate&quot;, riskJson));</span>
+
+<span class="nc" id="L145">                            formData.put(temp_data, getDataFromJson(&quot;temperature&quot;, riskJson));</span>
+<span class="nc" id="L146">                            formData.put(weight_data, getDataFromJson(&quot;weight&quot;, riskJson));</span>
+<span class="nc" id="L147">                            formData.put(blood_glucose, getDataFromJson(&quot;bloodGlucoseData&quot;, riskJson));</span>
+<span class="nc" id="L148">                            formData.put(hb_level, getDataFromJson(&quot;hbLevel&quot;, riskJson));</span>
+<span class="nc" id="L149">                            formData.put(stethoscope_data, getDataFromJson(&quot;pstechoscopeData&quot;, riskJson));</span>
+                        } else {
+<span class="nc" id="L151">                            formData.put(id_no, getDataFromJson(&quot;childNumber&quot;, riskJson));</span>
+<span class="nc" id="L152">                            formData.put(child_report_child_disease_place, getDataFromJson(&quot;reportChildDiseasePlace&quot;, riskJson));</span>
+<span class="nc" id="L153">                            formData.put(child_report_child_disease_date, getDataFromJson(&quot;reportChildDiseaseDate&quot;, riskJson));</span>
+
+<span class="nc" id="L155">                            formData.put(child_name, getDataFromJson(&quot;name&quot;, riskJson));</span>
+<span class="nc" id="L156">                            formData.put(child_info, getDataFromJson(&quot;childInfo&quot;, riskJson));</span>
+<span class="nc" id="L157">                            formData.put(child_dob, getDataFromJson(&quot;dateOfBirth&quot;, riskJson));</span>
+<span class="nc" id="L158">                            formData.put(child_age, getDataFromJson(&quot;age&quot;, riskJson));</span>
+<span class="nc" id="L159">                            formData.put(child_gender, getDataFromJson(&quot;gender&quot;, riskJson));</span>
+//                            formData.put(child_entityId, getDataFromJson(&quot;entityid&quot;, riskJson));
+<span class="nc" id="L161">                            formData.put(visitId, getDataFromJson(&quot;entityid&quot;, riskJson));</span>
+<span class="nc" id="L162">                            formData.put(temp_data, getDataFromJson(&quot;childTemperature&quot;, riskJson));</span>
+<span class="nc" id="L163">                            formData.put(child_immediateReferral, getDataFromJson(&quot;immediateReferral&quot;, riskJson));</span>
+<span class="nc" id="L164">                            formData.put(child_immediateReferral_reason, getDataFromJson(&quot;immediateReferralReason&quot;, riskJson));</span>
+<span class="nc" id="L165">                            formData.put(child_no_of_osrs, getDataFromJson(&quot;numberOfORSGiven&quot;, riskJson));</span>
+<span class="nc" id="L166">                            formData.put(child_submission_date, getDataFromJson(&quot;submissionDate&quot;, riskJson));</span>
+<span class="nc" id="L167">                            formData.put(child_referral, getDataFromJson(&quot;childReferral&quot;, riskJson));</span>
+<span class="nc" id="L168">                            formData.put(child_report_child_disease_date, getDataFromJson(&quot;reportChildDiseaseDate&quot;, riskJson));</span>
+<span class="nc" id="L169">                            formData.put(child_report_child_disease_other, getDataFromJson(&quot;reportChildDiseaseOther&quot;, riskJson));</span>
+<span class="nc" id="L170">                            formData.put(child_report_child_disease, getDataFromJson(&quot;reportChildDisease&quot;, riskJson));</span>
+<span class="nc" id="L171">                            formData.put(child_signs_other, getDataFromJson(&quot;childSignsOther&quot;, riskJson));</span>
+<span class="nc" id="L172">                            formData.put(child_signs, getDataFromJson(&quot;childSigns&quot;, riskJson));</span>
+
+<span class="nc" id="L174">                            formData.put(child_sick_visit_date, getDataFromJson(&quot;sickVisitDate&quot;, riskJson));</span>
+<span class="nc" id="L175">                            formData.put(child_days_of_cough, getDataFromJson(&quot;numberOfDaysCough&quot;, riskJson));</span>
+<span class="nc" id="L176">                            formData.put(child_breaths_per_minute, getDataFromJson(&quot;breathsPerMinute&quot;, riskJson));</span>
+<span class="nc" id="L177">                            formData.put(child_days_of_diarrhea, getDataFromJson(&quot;daysOfDiarrhea&quot;, riskJson));</span>
+<span class="nc" id="L178">                            formData.put(child_blood_in_stool, getDataFromJson(&quot;bloodInStool&quot;, riskJson));</span>
+<span class="nc" id="L179">                            formData.put(child_vommit_every_thing, getDataFromJson(&quot;vommitEveryThing&quot;, riskJson));</span>
+<span class="nc" id="L180">                            formData.put(child_number_of_days_fever, getDataFromJson(&quot;daysOfFever&quot;, riskJson));</span>
+
+
+                        }
+<span class="nc" id="L184">                        DoctorData doctorData = new DoctorData();</span>
+//                                        doctorData.setVisitType(getData(&quot;visit_type&quot;, datajsonObject));
+
+<span class="nc" id="L187">                        doctorData.setFormInformation(formData.toString());</span>
+<span class="nc" id="L188">                        doctorData.setAnmId(getDataFromJson(&quot;anmId&quot;, datajsonObject));</span>
+<span class="nc" id="L189">                        doctorData.setCaseId(getDataFromJson(&quot;entityid&quot;, riskJson));</span>
+<span class="nc" id="L190">                        doctorData.setSyncStatus(&quot;pending&quot;);</span>
+<span class="nc" id="L191">                        String village = getDataFromJson(&quot;village&quot;, datajsonObject);</span>
+<span class="nc" id="L192">                        doctorData.setVillageName(village);</span>
+<span class="nc" id="L193">                        doctorData.setVisitType(getDataFromJson(visit_type, riskJson));</span>
+<span class="nc" id="L194">                        Log.e(TAG, &quot;record&quot; + doctorData.getFormInformation());</span>
+<span class="nc" id="L195">                        allDoctorRepository.addData(doctorData);</span>
+//                        String id = getData(&quot;id&quot;, riskJson);
+//                        if (!tempList.contains(getData(&quot;id&quot;, riskJson))) {
+//                            tempList.add(getData(&quot;id&quot;, riskJson));
+//                            doctorDataArrayList.add(doctorData);
+//                        }
+//
+//                        syncAdapter = new PendingConsultantBaseAdapter(NativeDoctorActivity.this, doctorDataArrayList);
+//                        syncAdapter.notifyDataSetChanged();
+//                        lv_pending_consultants.setAdapter(syncAdapter);
+//                        anc_count = 0;
+//                        pnc_count = 0;
+//                        child_count = 0;
+//                        if (doctorDataArrayList.size() != 0) {
+//                            for (DoctorData doctorDataInfo : doctorDataArrayList) {
+//                                if (doctorDataInfo.getVisitType().equalsIgnoreCase(&quot;ANC&quot;))
+//                                    anc_count = anc_count + 1;
+//                                else if (doctorDataInfo.getVisitType().equalsIgnoreCase(&quot;PNC&quot;))
+//                                    pnc_count = pnc_count + 1;
+//                                else
+//                                    child_count = child_count + 1;
+//                            }
+//                            tv_anc_count.setText(anc_count + &quot;&quot;);
+//                            tv_pnc_count.setText(pnc_count + &quot;&quot;);
+//                            tv_child_count.setText(child_count + &quot;&quot;);
+//                        }
+<span class="nc" id="L221">                        Log.e(TAG, &quot;record&quot; + &quot;insert&quot;);</span>
+                    }
+                }
+
+            }
+<span class="nc" id="L226">        } catch (JSONException e) {</span>
+<span class="nc" id="L227">            e.printStackTrace();</span>
+
+<span class="nc" id="L229">        }</span>
+<span class="nc" id="L230">    }</span>
+
+    private String getDataFromJson(String key, JSONObject formData) {
+<span class="nc bnc" id="L233" title="All 2 branches missed.">        if (formData != null) try {</span>
+<span class="nc bnc" id="L234" title="All 6 branches missed.">            return (formData != null &amp;&amp; formData.has(key) &amp;&amp; formData.getString(key) != null) ? formData.getString(key) : &quot;&quot;;</span>
+<span class="nc" id="L235">        } catch (JSONException e) {</span>
+<span class="nc" id="L236">            e.printStackTrace();</span>
+        }
+<span class="nc" id="L238">        return null;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.1.201405082137</span></div></body></html>

@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>ChildSmartRegisterClient.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">org.ei.telemedicine.view.contract</a> &gt; <span class="el_source">ChildSmartRegisterClient.java</span></div><h1>ChildSmartRegisterClient.java</h1><pre class="source lang-java linenums">package org.ei.telemedicine.view.contract;
+
+
+import static org.apache.commons.lang3.StringUtils.isBlank;
+import static org.ei.telemedicine.AllConstants.COMMA_WITH_SPACE;
+import static org.ei.telemedicine.AllConstants.SPACE;
+import static org.ei.telemedicine.util.DateUtil.formatDate;
+import static org.ei.telemedicine.util.StringUtil.replaceAndHumanizeWithInitCapText;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import org.ei.telemedicine.Context;
+import org.ei.telemedicine.R;
+import org.ei.telemedicine.domain.ChildServiceType;
+
+public interface ChildSmartRegisterClient extends SmartRegisterClient {
+<span class="nc" id="L19">List&lt;String&gt; illnessAcronyms = new ArrayList&lt;String&gt;(</span>
+        Arrays.asList(Context.getInstance().getStringResource(R.string.str_child_illness_ari),
+                Context.getInstance().getStringResource(R.string.str_child_illness_sam)));
+
+    public static class ChildSickStatus {
+<span class="nc" id="L24">        public static ChildSickStatus noDiseaseStatus = new ChildSickStatus(null, null, null);</span>
+
+        private String diseases;
+        private String otherDiseases;
+        private String date;
+
+<span class="nc" id="L30">        public ChildSickStatus(String diseases, String otherDiseases, String date) {</span>
+<span class="nc" id="L31">            this.diseases = diseases;</span>
+<span class="nc" id="L32">            this.otherDiseases = otherDiseases;</span>
+<span class="nc" id="L33">            this.date = date;</span>
+<span class="nc" id="L34">        }</span>
+
+        public String diseases() {
+<span class="nc bnc" id="L37" title="All 2 branches missed.">            return getDiseasesCapitalizeIfAcronymsOrHumanize() + (isBlank(otherDiseases) ? &quot;&quot; : (&quot;, &quot; + replaceAndHumanizeWithInitCapText(otherDiseases, SPACE, COMMA_WITH_SPACE)));</span>
+        }
+
+        private String getDiseasesCapitalizeIfAcronymsOrHumanize() {
+<span class="nc bnc" id="L41" title="All 2 branches missed.">            return replaceAndHumanizeWithInitCapText(illnessAcronyms.contains(diseases) ? diseases.toUpperCase() : diseases, SPACE, COMMA_WITH_SPACE);</span>
+        }
+
+        public String date() {
+<span class="nc" id="L45">            return formatDate(date);</span>
+        }
+    }
+
+    public String gender();
+
+    public String weight();
+
+    public String thayiCardNumber();
+
+    public String motherEcNumber();
+
+    public String dateOfBirth();
+
+    public String fatherName();
+
+    public String motherName();
+
+    public String locationStatus();
+
+    public List&lt;ServiceProvidedDTO&gt; serviceProvided();
+
+    public ServiceProvidedDTO lastServiceProvided();
+
+    public ServiceProvidedDTO illnessVisitServiceProvided();
+
+    public ChildSickStatus sickStatus();
+
+    public boolean isBcgDone();
+
+    public boolean isOpvDone();
+
+    public boolean isHepBDone();
+
+    public boolean isPentavDone();
+
+    public String bcgDoneDate();
+
+    public String opvDoneDate();
+
+    public String hepBDoneDate();
+
+    public String pentavDoneDate();
+
+    public boolean isMeaslesDone();
+
+    public boolean isOpvBoosterDone();
+
+    public boolean isDptBoosterDone();
+
+    public boolean isVitaminADone();
+
+    public String measlesDoneDate();
+
+    public String opvBoosterDoneDate();
+
+    public String dptBoosterDoneDate();
+
+    public String vitaminADoneDate();
+
+    public List&lt;AlertDTO&gt; alerts();
+
+    public AlertDTO getAlert(ChildServiceType measles);
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.1.201405082137</span></div></body></html>

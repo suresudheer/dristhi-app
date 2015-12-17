@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>DrishtiService.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">org.ei.telemedicine.service</a> &gt; <span class="el_source">DrishtiService.java</span></div><h1>DrishtiService.java</h1><pre class="source lang-java linenums">package org.ei.telemedicine.service;
+
+import android.util.Log;
+
+import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
+import com.google.gson.reflect.TypeToken;
+
+import org.ei.telemedicine.domain.Response;
+import org.ei.telemedicine.dto.Action;
+
+import java.lang.reflect.Type;
+import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.ei.telemedicine.domain.ResponseStatus.failure;
+
+public class DrishtiService {
+<span class="fc" id="L20">    private HTTPAgent agent = null;</span>
+    private String drishtiBaseURL;
+
+<span class="fc" id="L23">    public DrishtiService(HTTPAgent agent, String drishtiBaseURL) {</span>
+<span class="fc" id="L24">        this.agent = agent;</span>
+<span class="fc" id="L25">        this.drishtiBaseURL = drishtiBaseURL;</span>
+<span class="fc" id="L26">    }</span>
+
+    public Response&lt;List&lt;Action&gt;&gt; fetchNewActions(String anmIdentifier, String previouslyFetchedIndex) {
+<span class="fc" id="L29">        String anmID = URLEncoder.encode(anmIdentifier);</span>
+<span class="fc" id="L30">        Response&lt;String&gt; response = agent.fetch(drishtiBaseURL + &quot;/actions?anmIdentifier=&quot; + anmID + &quot;&amp;timeStamp=&quot; + previouslyFetchedIndex);</span>
+
+<span class="fc" id="L32">        Type collectionType = new TypeToken&lt;List&lt;Action&gt;&gt;() {</span>
+        }.getType();
+        List&lt;Action&gt; actions;
+        try {
+
+<span class="fc" id="L37">            actions = new Gson().fromJson(response.payload(), collectionType);</span>
+<span class="fc" id="L38">        } catch (JsonSyntaxException e) {</span>
+<span class="fc" id="L39">            return new Response&lt;List&lt;Action&gt;&gt;(failure, new ArrayList&lt;Action&gt;());</span>
+<span class="fc" id="L40">        }</span>
+
+<span class="fc bfc" id="L42" title="All 2 branches covered.">        return new Response&lt;List&lt;Action&gt;&gt;(response.status(), actions == null ? new ArrayList&lt;Action&gt;() : actions);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.1.201405082137</span></div></body></html>

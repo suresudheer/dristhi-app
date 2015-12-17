@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="org.ei.telemedicine.test.view.contract.SmartRegisterClientsTest" tests="15" skipped="0" failures="0" errors="0" timestamp="2015-12-17T05:22:15" hostname="DIPL-PC0206" time="0.049">
+  <properties/>
+  <testcase name="ShouldReturnSortedResultsForHPSortOption" classname="org.ei.telemedicine.test.view.contract.SmartRegisterClientsTest" time="0.022"/>
+  <testcase name="ShouldReturn2ResultsFor_Half_Bherya_VillageFilterOption" classname="org.ei.telemedicine.test.view.contract.SmartRegisterClientsTest" time="0.002"/>
+  <testcase name="ShouldReturn1ResultsFor_Battiganahalli_VillageFilterOption" classname="org.ei.telemedicine.test.view.contract.SmartRegisterClientsTest" time="0.001"/>
+  <testcase name="ShouldReturn2ResultsFor_Hosa_agrahara_VillageFilterOption" classname="org.ei.telemedicine.test.view.contract.SmartRegisterClientsTest" time="0.0"/>
+  <testcase name="ShouldReturnFilteredResultsForSearchString" classname="org.ei.telemedicine.test.view.contract.SmartRegisterClientsTest" time="0.001"/>
+  <testcase name="ShouldReturnCascadedResultsApplyingMultipleFilterOption" classname="org.ei.telemedicine.test.view.contract.SmartRegisterClientsTest" time="0.001"/>
+  <testcase name="ShouldReturnSortedResultsForNameSortOption" classname="org.ei.telemedicine.test.view.contract.SmartRegisterClientsTest" time="0.001"/>
+  <testcase name="ShouldReturnSortedResultsForBPLSortOption" classname="org.ei.telemedicine.test.view.contract.SmartRegisterClientsTest" time="0.001"/>
+  <testcase name="ShouldReturn1ResultsForOutOfAreaFilterOption" classname="org.ei.telemedicine.test.view.contract.SmartRegisterClientsTest" time="0.001"/>
+  <testcase name="emptyStringSearchShouldReturnAllTheResults" classname="org.ei.telemedicine.test.view.contract.SmartRegisterClientsTest" time="0.001"/>
+  <testcase name="ShouldReturnSortedResultsForSTSortOption" classname="org.ei.telemedicine.test.view.contract.SmartRegisterClientsTest" time="0.002"/>
+  <testcase name="ShouldReturn1ResultsFor_Somanahalli_colony_VillageFilterOption" classname="org.ei.telemedicine.test.view.contract.SmartRegisterClientsTest" time="0.001"/>
+  <testcase name="ShouldReturnSortedResultsForECNumberSortOption" classname="org.ei.telemedicine.test.view.contract.SmartRegisterClientsTest" time="0.001"/>
+  <testcase name="ShouldReturnSortedResultsForSCSortOption" classname="org.ei.telemedicine.test.view.contract.SmartRegisterClientsTest" time="0.001"/>
+  <testcase name="ShouldReturnFilteredListForFP" classname="org.ei.telemedicine.test.view.contract.SmartRegisterClientsTest" time="0.003"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

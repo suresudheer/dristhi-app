@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="org.ei.telemedicine.test.view.controller.ReportIndicatorListViewControllerTest" tests="5" skipped="0" failures="0" errors="0" timestamp="2015-12-17T05:22:16" hostname="DIPL-PC0206" time="0.03">
+  <properties/>
+  <testcase name="shouldUseCurrentMonthDataForIndicatorReport" classname="org.ei.telemedicine.test.view.controller.ReportIndicatorListViewControllerTest" time="0.017"/>
+  <testcase name="shouldGetIndicatorReportsForGivenCategory" classname="org.ei.telemedicine.test.view.controller.ReportIndicatorListViewControllerTest" time="0.004"/>
+  <testcase name="shouldIgnoreThoseReportsWhichHaveEmptyMonthlySummary" classname="org.ei.telemedicine.test.view.controller.ReportIndicatorListViewControllerTest" time="0.002"/>
+  <testcase name="shouldUseLatestMonthDataIfCurrentMonthDataNotAvailable" classname="org.ei.telemedicine.test.view.controller.ReportIndicatorListViewControllerTest" time="0.002"/>
+  <testcase name="shouldShowNAIfAnnualTargetNotAvailable" classname="org.ei.telemedicine.test.view.controller.ReportIndicatorListViewControllerTest" time="0.002"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

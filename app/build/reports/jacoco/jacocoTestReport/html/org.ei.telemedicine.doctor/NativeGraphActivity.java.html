@@ -1,0 +1,274 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>NativeGraphActivity.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">org.ei.telemedicine.doctor</a> &gt; <span class="el_source">NativeGraphActivity.java</span></div><h1>NativeGraphActivity.java</h1><pre class="source lang-java linenums">package org.ei.telemedicine.doctor;
+
+import android.app.Activity;
+import android.graphics.Color;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+import android.widget.LinearLayout;
+import android.widget.Toast;
+
+import org.achartengine.ChartFactory;
+import org.achartengine.chart.PointStyle;
+import org.achartengine.model.XYMultipleSeriesDataset;
+import org.achartengine.model.XYSeries;
+import org.achartengine.renderer.XYMultipleSeriesRenderer;
+import org.achartengine.renderer.XYSeriesRenderer;
+import org.ei.telemedicine.AllConstants;
+import org.ei.telemedicine.R;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.mockito.internal.util.collections.ArrayUtils;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+
+import static org.ei.telemedicine.AllConstants.GraphFields.BLOODGLUCOSEDATA;
+import static org.ei.telemedicine.AllConstants.GraphFields.BP_DIA;
+import static org.ei.telemedicine.AllConstants.GraphFields.BP_SYS;
+import static org.ei.telemedicine.AllConstants.GraphFields.FETALDATA;
+import static org.ei.telemedicine.AllConstants.GraphFields.TEMPERATURE;
+import static org.ei.telemedicine.AllConstants.GraphFields.VISITNUMBER;
+import static org.ei.telemedicine.AllConstants.GraphFields.VISIT_DATE;
+
+<span class="nc" id="L35">public class NativeGraphActivity extends Activity {</span>
+
+    private View mChart;
+
+    String vitalsData, vitalType;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+<span class="nc" id="L43">        super.onCreate(savedInstanceState);</span>
+<span class="nc" id="L44">        setContentView(R.layout.graph);</span>
+<span class="nc" id="L45">        Bundle bundle = getIntent().getExtras();</span>
+<span class="nc bnc" id="L46" title="All 2 branches missed.">        if (bundle != null) {</span>
+<span class="nc" id="L47">            vitalsData = bundle.getString(AllConstants.VITALS_INFO_RESULT);</span>
+<span class="nc" id="L48">            vitalType = bundle.getString(AllConstants.VITAL_TYPE);</span>
+            try {
+<span class="nc bnc" id="L50" title="All 4 branches missed.">                if (vitalsData != null &amp;&amp; new JSONArray(vitalsData).length() != 0)</span>
+<span class="nc bnc" id="L51" title="All 2 branches missed.">                    if (vitalType.equals(AllConstants.GraphFields.BP))</span>
+<span class="nc" id="L52">                        bpChart(vitalsData);</span>
+                    else
+<span class="nc" id="L54">                        openChart(vitalsData, vitalType);</span>
+                else {
+<span class="nc" id="L56">                    Toast.makeText(this, &quot;No vital Data&quot;, Toast.LENGTH_SHORT).show();</span>
+<span class="nc" id="L57">                    this.finish();</span>
+                }
+
+<span class="nc" id="L60">            } catch (JSONException e) {</span>
+<span class="nc" id="L61">                e.printStackTrace();</span>
+<span class="nc" id="L62">            }</span>
+
+        }
+
+<span class="nc" id="L66">    }</span>
+
+    private void bpChart(String vitalsData) throws JSONException {
+
+<span class="nc" id="L70">        int[] x = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};</span>
+<span class="nc" id="L71">        ArrayList&lt;Integer&gt; datalist1 = new ArrayList&lt;Integer&gt;();</span>
+<span class="nc" id="L72">        ArrayList&lt;Integer&gt; datalist2 = new ArrayList&lt;Integer&gt;();</span>
+<span class="nc" id="L73">        ArrayList&lt;String&gt; datelist = new ArrayList&lt;String&gt;();</span>
+        int[] vitalReadings1, vitalReadings2;
+        String[] vitalDates;
+<span class="nc" id="L76">        JSONArray vitalsArray = new JSONArray(vitalsData);</span>
+<span class="nc bnc" id="L77" title="All 2 branches missed.">        for (int i = 0; i &lt; vitalsArray.length(); i++) {</span>
+<span class="nc" id="L78">            datalist1.add(getIntDatafromJson(vitalsArray.getJSONObject(i).toString(), BP_SYS));</span>
+<span class="nc" id="L79">            datalist2.add(getIntDatafromJson(vitalsArray.getJSONObject(i).toString(), BP_DIA));</span>
+<span class="nc bnc" id="L80" title="All 2 branches missed.">            datelist.add(getStringDatafromJson(vitalsArray.getJSONObject(i).toString(), VISIT_DATE) + &quot;\n&quot; + (!getStringDatafromJson(vitalsArray.getJSONObject(i).toString(), VISITNUMBER).equals(&quot;&quot;) ? &quot;ANC- &quot; + getStringDatafromJson(vitalsArray.getJSONObject(i).toString(), VISITNUMBER) : &quot;&quot;));</span>
+        }
+<span class="nc" id="L82">        vitalReadings1 = new int[datalist1.size()];</span>
+<span class="nc" id="L83">        vitalReadings2 = new int[datalist2.size()];</span>
+<span class="nc" id="L84">        vitalDates = new String[datelist.size()];</span>
+<span class="nc bnc" id="L85" title="All 2 branches missed.">        for (int i = 0; i &lt; datalist1.size(); i++) {</span>
+<span class="nc" id="L86">            vitalReadings1[i] = datalist1.get(i).intValue();</span>
+<span class="nc" id="L87">            vitalDates[i] = datelist.get(i).toString();</span>
+        }
+<span class="nc bnc" id="L89" title="All 2 branches missed.">        for (int i = 0; i &lt; datalist2.size(); i++) {</span>
+<span class="nc" id="L90">            vitalReadings2[i] = datalist2.get(i).intValue();</span>
+<span class="nc" id="L91">            vitalDates[i] = datelist.get(i).toString();</span>
+        }
+<span class="nc" id="L93">        XYSeries vitalData = new XYSeries(BP_SYS);</span>
+<span class="nc bnc" id="L94" title="All 2 branches missed.">        for (int i = 0; i &lt; vitalReadings1.length; i++) {</span>
+<span class="nc" id="L95">            vitalData.add(i, vitalReadings1[i]);</span>
+        }
+<span class="nc" id="L97">        XYSeries vitalData2 = new XYSeries(BP_DIA);</span>
+<span class="nc bnc" id="L98" title="All 2 branches missed.">        for (int i = 0; i &lt; vitalReadings2.length; i++) {</span>
+<span class="nc" id="L99">            vitalData2.add(i, vitalReadings2[i]);</span>
+        }
+<span class="nc" id="L101">        XYMultipleSeriesDataset dataset = new XYMultipleSeriesDataset();</span>
+<span class="nc" id="L102">        dataset.addSeries(vitalData);</span>
+<span class="nc" id="L103">        dataset.addSeries(vitalData2);</span>
+
+        // Creating XYSeriesRenderer to customize vitalData
+<span class="nc" id="L106">        XYSeriesRenderer dataRenderer = new XYSeriesRenderer();</span>
+<span class="nc" id="L107">        dataRenderer.setColor(Color.RED);</span>
+<span class="nc" id="L108">        dataRenderer.setPointStyle(PointStyle.CIRCLE);</span>
+<span class="nc" id="L109">        dataRenderer.setFillPoints(true);</span>
+<span class="nc" id="L110">        dataRenderer.setLineWidth(3);</span>
+<span class="nc" id="L111">        dataRenderer.setDisplayChartValues(true);</span>
+<span class="nc" id="L112">        dataRenderer.setDisplayBoundingPoints(true);</span>
+<span class="nc" id="L113">        dataRenderer.setHighlighted(true);</span>
+
+<span class="nc" id="L115">        XYSeriesRenderer dataRenderer2 = new XYSeriesRenderer();</span>
+<span class="nc" id="L116">        dataRenderer2.setColor(Color.BLUE);</span>
+<span class="nc" id="L117">        dataRenderer2.setPointStyle(PointStyle.SQUARE);</span>
+<span class="nc" id="L118">        dataRenderer2.setFillPoints(true);</span>
+<span class="nc" id="L119">        dataRenderer2.setLineWidth(3);</span>
+<span class="nc" id="L120">        dataRenderer2.setDisplayChartValues(true);</span>
+<span class="nc" id="L121">        dataRenderer2.setDisplayBoundingPoints(true);</span>
+<span class="nc" id="L122">        dataRenderer2.setHighlighted(true);</span>
+
+        // Creating a XYMultipleSeriesRenderer to customize the whole chart
+<span class="nc" id="L125">        XYMultipleSeriesRenderer multiRenderer = new XYMultipleSeriesRenderer();</span>
+<span class="nc" id="L126">        multiRenderer.setXLabels(0);</span>
+<span class="nc" id="L127">        multiRenderer.setChartTitle(&quot;Vital Readings&quot;);</span>
+<span class="nc" id="L128">        multiRenderer.setXTitle(&quot;Visit Date&quot;);</span>
+<span class="nc" id="L129">        multiRenderer.setYTitle(&quot;Readings&quot;);</span>
+<span class="nc" id="L130">        multiRenderer.setZoomButtonsVisible(false);</span>
+<span class="nc" id="L131">        multiRenderer.setAxisTitleTextSize(20);</span>
+
+<span class="nc" id="L133">        multiRenderer.setXLabelsColor(Color.parseColor(&quot;#ff0099cc&quot;));</span>
+<span class="nc" id="L134">        multiRenderer.setXLabelsPadding(5);</span>
+<span class="nc bnc" id="L135" title="All 2 branches missed.">        for (int i = 0; i &lt; vitalDates.length; i++) {</span>
+<span class="nc" id="L136">            multiRenderer.addXTextLabel(i, vitalDates[i]);</span>
+        }
+
+<span class="nc" id="L139">        multiRenderer.addSeriesRenderer(dataRenderer);</span>
+<span class="nc" id="L140">        multiRenderer.addSeriesRenderer(dataRenderer2);</span>
+
+<span class="nc" id="L142">        LinearLayout chartContainer = (LinearLayout) findViewById(R.id.chart_container);</span>
+<span class="nc" id="L143">        mChart = ChartFactory.getLineChartView(getBaseContext(), dataset, multiRenderer);</span>
+<span class="nc" id="L144">        chartContainer.addView(mChart);</span>
+<span class="nc" id="L145">    }</span>
+
+    private void openChart(String vitalsData, String vitalType) throws JSONException {
+
+<span class="nc" id="L149">        ArrayList&lt;Double&gt; datalist = new ArrayList&lt;Double&gt;();</span>
+<span class="nc" id="L150">        ArrayList&lt;String&gt; datelist = new ArrayList&lt;String&gt;();</span>
+        int[] vitalReadings;
+        String[] vitalDates;
+<span class="nc" id="L153">        JSONArray vitalsArray = new JSONArray(vitalsData);</span>
+<span class="nc bnc" id="L154" title="All 2 branches missed.">        for (int i = 0; i &lt; vitalsArray.length(); i++) {</span>
+<span class="nc bnc" id="L155" title="All 14 branches missed.">            switch (vitalType) {</span>
+                case TEMPERATURE:
+<span class="nc" id="L157">                    datalist.add(Double.parseDouble(getStrDatafromJson(vitalsArray.getJSONObject(i).toString(), TEMPERATURE)));</span>
+<span class="nc bnc" id="L158" title="All 2 branches missed.">                    datelist.add(getStringDatafromJson(vitalsArray.getJSONObject(i).toString(), VISIT_DATE) + &quot;\n&quot; + (!getStringDatafromJson(vitalsArray.getJSONObject(i).toString(), VISITNUMBER).equals(&quot;&quot;) ? &quot;ANC- &quot; + getStringDatafromJson(vitalsArray.getJSONObject(i).toString(), VISITNUMBER) : &quot;&quot;));</span>
+<span class="nc" id="L159">                    break;</span>
+                case BLOODGLUCOSEDATA:
+<span class="nc" id="L161">                    datalist.add(getDatafromJson(vitalsArray.getJSONObject(i).toString(), BLOODGLUCOSEDATA));</span>
+<span class="nc bnc" id="L162" title="All 2 branches missed.">                    datelist.add(getStringDatafromJson(vitalsArray.getJSONObject(i).toString(), VISIT_DATE) + &quot;\n&quot; + (!getStringDatafromJson(vitalsArray.getJSONObject(i).toString(), VISITNUMBER).equals(&quot;&quot;) ? &quot;ANC- &quot; + getStringDatafromJson(vitalsArray.getJSONObject(i).toString(), VISITNUMBER) : &quot;&quot;));</span>
+<span class="nc" id="L163">                    break;</span>
+                case FETALDATA:
+<span class="nc" id="L165">                    datalist.add(getDatafromJson(vitalsArray.getJSONObject(i).toString(), FETALDATA));</span>
+<span class="nc bnc" id="L166" title="All 2 branches missed.">                    datelist.add(getStringDatafromJson(vitalsArray.getJSONObject(i).toString(), VISIT_DATE) + &quot;\n&quot; + (!getStringDatafromJson(vitalsArray.getJSONObject(i).toString(), VISITNUMBER).equals(&quot;&quot;) ? &quot;ANC- &quot; + getStringDatafromJson(vitalsArray.getJSONObject(i).toString(), VISITNUMBER) : &quot;&quot;));</span>
+                    break;
+            }
+        }
+<span class="nc" id="L170">        vitalReadings = new int[datalist.size()];</span>
+
+<span class="nc" id="L172">        vitalDates = new String[datelist.size()];</span>
+<span class="nc bnc" id="L173" title="All 2 branches missed.">        for (int i = 0; i &lt; datalist.size(); i++) {</span>
+<span class="nc" id="L174">            vitalReadings[i] = datalist.get(i).intValue();</span>
+<span class="nc" id="L175">            vitalDates[i] = datelist.get(i).toString();</span>
+        }
+
+<span class="nc" id="L178">        XYSeries vitalData = new XYSeries(vitalType);</span>
+<span class="nc bnc" id="L179" title="All 2 branches missed.">        for (int i = 0; i &lt; vitalReadings.length; i++) {</span>
+<span class="nc" id="L180">            vitalData.add(i, vitalReadings[i]);</span>
+        }
+
+<span class="nc" id="L183">        XYMultipleSeriesDataset dataset = new XYMultipleSeriesDataset();</span>
+<span class="nc" id="L184">        dataset.addSeries(vitalData);</span>
+
+        // Creating XYSeriesRenderer to customize vitalData
+<span class="nc" id="L187">        XYSeriesRenderer dataRenderer = new XYSeriesRenderer();</span>
+<span class="nc" id="L188">        dataRenderer.setColor(Color.RED);</span>
+<span class="nc" id="L189">        dataRenderer.setPointStyle(PointStyle.CIRCLE);</span>
+<span class="nc" id="L190">        dataRenderer.setFillPoints(true);</span>
+<span class="nc" id="L191">        dataRenderer.setLineWidth(3);</span>
+<span class="nc" id="L192">        dataRenderer.setDisplayChartValues(true);</span>
+<span class="nc" id="L193">        dataRenderer.setDisplayBoundingPoints(true);</span>
+<span class="nc" id="L194">        dataRenderer.setHighlighted(true);</span>
+
+
+        // Creating a XYMultipleSeriesRenderer to customize the whole chart
+<span class="nc" id="L198">        XYMultipleSeriesRenderer multiRenderer = new XYMultipleSeriesRenderer();</span>
+<span class="nc" id="L199">        multiRenderer.setXLabels(0);</span>
+<span class="nc" id="L200">        multiRenderer.setChartTitle(&quot;Vital Readings&quot;);</span>
+<span class="nc" id="L201">        multiRenderer.setXTitle(&quot;Visit Date&quot;);</span>
+<span class="nc" id="L202">        multiRenderer.setYTitle(&quot;Readings&quot;);</span>
+<span class="nc" id="L203">        multiRenderer.setZoomButtonsVisible(false);</span>
+
+
+<span class="nc" id="L206">        multiRenderer.setXLabelsColor(Color.parseColor(&quot;#ff0099cc&quot;));</span>
+<span class="nc" id="L207">        multiRenderer.setXLabelsPadding(5);</span>
+<span class="nc bnc" id="L208" title="All 2 branches missed.">        for (int i = 0; i &lt; vitalDates.length; i++) {</span>
+<span class="nc" id="L209">            multiRenderer.addXTextLabel(i, vitalDates[i]);</span>
+        }
+<span class="nc" id="L211">        multiRenderer.addSeriesRenderer(dataRenderer);</span>
+
+
+<span class="nc" id="L214">        LinearLayout chartContainer = (LinearLayout) findViewById(R.id.chart_container);</span>
+<span class="nc" id="L215">        mChart = ChartFactory.getLineChartView(getBaseContext(), dataset, multiRenderer);</span>
+<span class="nc" id="L216">        chartContainer.addView(mChart);</span>
+<span class="nc" id="L217">    }</span>
+
+    public String getStringDatafromJson(String jsonStr, String key) {
+<span class="nc bnc" id="L220" title="All 2 branches missed.">        if (jsonStr != null) {</span>
+            try {
+<span class="nc" id="L222">                JSONObject jsonData = new JSONObject(jsonStr);</span>
+<span class="nc bnc" id="L223" title="All 2 branches missed.">                return jsonData.has(key) ? jsonData.getString(key) : &quot;&quot;;</span>
+<span class="nc" id="L224">            } catch (JSONException e) {</span>
+<span class="nc" id="L225">                e.printStackTrace();</span>
+            }
+        }
+<span class="nc" id="L228">        return &quot;&quot;;</span>
+    }
+
+    public int getIntDatafromJson(String jsonStr, String key) {
+<span class="nc bnc" id="L232" title="All 2 branches missed.">        if (jsonStr != null) {</span>
+            try {
+<span class="nc" id="L234">                JSONObject jsonData = new JSONObject(jsonStr);</span>
+<span class="nc bnc" id="L235" title="All 2 branches missed.">                return jsonData.has(key) ? jsonData.getInt(key) : 0;</span>
+<span class="nc" id="L236">            } catch (JSONException e) {</span>
+<span class="nc" id="L237">                e.printStackTrace();</span>
+            }
+        }
+<span class="nc" id="L240">        return 0;</span>
+    }
+
+    public double getDatafromJson(String jsonStr, String key) {
+<span class="nc bnc" id="L244" title="All 2 branches missed.">        if (jsonStr != null) {</span>
+            try {
+<span class="nc" id="L246">                JSONObject jsonData = new JSONObject(jsonStr);</span>
+<span class="nc bnc" id="L247" title="All 2 branches missed.">                return jsonData.has(key) ? jsonData.getDouble(key) : 0;</span>
+<span class="nc" id="L248">            } catch (JSONException e) {</span>
+<span class="nc" id="L249">                Log.e(&quot;Ersrot&quot;, e.toString());</span>
+<span class="nc" id="L250">                e.printStackTrace();</span>
+            }
+        }
+<span class="nc" id="L253">        return 0;</span>
+    }
+
+    public String getStrDatafromJson(String jsonStr, String key) {
+<span class="nc bnc" id="L257" title="All 2 branches missed.">        if (jsonStr != null) {</span>
+            try {
+<span class="nc" id="L259">                JSONObject jsonData = new JSONObject(jsonStr);</span>
+<span class="nc" id="L260">                String tempVal = &quot;0&quot;;</span>
+<span class="nc bnc" id="L261" title="All 4 branches missed.">                if (jsonData.has(key) &amp;&amp; jsonData.getString(key).contains(&quot;-&quot;)) {</span>
+<span class="nc" id="L262">                    String[] temp = jsonData.getString(key).split(&quot;-&quot;);</span>
+<span class="nc" id="L263">                    tempVal = temp[0];</span>
+                }
+<span class="nc" id="L265">                return tempVal;</span>
+<span class="nc" id="L266">            } catch (JSONException e) {</span>
+<span class="nc" id="L267">                Log.e(&quot;Ersrot&quot;, e.toString());</span>
+<span class="nc" id="L268">                e.printStackTrace();</span>
+            }
+        }
+<span class="nc" id="L271">        return &quot;0&quot;;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.1.201405082137</span></div></body></html>

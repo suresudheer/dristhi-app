@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>EligibleCouple.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">org.ei.telemedicine.domain</a> &gt; <span class="el_source">EligibleCouple.java</span></div><h1>EligibleCouple.java</h1><pre class="source lang-java linenums">package org.ei.telemedicine.domain;
+
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Map;
+
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
+import static org.ei.telemedicine.AllConstants.ECRegistrationFields.*;
+import static org.ei.telemedicine.AllConstants.BOOLEAN_TRUE;
+import static org.ei.telemedicine.AllConstants.SPACE;
+
+public class EligibleCouple {
+    private String caseId;
+    private String wifeName;
+    private String husbandName;
+    private String ecNumber;
+    private final String village;
+    private final String subcenter;
+    private Map&lt;String, String&gt; details;
+    private Boolean isOutOfArea;
+    private Boolean isClosed;
+    private String photoPath;
+
+<span class="fc" id="L29">    public EligibleCouple(String caseId, String wifeName, String husbandName, String ecNumber, String village, String subcenter, Map&lt;String, String&gt; details) {</span>
+<span class="fc" id="L30">        this.caseId = caseId;</span>
+<span class="fc" id="L31">        this.wifeName = wifeName;</span>
+<span class="fc" id="L32">        this.husbandName = husbandName;</span>
+<span class="fc" id="L33">        this.ecNumber = ecNumber;</span>
+<span class="fc" id="L34">        this.village = village;</span>
+<span class="fc" id="L35">        this.subcenter = subcenter;</span>
+<span class="fc" id="L36">        this.details = details;</span>
+<span class="fc" id="L37">        this.isOutOfArea = false;</span>
+<span class="fc" id="L38">        this.isClosed = false;</span>
+<span class="fc" id="L39">        this.photoPath = null;</span>
+<span class="fc" id="L40">    }</span>
+
+    public EligibleCouple asOutOfArea() {
+<span class="fc" id="L43">        this.isOutOfArea = true;</span>
+<span class="fc" id="L44">        return this;</span>
+    }
+
+    public EligibleCouple withPhotoPath(String photoPath) {
+<span class="fc" id="L48">        this.photoPath = photoPath;</span>
+<span class="fc" id="L49">        return this;</span>
+    }
+
+    public EligibleCouple withOutOfArea(String outOfArea) {
+<span class="nc bnc" id="L53" title="All 2 branches missed.">        if (Boolean.parseBoolean(outOfArea)) {</span>
+<span class="nc" id="L54">            isOutOfArea = true;</span>
+        }
+<span class="nc" id="L56">        return this;</span>
+    }
+
+    public String wifeName() {
+<span class="fc" id="L60">        return wifeName;</span>
+    }
+
+    public String husbandName() {
+<span class="fc" id="L64">        return husbandName;</span>
+    }
+
+    public String ecNumber() {
+<span class="fc" id="L68">        return ecNumber;</span>
+    }
+
+    public String caseId() {
+<span class="fc" id="L72">        return caseId;</span>
+    }
+
+    public String village() {
+<span class="fc" id="L76">        return village;</span>
+    }
+
+    public String subCenter() {
+<span class="fc" id="L80">        return subcenter;</span>
+    }
+
+    public boolean isOutOfArea() {
+<span class="fc" id="L84">        return isOutOfArea;</span>
+    }
+
+    public boolean isHighPriority() {
+<span class="fc" id="L88">        return parseDetailFieldValueToBoolean(IS_HIGH_PRIORITY);</span>
+    }
+
+    public String highPriorityReason() {
+<span class="nc bnc" id="L92" title="All 2 branches missed.">        String highRiskReason = details.get(HIGH_PRIORITY_REASON) == null ? &quot;&quot; : details.get(HIGH_PRIORITY_REASON);</span>
+<span class="nc" id="L93">        return StringUtils.join(new HashSet&lt;String&gt;(Arrays.asList(highRiskReason.split(SPACE))).toArray(), SPACE);</span>
+    }
+
+    public boolean isYoungestChildUnderTwo() {
+<span class="fc" id="L97">        return parseDetailFieldValueToBoolean(&quot;isYoungestChildUnderTwo&quot;);</span>
+    }
+
+    private boolean parseDetailFieldValueToBoolean(String fieldName) {
+<span class="fc" id="L101">        String isHighPriority = details.get(fieldName);</span>
+<span class="fc bfc" id="L102" title="All 4 branches covered.">        return &quot;1&quot;.equals(isHighPriority) || BOOLEAN_TRUE.equals(isHighPriority);</span>
+    }
+
+    public Map&lt;String, String&gt; details() {
+<span class="fc" id="L106">        return details;</span>
+    }
+
+    public boolean isClosed() {
+<span class="nc" id="L110">        return isClosed;</span>
+    }
+
+    public String photoPath() {
+<span class="fc" id="L114">        return photoPath;</span>
+    }
+
+    public EligibleCouple setIsClosed(boolean isClosed) {
+<span class="nc" id="L118">        this.isClosed = isClosed;</span>
+<span class="nc" id="L119">        return this;</span>
+    }
+
+    public String getDetail(String name) {
+<span class="fc" id="L123">        return details.get(name);</span>
+    }
+
+    public String age() {
+        //TODO: Calculate age from DOB
+<span class="fc" id="L128">        return details.get(&quot;wifeAge&quot;);</span>
+    }
+
+    public boolean hasFPMethod() {
+<span class="fc" id="L132">        String fpMethod = getDetail(CURRENT_FP_METHOD);</span>
+<span class="fc bfc" id="L133" title="All 4 branches covered.">        return isNotBlank(fpMethod) &amp;&amp; !&quot;none&quot;.equalsIgnoreCase(fpMethod);</span>
+    }
+
+    @Override
+    public boolean equals(Object o) {
+<span class="nc" id="L138">        return EqualsBuilder.reflectionEquals(this, o);</span>
+    }
+
+    @Override
+    public int hashCode() {
+<span class="nc" id="L143">        return HashCodeBuilder.reflectionHashCode(this);</span>
+    }
+
+    @Override
+    public String toString() {
+<span class="nc" id="L148">        return ToStringBuilder.reflectionToString(this);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.1.201405082137</span></div></body></html>

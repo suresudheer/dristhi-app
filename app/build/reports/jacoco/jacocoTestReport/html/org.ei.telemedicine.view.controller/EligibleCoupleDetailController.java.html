@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>EligibleCoupleDetailController.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">org.ei.telemedicine.view.controller</a> &gt; <span class="el_source">EligibleCoupleDetailController.java</span></div><h1>EligibleCoupleDetailController.java</h1><pre class="source lang-java linenums">package org.ei.telemedicine.view.controller;
+
+import android.content.Context;
+import android.content.Intent;
+
+import com.google.gson.Gson;
+
+import org.ei.telemedicine.AllConstants;
+import org.ei.telemedicine.domain.EligibleCouple;
+import org.ei.telemedicine.repository.AllEligibleCouples;
+import org.ei.telemedicine.repository.AllTimelineEvents;
+import org.ei.telemedicine.util.TimelineEventComparator;
+import org.ei.telemedicine.view.activity.CameraLaunchActivity;
+import org.ei.telemedicine.view.contract.Child;
+import org.ei.telemedicine.view.contract.CoupleDetails;
+import org.ei.telemedicine.view.contract.ECDetail;
+import org.ei.telemedicine.view.contract.TimelineEvent;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+import static org.ei.telemedicine.AllConstants.ENTITY_ID;
+import static org.ei.telemedicine.AllConstants.WOMAN_TYPE;
+
+public class EligibleCoupleDetailController {
+    private final Context context;
+    private String caseId;
+    private final AllEligibleCouples allEligibleCouples;
+    private final AllTimelineEvents allTimelineEvents;
+
+    public EligibleCoupleDetailController(Context context, String caseId, AllEligibleCouples allEligibleCouples,
+<span class="fc" id="L35">                                          AllTimelineEvents allTimelineEvents) {</span>
+<span class="fc" id="L36">        this.context = context;</span>
+<span class="fc" id="L37">        this.caseId = caseId;</span>
+<span class="fc" id="L38">        this.allEligibleCouples = allEligibleCouples;</span>
+<span class="fc" id="L39">        this.allTimelineEvents = allTimelineEvents;</span>
+<span class="fc" id="L40">    }</span>
+
+    public String get() {
+<span class="fc" id="L43">        EligibleCouple eligibleCouple = allEligibleCouples.findByCaseID(caseId);</span>
+
+<span class="fc" id="L45">        ECDetail ecContext = new ECDetail(caseId, eligibleCouple.village(), eligibleCouple.subCenter(), eligibleCouple.ecNumber(),</span>
+                eligibleCouple.isHighPriority(), null, eligibleCouple.photoPath(), new ArrayList&lt;Child&gt;(), new CoupleDetails(eligibleCouple.wifeName(),
+                eligibleCouple.husbandName(), eligibleCouple.ecNumber(), eligibleCouple.isOutOfArea()),
+                eligibleCouple.details()).
+                addTimelineEvents(getEvents());
+
+<span class="fc" id="L51">        return new Gson().toJson(ecContext);</span>
+    }
+
+    public void takePhoto() {
+<span class="nc" id="L55">        Intent intent = new Intent(context, CameraLaunchActivity.class);</span>
+<span class="nc" id="L56">        intent.putExtra(AllConstants.TYPE, WOMAN_TYPE);</span>
+<span class="nc" id="L57">        intent.putExtra(ENTITY_ID, caseId);</span>
+<span class="nc" id="L58">        context.startActivity(intent);</span>
+<span class="nc" id="L59">    }</span>
+
+    private List&lt;TimelineEvent&gt; getEvents() {
+<span class="fc" id="L62">        List&lt;org.ei.telemedicine.domain.TimelineEvent&gt; events = allTimelineEvents.forCase(caseId);</span>
+<span class="fc" id="L63">        List&lt;TimelineEvent&gt; timelineEvents = new ArrayList&lt;TimelineEvent&gt;();</span>
+<span class="fc" id="L64">        Collections.sort(events, new TimelineEventComparator());</span>
+
+<span class="fc bfc" id="L66" title="All 2 branches covered.">        for (org.ei.telemedicine.domain.TimelineEvent event : events) {</span>
+<span class="fc" id="L67">            DateTimeFormatter dateTimeFormatter = DateTimeFormat.forPattern(&quot;dd-MM-YYYY&quot;);</span>
+<span class="fc" id="L68">            timelineEvents.add(new TimelineEvent(event.type(), event.title(), new String[]{event.detail1(), event.detail2()}, event.referenceDate().toString(dateTimeFormatter)));</span>
+<span class="fc" id="L69">        }</span>
+
+<span class="fc" id="L71">        return timelineEvents;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.1.201405082137</span></div></body></html>

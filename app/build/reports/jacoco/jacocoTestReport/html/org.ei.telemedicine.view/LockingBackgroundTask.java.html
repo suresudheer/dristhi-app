@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>LockingBackgroundTask.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">org.ei.telemedicine.view</a> &gt; <span class="el_source">LockingBackgroundTask.java</span></div><h1>LockingBackgroundTask.java</h1><pre class="source lang-java linenums">package org.ei.telemedicine.view;
+
+import android.os.AsyncTask;
+
+import java.util.concurrent.locks.ReentrantLock;
+
+import static org.ei.telemedicine.util.Log.logVerbose;
+
+public class LockingBackgroundTask {
+    private ProgressIndicator indicator;
+<span class="nc" id="L11">    private static final ReentrantLock lock = new ReentrantLock();</span>
+
+<span class="nc" id="L13">    public LockingBackgroundTask(ProgressIndicator progressIndicator) {</span>
+<span class="nc" id="L14">        this.indicator = progressIndicator;</span>
+<span class="nc" id="L15">    }</span>
+
+    public &lt;T&gt; void doActionInBackground(final BackgroundAction&lt;T&gt; backgroundAction) {
+<span class="nc" id="L18">        new AsyncTask&lt;Void, Void, T&gt;() {</span>
+            @Override
+            protected T doInBackground(Void... params) {
+<span class="nc bnc" id="L21" title="All 2 branches missed.">                if (!lock.tryLock()) {</span>
+<span class="nc" id="L22">                    logVerbose(&quot;Going away. Something else is holding the lock.&quot;);</span>
+<span class="nc" id="L23">                    cancel(true);</span>
+<span class="nc" id="L24">                    return null;</span>
+                }
+                try {
+<span class="nc" id="L27">                    publishProgress();</span>
+<span class="nc" id="L28">                    return backgroundAction.actionToDoInBackgroundThread();</span>
+                } finally {
+<span class="nc" id="L30">                    lock.unlock();</span>
+                }
+            }
+
+            @Override
+            protected void onProgressUpdate(Void... values) {
+<span class="nc" id="L36">                super.onProgressUpdate(values);</span>
+<span class="nc" id="L37">                indicator.setVisible();</span>
+<span class="nc" id="L38">            }</span>
+
+            @Override
+            protected void onPostExecute(T result) {
+<span class="nc" id="L42">                backgroundAction.postExecuteInUIThread(result);</span>
+<span class="nc" id="L43">                indicator.setInvisible();</span>
+<span class="nc" id="L44">            }</span>
+        }.execute((Void) null);
+<span class="nc" id="L46">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.1.201405082137</span></div></body></html>

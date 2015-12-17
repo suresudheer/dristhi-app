@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>DeliveryInfoView.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">org.ei.telemedicine.view.customControls</a> &gt; <span class="el_source">DeliveryInfoView.java</span></div><h1>DeliveryInfoView.java</h1><pre class="source lang-java linenums">package org.ei.telemedicine.view.customControls;
+
+import org.ei.telemedicine.R;
+import org.ei.telemedicine.view.contract.pnc.PNCSmartRegisterClient;
+
+import android.content.Context;
+import android.util.AttributeSet;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+
+public class DeliveryInfoView extends LinearLayout {
+    private TextView txtDeliveryDateView;
+    private TextView txtDeliveryPlaceView;
+    private TextView txtDeliveryTypeView;
+
+    @SuppressWarnings(&quot;UnusedDeclaration&quot;)
+    public DeliveryInfoView(Context context) {
+<span class="nc" id="L18">        this(context, null, 0);</span>
+<span class="nc" id="L19">    }</span>
+
+    @SuppressWarnings(&quot;UnusedDeclaration&quot;)
+    public DeliveryInfoView(Context context, AttributeSet attrs) {
+<span class="nc" id="L23">        this(context, attrs, 0);</span>
+<span class="nc" id="L24">    }</span>
+
+    public DeliveryInfoView(Context context, AttributeSet attrs, int defStyle) {
+<span class="nc" id="L27">        super(context, attrs, defStyle);</span>
+<span class="nc" id="L28">    }</span>
+
+    public void initialize() {
+<span class="nc" id="L31">        txtDeliveryDateView = (TextView) findViewById(R.id.txt_delivery_date);</span>
+<span class="nc" id="L32">        txtDeliveryPlaceView = (TextView) findViewById(R.id.txt_delivery_place);</span>
+<span class="nc" id="L33">        txtDeliveryTypeView = (TextView) findViewById(R.id.txt_delivery_type);</span>
+<span class="nc" id="L34">    }</span>
+
+    // #TODO: make these names generic, so this layout can be reused in all the registers
+    public void bindData(PNCSmartRegisterClient client) {
+<span class="nc" id="L38">        txtDeliveryDateView.setText(client.deliveryDateForDisplay());</span>
+<span class="nc" id="L39">        txtDeliveryPlaceView.setText(client.deliveryPlace());</span>
+<span class="nc" id="L40">        txtDeliveryTypeView.setText(client.deliveryType());</span>
+<span class="nc" id="L41">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.1.201405082137</span></div></body></html>

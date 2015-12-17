@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>ANCSmartRegisterController.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">org.ei.telemedicine.view.controller</a> &gt; <span class="el_source">ANCSmartRegisterController.java</span></div><h1>ANCSmartRegisterController.java</h1><pre class="source lang-java linenums">package org.ei.telemedicine.view.controller;
+
+import org.apache.commons.lang3.tuple.Pair;
+import org.ei.telemedicine.AllConstants;
+import org.ei.telemedicine.domain.Alert;
+import org.ei.telemedicine.domain.EligibleCouple;
+import org.ei.telemedicine.domain.Mother;
+import org.ei.telemedicine.domain.ServiceProvided;
+import org.ei.telemedicine.repository.AllBeneficiaries;
+import org.ei.telemedicine.service.AlertService;
+import org.ei.telemedicine.service.ServiceProvidedService;
+import org.ei.telemedicine.util.Cache;
+import org.ei.telemedicine.util.CacheableData;
+import org.ei.telemedicine.view.contract.*;
+
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+
+import static java.lang.String.valueOf;
+import static java.util.Collections.sort;
+import static org.apache.commons.lang3.StringUtils.isBlank;
+import static org.ei.telemedicine.AllConstants.DEFAULT_WOMAN_IMAGE_PLACEHOLDER_PATH;
+import static org.ei.telemedicine.domain.ServiceProvided.*;
+
+public class ANCSmartRegisterController {
+    private static final String ANC_1_ALERT_NAME = &quot;ANC 1&quot;;
+    private static final String ANC_2_ALERT_NAME = &quot;ANC 2&quot;;
+    private static final String ANC_3_ALERT_NAME = &quot;ANC 3&quot;;
+    private static final String ANC_4_ALERT_NAME = &quot;ANC 4&quot;;
+    private static final String IFA_1_ALERT_NAME = &quot;IFA 1&quot;;
+    private static final String IFA_2_ALERT_NAME = &quot;IFA 2&quot;;
+    private static final String IFA_3_ALERT_NAME = &quot;IFA 3&quot;;
+    private static final String LAB_REMINDER_ALERT_NAME = &quot;REMINDER&quot;;
+    private static final String TT_1_ALERT_NAME = &quot;TT 1&quot;;
+    private static final String TT_2_ALERT_NAME = &quot;TT 2&quot;;
+    private static final String HB_TEST_1_ALERT_NAME = &quot;Hb Test 1&quot;;
+    private static final String HB_TEST_2_ALERT_NAME = &quot;Hb Test 2&quot;;
+    private static final String HB_FOLLOWUP_TEST_ALERT_NAME = &quot;Hb Followup Test&quot;;
+    private static final String DELIVERY_PLAN_ALERT_NAME = &quot;Delivery Plan&quot;;
+
+    private static final String ANC_CLIENTS_LIST = &quot;ANCClientList&quot;;
+    private AllBeneficiaries allBeneficiaries;
+    private AlertService alertService;
+    private Cache&lt;String&gt; cache;
+    private Cache&lt;ANCClients&gt; ancClientsCache;
+    private final ServiceProvidedService serviceProvidedService;
+
+    public ANCSmartRegisterController(ServiceProvidedService serviceProvidedService, AlertService alertService,
+                                      AllBeneficiaries allBeneficiaries,
+<span class="fc" id="L51">                                      Cache&lt;String&gt; cache, Cache&lt;ANCClients&gt; ancClientsCache) {</span>
+<span class="fc" id="L52">        this.allBeneficiaries = allBeneficiaries;</span>
+<span class="fc" id="L53">        this.alertService = alertService;</span>
+<span class="fc" id="L54">        this.serviceProvidedService = serviceProvidedService;</span>
+<span class="fc" id="L55">        this.cache = cache;</span>
+<span class="fc" id="L56">        this.ancClientsCache = ancClientsCache;</span>
+<span class="fc" id="L57">    }</span>
+
+
+    private List&lt;ServiceProvidedDTO&gt; getServicesProvided(String entityId) {
+<span class="fc" id="L61">        List&lt;ServiceProvided&gt; servicesProvided = serviceProvidedService.findByEntityIdAndServiceNames(entityId,</span>
+                IFA_SERVICE_PROVIDED_NAME,
+                TT_1_SERVICE_PROVIDED_NAME,
+                TT_2_SERVICE_PROVIDED_NAME,
+                TT_BOOSTER_SERVICE_PROVIDED_NAME,
+                HB_TEST_SERVICE_PROVIDED_NAME,
+                ANC_1_SERVICE_PROVIDED_NAME,
+                ANC_2_SERVICE_PROVIDED_NAME,
+                ANC_3_SERVICE_PROVIDED_NAME,
+                ANC_4_SERVICE_PROVIDED_NAME,
+                DELIVERY_PLAN_SERVICE_PROVIDED_NAME);
+<span class="fc" id="L72">        List&lt;ServiceProvidedDTO&gt; serviceProvidedDTOs = new ArrayList&lt;ServiceProvidedDTO&gt;();</span>
+<span class="pc bpc" id="L73" title="1 of 2 branches missed.">        for (ServiceProvided serviceProvided : servicesProvided) {</span>
+<span class="nc" id="L74">            serviceProvidedDTOs.add(new ServiceProvidedDTO(serviceProvided.name(), serviceProvided.date(), serviceProvided.data()));</span>
+<span class="nc" id="L75">        }</span>
+<span class="fc" id="L76">        return serviceProvidedDTOs;</span>
+    }
+
+    private List&lt;AlertDTO&gt; getAlerts(String entityId) {
+<span class="fc" id="L80">        List&lt;Alert&gt; alerts = alertService.findByEntityIdAndAlertNames(entityId,</span>
+                ANC_1_ALERT_NAME,
+                ANC_2_ALERT_NAME,
+                ANC_3_ALERT_NAME,
+                ANC_4_ALERT_NAME,
+                IFA_1_ALERT_NAME,
+                IFA_2_ALERT_NAME,
+                IFA_3_ALERT_NAME,
+                LAB_REMINDER_ALERT_NAME,
+                TT_1_ALERT_NAME,
+                TT_2_ALERT_NAME,
+                HB_TEST_1_ALERT_NAME,
+                HB_FOLLOWUP_TEST_ALERT_NAME,
+                HB_TEST_2_ALERT_NAME,
+                DELIVERY_PLAN_ALERT_NAME
+        );
+<span class="fc" id="L96">        List&lt;AlertDTO&gt; alertDTOs = new ArrayList&lt;AlertDTO&gt;();</span>
+<span class="pc bpc" id="L97" title="1 of 2 branches missed.">        for (Alert alert : alerts) {</span>
+<span class="nc" id="L98">            alertDTOs.add(new AlertDTO(alert.visitCode(), valueOf(alert.status()), alert.startDate()));</span>
+<span class="nc" id="L99">        }</span>
+<span class="fc" id="L100">        return alertDTOs;</span>
+    }
+
+    public ANCClients getClients() {
+<span class="fc" id="L104">        return ancClientsCache.get(ANC_CLIENTS_LIST, new CacheableData&lt;ANCClients&gt;() {</span>
+            @Override
+            public ANCClients fetch() {
+<span class="fc" id="L107">                ANCClients ancClients = new ANCClients();</span>
+<span class="fc" id="L108">                List&lt;Pair&lt;Mother, EligibleCouple&gt;&gt; ancsWithEcs = allBeneficiaries.allANCsWithEC();</span>
+
+<span class="fc bfc" id="L110" title="All 2 branches covered.">                for (Pair&lt;Mother, EligibleCouple&gt; ancWithEc : ancsWithEcs) {</span>
+<span class="fc" id="L111">                    Mother anc = ancWithEc.getLeft();</span>
+<span class="fc" id="L112">                    EligibleCouple ec = ancWithEc.getRight();</span>
+<span class="pc bpc" id="L113" title="1 of 2 branches missed.">                    String photoPath = isBlank(ec.photoPath()) ? DEFAULT_WOMAN_IMAGE_PLACEHOLDER_PATH : ec.photoPath();</span>
+
+<span class="fc" id="L115">                    List&lt;ServiceProvidedDTO&gt; servicesProvided = getServicesProvided(anc.caseId());</span>
+<span class="fc" id="L116">                    List&lt;AlertDTO&gt; alerts = getAlerts(anc.caseId());</span>
+<span class="fc" id="L117">                    ANCClient ancClient = new ANCClient(anc.caseId(), ec.village(), ec.wifeName(), anc.thayiCardNumber(), anc.getDetail(AllConstants.ANCRegistrationFields.EDD), anc.referenceDate())</span>
+                            .withHusbandName(ec.husbandName())
+                            .withAge(ec.age())
+                            .withECNumber(ec.ecNumber())
+                            .withANCNumber(anc.getDetail(AllConstants.ANCRegistrationFields.ANC_NUMBER))
+                            .withIsHighPriority(ec.isHighPriority())
+                            .withIsHighRisk(anc.isHighRisk())
+                            .withIsOutOfArea(ec.isOutOfArea())
+                            .withHighRiskReason(anc.highRiskReason())
+                            .withPoc(anc.getDetail(AllConstants.ANCRegistrationFields.ANC_POC_INFO))
+                            .withCaste(ec.getDetail(AllConstants.ECRegistrationFields.CASTE))
+                            .withEconomicStatus(ec.getDetail(AllConstants.ECRegistrationFields.ECONOMIC_STATUS))
+                            .withPhotoPath(photoPath)
+                            .withEntityIdToSavePhoto(ec.caseId())
+                            .withAlerts(alerts)
+                            .withAshaPhoneNumber(anc.getDetail(AllConstants.ANCRegistrationFields.ASHA_PHONE_NUMBER))
+                            .withServicesProvided(servicesProvided)
+                            .withPreProcess();
+<span class="fc" id="L135">                    ancClients.add(ancClient);</span>
+<span class="fc" id="L136">                }</span>
+<span class="fc" id="L137">                sortByName(ancClients);</span>
+<span class="fc" id="L138">                return ancClients;</span>
+            }
+        });
+    }
+
+    private void sortByName(ANCClients ancClients) {
+<span class="fc" id="L144">        sort(ancClients, new Comparator&lt;SmartRegisterClient&gt;() {</span>
+            @Override
+            public int compare(SmartRegisterClient oneANCClient, SmartRegisterClient anotherANCClient) {
+<span class="nc bnc" id="L147" title="All 4 branches missed.">                if (oneANCClient.wifeName() != null &amp;&amp; anotherANCClient.wifeName() != null)</span>
+<span class="nc" id="L148">                    return oneANCClient.wifeName().compareToIgnoreCase(anotherANCClient.wifeName());</span>
+<span class="nc" id="L149">                return -1;</span>
+            }
+        });
+<span class="fc" id="L152">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.1.201405082137</span></div></body></html>

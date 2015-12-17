@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>ServiceProvidedReportDTO.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">org.ei.telemedicine.dto.report</a> &gt; <span class="el_source">ServiceProvidedReportDTO.java</span></div><h1>ServiceProvidedReportDTO.java</h1><pre class="source lang-java linenums">package org.ei.telemedicine.dto.report;
+
+import org.codehaus.jackson.annotate.JsonProperty;
+import org.joda.time.LocalDate;
+
+public class ServiceProvidedReportDTO
+{
+  @JsonProperty
+  private String anm_identifier;
+  @JsonProperty
+  private String district;
+  @JsonProperty
+  private Integer id;
+  @JsonProperty
+  private String indicator;
+  @JsonProperty
+  private Integer nrhm_report_month;
+  @JsonProperty
+  private Integer nrhm_report_year;
+  @JsonProperty
+  private String phc;
+  @JsonProperty
+  private LocalDate reported_date;
+  @JsonProperty
+  private String state;
+  @JsonProperty
+  private String sub_center;
+  @JsonProperty
+  private String taluka;
+  @JsonProperty
+  private String type;
+  @JsonProperty
+  private String village;
+  
+<span class="nc" id="L35">  public ServiceProvidedReportDTO() {}</span>
+  
+  public ServiceProvidedReportDTO(Integer paramInteger, String paramString1, String paramString2, String paramString3, LocalDate paramLocalDate, String paramString4, String paramString5, String paramString6, String paramString7, String paramString8, String paramString9)
+<span class="nc" id="L38">  {</span>
+<span class="nc" id="L39">    this.id = paramInteger;</span>
+<span class="nc" id="L40">    this.anm_identifier = paramString1;</span>
+<span class="nc" id="L41">    this.type = paramString2;</span>
+<span class="nc" id="L42">    this.indicator = paramString3;</span>
+<span class="nc" id="L43">    this.reported_date = paramLocalDate;</span>
+<span class="nc" id="L44">    this.village = paramString4;</span>
+<span class="nc" id="L45">    this.sub_center = paramString5;</span>
+<span class="nc" id="L46">    this.phc = paramString6;</span>
+<span class="nc" id="L47">    this.taluka = paramString7;</span>
+<span class="nc" id="L48">    this.district = paramString8;</span>
+<span class="nc" id="L49">    this.state = paramString9;</span>
+<span class="nc" id="L50">  }</span>
+  
+  public ServiceProvidedReportDTO withDate(LocalDate paramLocalDate)
+  {
+<span class="nc" id="L54">    this.reported_date = paramLocalDate;</span>
+<span class="nc" id="L55">    return this;</span>
+  }
+  
+  public ServiceProvidedReportDTO withId(Integer paramInteger)
+  {
+<span class="nc" id="L60">    this.id = paramInteger;</span>
+<span class="nc" id="L61">    return this;</span>
+  }
+  
+  public ServiceProvidedReportDTO withNRHMReportMonth(Integer paramInteger)
+  {
+<span class="nc" id="L66">    this.nrhm_report_month = paramInteger;</span>
+<span class="nc" id="L67">    return this;</span>
+  }
+  
+  public ServiceProvidedReportDTO withNRHMReportYear(Integer paramInteger)
+  {
+<span class="nc" id="L72">    this.nrhm_report_year = paramInteger;</span>
+<span class="nc" id="L73">    return this;</span>
+  }
+}
+
+
+
+/* Location:           C:\Users\appaji.r\Downloads\classes-dex2.jar
+
+ * Qualified Name:     org.ei.drishti.dto.report.ServiceProvidedReportDTO
+
+ * JD-Core Version:    0.7.0.1
+
+ */
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.1.201405082137</span></div></body></html>

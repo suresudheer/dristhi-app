@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>UpdateANMDetailsTask.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">org.ei.telemedicine.view.controller</a> &gt; <span class="el_source">UpdateANMDetailsTask.java</span></div><h1>UpdateANMDetailsTask.java</h1><pre class="source lang-java linenums">package org.ei.telemedicine.view.controller;
+
+import android.os.AsyncTask;
+
+import java.util.concurrent.locks.ReentrantLock;
+
+import static android.os.AsyncTask.THREAD_POOL_EXECUTOR;
+import static org.ei.telemedicine.util.Log.logWarn;
+
+public class UpdateANMDetailsTask {
+    private final ANMController anmController;
+<span class="nc" id="L12">    private static final ReentrantLock lock = new ReentrantLock();</span>
+
+<span class="nc" id="L14">    public UpdateANMDetailsTask(ANMController anmController) {</span>
+<span class="nc" id="L15">        this.anmController = anmController;</span>
+<span class="nc" id="L16">    }</span>
+
+    public void fetch(final AfterANMDetailsFetchListener afterFetchListener) {
+<span class="nc" id="L19">        new AsyncTask&lt;Void, Void, String&gt;() {</span>
+            @Override
+            protected String doInBackground(Void... params) {
+<span class="nc bnc" id="L22" title="All 2 branches missed.">                if (!lock.tryLock()) {</span>
+<span class="nc" id="L23">                    logWarn(&quot;Update ANM details is in progress, so going away.&quot;);</span>
+<span class="nc" id="L24">                    cancel(true);</span>
+<span class="nc" id="L25">                    return null;</span>
+                }
+                try {
+<span class="nc" id="L28">                    return anmController.get();</span>
+                } finally {
+<span class="nc" id="L30">                    lock.unlock();</span>
+                }
+            }
+
+            @Override
+            protected void onPostExecute(String anm) {
+<span class="nc" id="L36">                afterFetchListener.afterFetch(anm);</span>
+<span class="nc" id="L37">            }</span>
+        }.executeOnExecutor(THREAD_POOL_EXECUTOR);
+<span class="nc" id="L39">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.1.201405082137</span></div></body></html>

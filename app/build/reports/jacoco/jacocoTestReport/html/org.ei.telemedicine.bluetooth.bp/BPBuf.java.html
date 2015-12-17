@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>BPBuf.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">org.ei.telemedicine.bluetooth.bp</a> &gt; <span class="el_source">BPBuf.java</span></div><h1>BPBuf.java</h1><pre class="source lang-java linenums">package org.ei.telemedicine.bluetooth.bp;
+
+import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.Vector;
+
+import android.content.Context;
+import android.util.Log;
+
+import com.contec.jar.contec08a.DeviceCommand;
+import com.contec.jar.contec08a.DevicePackManager;
+
+import org.ei.telemedicine.bluetooth.OnBluetoothResult;
+
+
+public class BPBuf {
+    private static final String TAG = &quot;com.testBlueTooth.Mtbuf&quot;;
+<span class="nc" id="L18">    public static Vector&lt;Integer&gt; m_buf = null;</span>
+
+    public static final int e_pack_pressure_back = 0x46;
+
+<span class="nc" id="L22">    public BPBuf() {</span>
+<span class="nc" id="L23">        m_buf = new Vector&lt;Integer&gt;();</span>
+<span class="nc" id="L24">    }</span>
+
+    public synchronized int Count() {
+<span class="nc" id="L27">        return m_buf.size();</span>
+    }
+
+<span class="nc" id="L30">    DevicePackManager mPackManager = new DevicePackManager();</span>
+    private DeviceData mDeviceData;
+    public static final int e_pack_hand_back = 0x48;
+    public static final int e_pack_oxygen_back = 0x47;
+<span class="nc" id="L34">    private int mType = 0;</span>
+    OnBluetoothResult onResult;
+
+    public synchronized void write(byte[] buf, int count,
+                                   OutputStream pOutputStream, Context context, int deviceNum)
+            throws Exception {
+
+<span class="nc" id="L41">        int state = mPackManager.arrangeMessage(buf, count, mType);</span>
+<span class="nc" id="L42">        int x = DevicePackManager.Flag_User;</span>
+<span class="nc" id="L43">        Log.e(&quot;BP Buf&quot;, mType + &quot;&quot;);</span>
+<span class="nc bnc" id="L44" title="All 5 branches missed.">        switch (state) {</span>
+            case e_pack_hand_back:
+<span class="nc bnc" id="L46" title="All 5 branches missed.">                switch (mType) {</span>
+                    case 9:
+<span class="nc" id="L48">                        mType = 5;</span>
+<span class="nc" id="L49">                        pOutputStream.write(DeviceCommand.DELETE_BP());</span>
+<span class="nc" id="L50">                        break;</span>
+                    case 0:
+<span class="nc" id="L52">                        mType = 3;</span>
+<span class="nc" id="L53">                        pOutputStream.write(DeviceCommand.correct_time_notice);</span>
+<span class="nc" id="L54">                        break;</span>
+                    case 1:
+<span class="nc" id="L56">                        mType = 2;</span>
+<span class="nc" id="L57">                        pOutputStream.write(DeviceCommand.REQUEST_OXYGEN());</span>
+<span class="nc" id="L58">                        break;</span>
+                    // case 7:
+                    // mType = 8;
+                    // pOutputStream.write(DeviceCommand.REQUEST_OXYGEN());
+                    // break;
+                    // case 2:
+                    // mType = 5;
+                    // pOutputStream.write(DeviceCommand.DELETE_OXYGEN());
+                    // break;
+                    // case 8:
+                    // mType = 5;
+                    // pOutputStream.write(DeviceCommand.DELETE_OXYGEN());
+                    // break;
+                    case 3:
+<span class="nc" id="L72">                        mType = 1;</span>
+
+<span class="nc bnc" id="L74" title="All 2 branches missed.">                        if (x == 0x11) {</span>
+<span class="nc" id="L75">                            mType = 7;// Three user</span>
+                        } else {
+<span class="nc" id="L77">                            mType = 1;// Single-user</span>
+                        }
+<span class="nc" id="L79">                        pOutputStream.write(DeviceCommand.REQUEST_BLOOD_PRESSURE());</span>
+                        break;
+                }
+<span class="nc" id="L82">                break;</span>
+            case 0x30:// Confirm proper correction time
+
+<span class="nc" id="L85">                pOutputStream.write(DeviceCommand.Correct_Time());</span>
+<span class="nc" id="L86">                break;</span>
+            case 0x40:// Correction time correctly
+
+<span class="nc" id="L89">                pOutputStream.write(DeviceCommand.REQUEST_HANDSHAKE());</span>
+<span class="nc" id="L90">                break;</span>
+            case e_pack_pressure_back:
+
+                try {
+<span class="nc" id="L94">                    Thread.sleep(300);</span>
+<span class="nc" id="L95">                } catch (InterruptedException e) {// The last command to prevent</span>
+                    // blood pressure device can not
+                    // receive
+<span class="nc" id="L98">                    e.printStackTrace();</span>
+<span class="nc" id="L99">                }</span>
+<span class="nc" id="L100">                ArrayList&lt;byte[]&gt; _dataList = mPackManager.mDeviceData.mData_blood;</span>
+<span class="nc" id="L101">                ArrayList&lt;byte[]&gt; _dataLists = mPackManager.mDeviceData.mData_normal_blood;</span>
+<span class="nc" id="L102">                ArrayList&lt;byte[]&gt; _dataList2s = mPackManager.mDeviceData.mData_oxygen;</span>
+<span class="nc bnc" id="L103" title="All 2 branches missed.">                for (int ii = 0; ii &lt; _dataLists.size(); ii++) {</span>
+<span class="nc" id="L104">                    Log.e(&quot;Bp Data ++++ii&quot;, _dataLists.get(ii)[0] + &quot;----&quot; + _dataLists.get(ii)[1] + &quot;-------&quot; + _dataLists.get(ii)[2]);</span>
+                }
+<span class="nc bnc" id="L106" title="All 2 branches missed.">                for (int ij = 0; ij &lt; _dataList2s.size(); ij++) {</span>
+<span class="nc" id="L107">                    Log.e(&quot;Bp Data //////ij&quot;, _dataLists.get(ij)[0] + &quot;----&quot; + _dataLists.get(ij)[1] + &quot;-------&quot; + _dataLists.get(ij)[2]);</span>
+                }
+<span class="nc" id="L109">                byte[] result = null;</span>
+<span class="nc bnc" id="L110" title="All 2 branches missed.">                for (int i = 0; i &lt; _dataList.size(); i++) {</span>
+
+<span class="nc" id="L112">                    result = _dataList.get(i);</span>
+<span class="nc" id="L113">                    Log.e(&quot;Bp Data&quot;, result + &quot;&quot;);</span>
+<span class="nc" id="L114">                    int i1 = (result[0] &lt;&lt; 8 | result[1]) &amp; 255;</span>
+
+<span class="nc" id="L116">                    Log.e(TAG, &quot;blood sys--0--&quot; + i + result[0] + &quot;-------+++++&quot; + i1);</span>
+<span class="nc" id="L117">                    Log.e(TAG, &quot;blood sys--1--&quot; + i + result[1] + &quot;-------+++++&quot;);</span>
+<span class="nc" id="L118">                    Log.e(TAG, &quot;blood Di&quot; + i + result[2] + &quot;&quot;);</span>
+                }
+<span class="nc bnc" id="L120" title="All 2 branches missed.">                if (context instanceof OnBluetoothResult) {</span>
+<span class="nc" id="L121">                    onResult = (OnBluetoothResult) context;</span>
+<span class="nc" id="L122">                    onResult.onResult(result, deviceNum);</span>
+                } else {
+<span class="nc" id="L124">                    Log.e(TAG, &quot;Error&quot; + &quot;Must Implement OnResult Interface&quot;);</span>
+                }
+<span class="nc" id="L126">                int _size = _dataList.size();</span>
+//                DeviceData _mData = new DeviceData(null);
+<span class="nc bnc" id="L128" title="All 2 branches missed.">                for (int i = 0; i &lt; _size; i++) {</span>
+<span class="nc" id="L129">                    byte[] _data = _dataList.get(i);</span>
+//                    byte[] _data = new byte[10];
+
+<span class="nc" id="L132">                    int hiPre = ((_data[5] &lt;&lt; 8) | (_data[6] &amp; 0xff)) &amp; 0xffff;// High</span>
+                    // pressure
+<span class="nc" id="L134">                    int lowPre = _data[7] &amp; 0xff;// Low pressure</span>
+<span class="nc" id="L135">                    Log.e(TAG, &quot;-------Pressur-------&quot; + hiPre + &quot;============low&quot; + lowPre);</span>
+                }
+<span class="nc bnc" id="L137" title="All 2 branches missed.">                if (_size == 0) {</span>
+<span class="nc" id="L138">                    pOutputStream.write(DeviceCommand.REPLAY_CONTEC08A());</span>
+<span class="nc" id="L139">                    Log.e(TAG, &quot;-------Pressure-------&quot;);</span>
+
+                } else {
+<span class="nc" id="L142">                    pOutputStream.write(DeviceCommand.REPLAY_CONTEC08A());</span>
+                }
+
+                break;
+        }
+
+<span class="nc" id="L148">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.1.201405082137</span></div></body></html>

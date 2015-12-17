@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>TestDomain.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">org.ei.telemedicine.domain</a> &gt; <span class="el_source">TestDomain.java</span></div><h1>TestDomain.java</h1><pre class="source lang-java linenums">package org.ei.telemedicine.domain;
+
+import java.util.Map;
+
+public class TestDomain {
+	private String caseId;
+	private String testName;
+	private String testAge;
+	private Map&lt;String, String&gt; details;
+
+	public TestDomain(String caseId, String testName, String testAge,
+<span class="nc" id="L12">			Map&lt;String, String&gt; details) {</span>
+<span class="nc" id="L13">		this.caseId = caseId;</span>
+<span class="nc" id="L14">		this.testName = testName;</span>
+<span class="nc" id="L15">		this.testAge = testAge;</span>
+<span class="nc" id="L16">		this.details = details;</span>
+<span class="nc" id="L17">	}</span>
+
+	public String getCaseId() {
+<span class="nc" id="L20">		return caseId;</span>
+	}
+
+	public void setCaseId(String caseId) {
+<span class="nc" id="L24">		this.caseId = caseId;</span>
+<span class="nc" id="L25">	}</span>
+
+	public String getTestName() {
+<span class="nc" id="L28">		return testName;</span>
+	}
+
+	public void setTestName(String testName) {
+<span class="nc" id="L32">		this.testName = testName;</span>
+<span class="nc" id="L33">	}</span>
+
+	public String getTestAge() {
+<span class="nc" id="L36">		return testAge;</span>
+	}
+
+	public void setTestAge(String testAge) {
+<span class="nc" id="L40">		this.testAge = testAge;</span>
+<span class="nc" id="L41">	}</span>
+
+	public Map&lt;String, String&gt; getDetails() {
+<span class="nc" id="L44">		return details;</span>
+	}
+
+	public void setDetails(Map&lt;String, String&gt; details) {
+<span class="nc" id="L48">		this.details = details;</span>
+<span class="nc" id="L49">	}</span>
+
+	public String getDetail(String name) {
+<span class="nc" id="L52">		return details.get(name);</span>
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.1.201405082137</span></div></body></html>

@@ -1,0 +1,280 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>ChildService.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">org.ei.telemedicine.service</a> &gt; <span class="el_source">ChildService.java</span></div><h1>ChildService.java</h1><pre class="source lang-java linenums">package org.ei.telemedicine.service;
+
+import android.util.Log;
+
+import org.ei.telemedicine.AllConstants;
+import org.ei.telemedicine.Context;
+import org.ei.telemedicine.domain.Child;
+import org.ei.telemedicine.domain.Mother;
+import org.ei.telemedicine.domain.ServiceProvided;
+import org.ei.telemedicine.domain.TimelineEvent;
+import org.ei.telemedicine.domain.form.FormSubmission;
+import org.ei.telemedicine.domain.form.SubForm;
+import org.ei.telemedicine.repository.*;
+import org.ei.telemedicine.util.EasyMap;
+
+import java.util.*;
+
+import static org.apache.commons.lang3.StringUtils.isBlank;
+import static org.ei.telemedicine.AllConstants.ANCVisitFields.POC_INFO;
+import static org.ei.telemedicine.AllConstants.ChildIllnessFields.*;
+import static org.ei.telemedicine.AllConstants.ChildRegistrationECFields.*;
+import static org.ei.telemedicine.AllConstants.ENTITY_ID_FIELD_NAME;
+import static org.ei.telemedicine.AllConstants.SPACE;
+import static org.ei.telemedicine.AllConstants.ChildRegistrationOAFields.CHILD_ID;
+import static org.ei.telemedicine.AllConstants.ChildRegistrationOAFields.THAYI_CARD_NUMBER;
+import static org.ei.telemedicine.AllConstants.Immunizations.*;
+import static org.ei.telemedicine.domain.TimelineEvent.*;
+import static org.ei.telemedicine.util.EasyMap.create;
+
+public class ChildService {
+    private AllBeneficiaries allBeneficiaries;
+    private ChildRepository childRepository;
+    private MotherRepository motherRepository;
+    private AllTimelineEvents allTimelines;
+    private ServiceProvidedService serviceProvidedService;
+    private AllAlerts allAlerts;
+
+    public ChildService(AllBeneficiaries allBeneficiaries, MotherRepository motherRepository, ChildRepository childRepository,
+<span class="fc" id="L39">                        AllTimelineEvents allTimelineEvents, ServiceProvidedService serviceProvidedService, AllAlerts allAlerts) {</span>
+<span class="fc" id="L40">        this.allBeneficiaries = allBeneficiaries;</span>
+<span class="fc" id="L41">        this.childRepository = childRepository;</span>
+<span class="fc" id="L42">        this.motherRepository = motherRepository;</span>
+<span class="fc" id="L43">        this.allTimelines = allTimelineEvents;</span>
+<span class="fc" id="L44">        this.serviceProvidedService = serviceProvidedService;</span>
+<span class="fc" id="L45">        this.allAlerts = allAlerts;</span>
+<span class="fc" id="L46">    }</span>
+
+    public void register(FormSubmission submission) {
+<span class="fc" id="L49">        SubForm subForm = submission.getSubFormByName(AllConstants.DeliveryOutcomeFields.CHILD_REGISTRATION_SUB_FORM_NAME);</span>
+<span class="fc bfc" id="L50" title="All 2 branches covered.">        if (handleStillBirth(submission, subForm)) return;</span>
+<span class="fc" id="L51">        String referenceDate = submission.getFieldValue(AllConstants.DeliveryOutcomeFields.REFERENCE_DATE);</span>
+<span class="fc" id="L52">        String deliveryPlace = submission.getFieldValue(AllConstants.DeliveryOutcomeFields.DELIVERY_PLACE);</span>
+<span class="fc" id="L53">        Mother mother = motherRepository.findById(submission.entityId());</span>
+<span class="fc bfc" id="L54" title="All 2 branches covered.">        for (Map&lt;String, String&gt; childInstance : subForm.instances()) {</span>
+<span class="fc" id="L55">            Child child = childRepository.find(childInstance.get(ENTITY_ID_FIELD_NAME));</span>
+<span class="fc" id="L56">            childRepository.update(child.setIsClosed(false).setThayiCardNumber(mother.thayiCardNumber()).setDateOfBirth(referenceDate));</span>
+<span class="fc" id="L57">            allTimelines.add(forChildBirthInChildProfile(child.caseId(), referenceDate,</span>
+                    child.getDetail(AllConstants.ChildRegistrationFields.WEIGHT), child.getDetail(AllConstants.ChildRegistrationFields.IMMUNIZATIONS_GIVEN)));
+<span class="fc" id="L59">            allTimelines.add(forChildBirthInMotherProfile(mother.caseId(), referenceDate, child.gender(), referenceDate, deliveryPlace));</span>
+<span class="fc" id="L60">            allTimelines.add(forChildBirthInECProfile(mother.ecCaseId(), referenceDate, child.gender(), referenceDate));</span>
+<span class="fc" id="L61">            String immunizationsGiven = child.getDetail(AllConstants.ChildRegistrationFields.IMMUNIZATIONS_GIVEN);</span>
+<span class="fc bfc" id="L62" title="All 2 branches covered.">            for (String immunization : immunizationsGiven.split(SPACE)) {</span>
+<span class="fc" id="L63">                serviceProvidedService.add(ServiceProvided.forChildImmunization(child.caseId(), immunization, referenceDate));</span>
+            }
+<span class="fc" id="L65">        }</span>
+<span class="fc" id="L66">    }</span>
+
+    public Mother getMotherUseEntityId(String entityId) {
+<span class="nc" id="L69">        return motherRepository.findById(entityId);</span>
+    }
+
+    private boolean isDeliveryOutcomeStillBirth(FormSubmission submission) {
+<span class="fc" id="L73">        return AllConstants.DeliveryOutcomeFields.STILL_BIRTH_VALUE</span>
+                .equalsIgnoreCase(submission.getFieldValue(AllConstants.DeliveryOutcomeFields.DELIVERY_OUTCOME));
+    }
+
+    public void registerForEC(FormSubmission submission) {
+<span class="fc bfc" id="L78" title="All 2 branches covered.">        if (shouldCloseMother(submission.getFieldValue(SHOULD_CLOSE_MOTHER))) {</span>
+<span class="fc" id="L79">            closeMother(submission.getFieldValue(AllConstants.ChildRegistrationFields.MOTHER_ID));</span>
+        }
+
+<span class="fc" id="L82">        Map&lt;String, String&gt; immunizationDateFieldMap = createImmunizationDateFieldMap();</span>
+<span class="fc" id="L83">        allTimelines.add(forChildBirthInChildProfile(</span>
+                submission.getFieldValue(AllConstants.ChildRegistrationFields.CHILD_ID),
+                submission.getFieldValue(AllConstants.ChildRegistrationFields.DATE_OF_BIRTH),
+                submission.getFieldValue(AllConstants.ChildRegistrationFields.WEIGHT),
+                submission.getFieldValue(AllConstants.ChildRegistrationFields.IMMUNIZATIONS_GIVEN)));
+<span class="fc" id="L88">        allTimelines.add(forChildBirthInMotherProfile(</span>
+                submission.getFieldValue(AllConstants.ChildRegistrationFields.MOTHER_ID),
+                submission.getFieldValue(AllConstants.ChildRegistrationFields.DATE_OF_BIRTH),
+                submission.getFieldValue(AllConstants.ChildRegistrationFields.GENDER),
+                null, null));
+<span class="fc" id="L93">        allTimelines.add(forChildBirthInECProfile(</span>
+                submission.entityId(),
+                submission.getFieldValue(AllConstants.ChildRegistrationFields.DATE_OF_BIRTH),
+                submission.getFieldValue(AllConstants.ChildRegistrationFields.GENDER), null));
+<span class="fc" id="L97">        String immunizationsGiven = submission.getFieldValue(AllConstants.ChildRegistrationFields.IMMUNIZATIONS_GIVEN);</span>
+<span class="fc bfc" id="L98" title="All 2 branches covered.">        for (String immunization : immunizationsGiven.split(SPACE)) {</span>
+<span class="fc" id="L99">            serviceProvidedService.add(ServiceProvided.forChildImmunization(</span>
+                    submission.getFieldValue(AllConstants.ChildRegistrationFields.CHILD_ID),
+                    immunization,
+                    submission.getFieldValue(immunizationDateFieldMap.get(immunization))));
+        }
+<span class="fc" id="L104">    }</span>
+
+    private void closeMother(String id) {
+<span class="fc" id="L107">        Mother mother = allBeneficiaries.findMother(id);</span>
+<span class="fc" id="L108">        mother.setIsClosed(true);</span>
+<span class="fc" id="L109">        allBeneficiaries.updateMother(mother);</span>
+<span class="fc" id="L110">    }</span>
+
+    private boolean shouldCloseMother(String shouldCloseMother) {
+<span class="pc bpc" id="L113" title="1 of 4 branches missed.">        return isBlank(shouldCloseMother) || Boolean.parseBoolean(shouldCloseMother);</span>
+    }
+
+    private Map&lt;String, String&gt; createImmunizationDateFieldMap() {
+<span class="fc" id="L117">        Map&lt;String, String&gt; immunizationDateFieldsMap = new HashMap&lt;String, String&gt;();</span>
+<span class="fc" id="L118">        immunizationDateFieldsMap.put(BCG, BCG_DATE);</span>
+
+<span class="fc" id="L120">        immunizationDateFieldsMap.put(MEASLES, MEASLES_DATE);</span>
+<span class="fc" id="L121">        immunizationDateFieldsMap.put(MEASLES_BOOSTER, MEASLESBOOSTER_DATE);</span>
+
+<span class="fc" id="L123">        immunizationDateFieldsMap.put(OPV_0, OPV_0_DATE);</span>
+<span class="fc" id="L124">        immunizationDateFieldsMap.put(OPV_1, OPV_1_DATE);</span>
+<span class="fc" id="L125">        immunizationDateFieldsMap.put(OPV_2, OPV_2_DATE);</span>
+<span class="fc" id="L126">        immunizationDateFieldsMap.put(OPV_3, OPV_3_DATE);</span>
+<span class="fc" id="L127">        immunizationDateFieldsMap.put(OPV_BOOSTER, OPVBOOSTER_DATE);</span>
+
+<span class="fc" id="L129">        immunizationDateFieldsMap.put(DPT_BOOSTER_1, DPTBOOSTER_1_DATE);</span>
+<span class="fc" id="L130">        immunizationDateFieldsMap.put(DPT_BOOSTER_2, DPTBOOSTER_2_DATE);</span>
+
+<span class="fc" id="L132">        immunizationDateFieldsMap.put(HEPATITIS_BIRTH_DOSE, HEPB_BIRTH_DOSE_DATE);</span>
+
+<span class="fc" id="L134">        immunizationDateFieldsMap.put(PENTAVALENT_1, PENTAVALENT_1_DATE);</span>
+<span class="fc" id="L135">        immunizationDateFieldsMap.put(PENTAVALENT_2, PENTAVALENT_2_DATE);</span>
+<span class="fc" id="L136">        immunizationDateFieldsMap.put(PENTAVALENT_3, PENTAVALENT_3_DATE);</span>
+
+<span class="fc" id="L138">        immunizationDateFieldsMap.put(MMR, MMR_DATE);</span>
+<span class="fc" id="L139">        immunizationDateFieldsMap.put(JE, JE_DATE);</span>
+
+<span class="fc" id="L141">        return immunizationDateFieldsMap;</span>
+    }
+
+    public void pncRegistrationOA(FormSubmission submission) {
+<span class="fc" id="L145">        SubForm subForm = submission.getSubFormByName(AllConstants.PNCRegistrationOAFields.CHILD_REGISTRATION_OA_SUB_FORM_NAME);</span>
+<span class="fc bfc" id="L146" title="All 2 branches covered.">        if (handleStillBirth(submission, subForm)) return;</span>
+
+<span class="fc" id="L148">        String referenceDate = submission.getFieldValue(AllConstants.DeliveryOutcomeFields.REFERENCE_DATE);</span>
+<span class="fc" id="L149">        String deliveryPlace = submission.getFieldValue(AllConstants.DeliveryOutcomeFields.DELIVERY_PLACE);</span>
+<span class="fc" id="L150">        Mother mother = motherRepository.findAllCasesForEC(submission.entityId()).get(0);</span>
+
+<span class="fc bfc" id="L152" title="All 2 branches covered.">        for (Map&lt;String, String&gt; childInstances : subForm.instances()) {</span>
+<span class="fc" id="L153">            Child child = childRepository.find(childInstances.get(ENTITY_ID_FIELD_NAME));</span>
+<span class="fc" id="L154">            childRepository.update(child.setIsClosed(false).setThayiCardNumber(mother.thayiCardNumber()).setDateOfBirth(referenceDate));</span>
+<span class="fc" id="L155">            allTimelines.add(forChildBirthInChildProfile(child.caseId(), referenceDate,</span>
+                    child.getDetail(AllConstants.PNCRegistrationOAFields.WEIGHT), child.getDetail(AllConstants.PNCRegistrationOAFields.IMMUNIZATIONS_GIVEN)));
+<span class="fc" id="L157">            allTimelines.add(forChildBirthInMotherProfile(mother.caseId(), referenceDate, child.gender(),</span>
+                    referenceDate, deliveryPlace));
+<span class="fc" id="L159">            allTimelines.add(forChildBirthInECProfile(mother.ecCaseId(), referenceDate, child.gender(),</span>
+                    referenceDate));
+<span class="fc" id="L161">            String immunizationsGiven = child.getDetail(AllConstants.PNCRegistrationOAFields.IMMUNIZATIONS_GIVEN);</span>
+<span class="fc bfc" id="L162" title="All 2 branches covered.">            for (String immunization : immunizationsGiven.split(SPACE)) {</span>
+<span class="fc" id="L163">                serviceProvidedService.add(ServiceProvided.forChildImmunization(child.caseId(), immunization, referenceDate));</span>
+            }
+<span class="fc" id="L165">        }</span>
+<span class="fc" id="L166">    }</span>
+
+    private boolean handleStillBirth(FormSubmission submission, SubForm subForm) {
+<span class="fc bfc" id="L169" title="All 2 branches covered.">        if (!isDeliveryOutcomeStillBirth(submission)) {</span>
+<span class="fc" id="L170">            return false;</span>
+        }
+<span class="fc bfc" id="L172" title="All 2 branches covered.">        if (!subForm.instances().isEmpty()) {</span>
+<span class="fc" id="L173">            String childId = subForm.instances().get(0).get(ENTITY_ID_FIELD_NAME);</span>
+<span class="fc" id="L174">            childRepository.delete(childId);</span>
+        }
+<span class="fc" id="L176">        return true;</span>
+    }
+
+    public void updateImmunizations(FormSubmission submission) {
+<span class="fc" id="L180">        String immunizationDate = submission.getFieldValue(AllConstants.ChildImmunizationsFields.IMMUNIZATION_DATE);</span>
+<span class="fc" id="L181">        List&lt;String&gt; immunizationsGivenList = splitFieldValueBySpace(submission, AllConstants.ChildImmunizationsFields.IMMUNIZATIONS_GIVEN);</span>
+<span class="fc" id="L182">        List&lt;String&gt; previousImmunizationsList = splitFieldValueBySpace(submission, AllConstants.ChildImmunizationsFields.PREVIOUS_IMMUNIZATIONS_GIVEN);</span>
+<span class="fc" id="L183">        immunizationsGivenList.removeAll(previousImmunizationsList);</span>
+<span class="fc bfc" id="L184" title="All 2 branches covered.">        for (String immunization : immunizationsGivenList) {</span>
+<span class="fc" id="L185">            allTimelines.add(forChildImmunization(submission.entityId(), immunization, immunizationDate));</span>
+<span class="fc" id="L186">            serviceProvidedService.add(ServiceProvided.forChildImmunization(submission.entityId(), immunization, immunizationDate));</span>
+<span class="fc" id="L187">            allAlerts.changeAlertStatusToInProcess(submission.entityId(), immunization);</span>
+<span class="fc" id="L188">        }</span>
+<span class="fc" id="L189">    }</span>
+
+    private ArrayList&lt;String&gt; splitFieldValueBySpace(FormSubmission submission, String fieldName) {
+<span class="fc" id="L192">        return new ArrayList&lt;String&gt;(Arrays.asList(submission.getFieldValue(fieldName).split(SPACE)));</span>
+    }
+
+    public void pncVisitHappened(FormSubmission submission) {
+<span class="fc" id="L196">        String pncVisitDate = submission.getFieldValue(AllConstants.PNCVisitFields.PNC_VISIT_DATE);</span>
+<span class="fc" id="L197">        String pncVisitDay = submission.getFieldValue(AllConstants.PNCVisitFields.PNC_VISIT_DAY);</span>
+<span class="fc" id="L198">        SubForm subForm = submission.getSubFormByName(AllConstants.PNCVisitFields.CHILD_PNC_VISIT_SUB_FORM_NAME);</span>
+
+<span class="fc bfc" id="L200" title="All 2 branches covered.">        if (handleStillBirth(submission, subForm)) return;</span>
+
+<span class="fc bfc" id="L202" title="All 2 branches covered.">        for (Map&lt;String, String&gt; childInstances : subForm.instances()) {</span>
+<span class="fc" id="L203">            allTimelines.add(forChildPNCVisit(childInstances.get(ENTITY_ID_FIELD_NAME), pncVisitDay,</span>
+                    pncVisitDate, childInstances.get(AllConstants.PNCVisitFields.WEIGHT), childInstances.get(AllConstants.PNCVisitFields.CHILD_TEMPERATURE)));
+<span class="fc" id="L205">            serviceProvidedService.add(ServiceProvided.forChildPNCVisit(childInstances.get(ENTITY_ID_FIELD_NAME), pncVisitDay, pncVisitDate));</span>
+<span class="fc" id="L206">        }</span>
+<span class="fc" id="L207">    }</span>
+
+    public void close(FormSubmission submission) {
+<span class="fc" id="L210">        allBeneficiaries.closeChild(submission.entityId());</span>
+<span class="fc" id="L211">    }</span>
+
+    public void updatePhotoPath(String entityId, String imagePath) {
+<span class="nc" id="L214">        childRepository.updatePhotoPath(entityId, imagePath);</span>
+<span class="nc" id="L215">    }</span>
+
+    public void updateIllnessStatus(FormSubmission submission) {
+<span class="fc" id="L218">        String poc = submission.getFieldValue(&quot;anmPoc&quot;);</span>
+<span class="fc" id="L219">        String sickVisitDate = submission.getFieldValue(SICK_VISIT_DATE);</span>
+<span class="pc bpc" id="L220" title="1 of 2 branches missed.">        String date = sickVisitDate != null ?</span>
+                sickVisitDate : submission.getFieldValue(REPORT_CHILD_DISEASE_DATE);
+<span class="fc" id="L222">        allTimelines.add(forChildIllness(submission.getFieldValue(ENTITY_ID_FIELD_NAME), date, submission.getFieldValue(AllConstants.PNCVisitFields.CHILD_TEMPERATURE), poc));</span>
+
+<span class="fc" id="L224">        Log.e(&quot;Submission Form for poc&quot;, &quot;POc fot illness&quot; + submission.instance() + &quot;&quot;);</span>
+<span class="pc bpc" id="L225" title="3 of 4 branches missed.">        if (submission.getFieldValue(POC_INFO) != null &amp;&amp; !submission.getFieldValue(POC_INFO).equals(&quot;&quot;)) {</span>
+<span class="nc" id="L226">            TimelineEvent childVisitPoc = forPOCGiven(</span>
+                    submission.entityId(),
+                    date,
+                    &quot;CHILDILLNESS&quot;, &quot;Plan of care for Child Illness&quot;, create(POC_INFO, submission.getFieldValue(POC_INFO)).map());
+<span class="nc bnc" id="L230" title="All 2 branches missed.">            if (childVisitPoc != null)</span>
+<span class="nc" id="L231">                allTimelines.add(childVisitPoc);</span>
+        }
+<span class="fc" id="L233">        serviceProvidedService.add(</span>
+                ServiceProvided.forChildIllnessVisit(submission.entityId(),
+                        date,
+                        createChildIllnessMap(submission))
+        );
+<span class="fc" id="L238">    }</span>
+
+    private Map&lt;String, String&gt; createChildIllnessMap(FormSubmission submission) {
+<span class="fc" id="L241">        return EasyMap.create(CHILD_SIGNS, submission.getFieldValue(CHILD_SIGNS))</span>
+                .put(CHILD_SIGNS_OTHER, submission.getFieldValue(CHILD_SIGNS_OTHER))
+                .put(SICK_VISIT_DATE, submission.getFieldValue(SICK_VISIT_DATE))
+                .put(REPORT_CHILD_DISEASE, submission.getFieldValue(REPORT_CHILD_DISEASE))
+                .put(REPORT_CHILD_DISEASE_OTHER, submission.getFieldValue(REPORT_CHILD_DISEASE_OTHER))
+                .put(REPORT_CHILD_DISEASE_DATE, submission.getFieldValue(REPORT_CHILD_DISEASE_DATE))
+                .put(REPORT_CHILD_DISEASE_PLACE, submission.getFieldValue(REPORT_CHILD_DISEASE_PLACE))
+                .put(CHILD_REFERRAL, submission.getFieldValue(CHILD_REFERRAL))
+                .map();
+    }
+
+    public void updateVitaminAProvided(FormSubmission submission) {
+<span class="fc" id="L253">        serviceProvidedService.add(</span>
+                ServiceProvided.forVitaminAProvided(submission.entityId(),
+                        submission.getFieldValue(AllConstants.VitaminAFields.VITAMIN_A_DATE),
+                        submission.getFieldValue(AllConstants.VitaminAFields.VITAMIN_A_DOSE),
+                        submission.getFieldValue(AllConstants.VitaminAFields.VITAMIN_A_PLACE)));
+<span class="fc" id="L258">    }</span>
+
+    public void registerForOA(FormSubmission submission) {
+<span class="fc" id="L261">        Child child = allBeneficiaries.findChild(submission.getFieldValue(CHILD_ID));</span>
+<span class="fc" id="L262">        child.setThayiCardNumber(submission.getFieldValue(THAYI_CARD_NUMBER));</span>
+<span class="fc" id="L263">        allBeneficiaries.updateChild(child);</span>
+
+<span class="fc" id="L265">        Map&lt;String, String&gt; immunizationDateFieldMap = createImmunizationDateFieldMap();</span>
+
+<span class="fc" id="L267">        String immunizationsGiven = submission.getFieldValue(AllConstants.ChildRegistrationOAFields.IMMUNIZATIONS_GIVEN);</span>
+<span class="pc bpc" id="L268" title="1 of 2 branches missed.">        immunizationsGiven = isBlank(immunizationsGiven) ? &quot;&quot; : immunizationsGiven;</span>
+<span class="fc" id="L269">        allTimelines.add(forChildBirthInChildProfile(</span>
+                submission.getFieldValue(CHILD_ID),
+                submission.getFieldValue(AllConstants.ChildRegistrationOAFields.DATE_OF_BIRTH),
+                submission.getFieldValue(AllConstants.ChildRegistrationOAFields.WEIGHT),
+                immunizationsGiven));
+
+<span class="fc bfc" id="L275" title="All 2 branches covered.">        for (String immunization : immunizationsGiven.split(SPACE)) {</span>
+<span class="fc" id="L276">            serviceProvidedService.add(ServiceProvided.forChildImmunization(submission.entityId(), immunization, submission.getFieldValue(immunizationDateFieldMap.get(immunization))));</span>
+        }
+<span class="fc" id="L278">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.1.201405082137</span></div></body></html>

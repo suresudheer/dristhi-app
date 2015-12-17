@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>ClientStatusView.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">org.ei.telemedicine.view.customControls</a> &gt; <span class="el_source">ClientStatusView.java</span></div><h1>ClientStatusView.java</h1><pre class="source lang-java linenums">package org.ei.telemedicine.view.customControls;
+
+import static org.ei.telemedicine.util.DateUtil.formatDate;
+import static org.ei.telemedicine.view.controller.ECSmartRegisterController.ANC_STATUS;
+import static org.ei.telemedicine.view.controller.ECSmartRegisterController.EC_STATUS;
+import static org.ei.telemedicine.view.controller.ECSmartRegisterController.FP_METHOD_DATE_FIELD;
+import static org.ei.telemedicine.view.controller.ECSmartRegisterController.FP_STATUS;
+import static org.ei.telemedicine.view.controller.ECSmartRegisterController.PNC_FP_STATUS;
+import static org.ei.telemedicine.view.controller.ECSmartRegisterController.PNC_STATUS;
+import static org.ei.telemedicine.view.controller.ECSmartRegisterController.STATUS_DATE_FIELD;
+import static org.ei.telemedicine.view.controller.ECSmartRegisterController.STATUS_EDD_FIELD;
+import static org.ei.telemedicine.view.controller.ECSmartRegisterController.STATUS_TYPE_FIELD;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import org.apache.commons.lang3.StringUtils;
+import org.ei.telemedicine.R;
+import org.ei.telemedicine.view.contract.ECSmartRegisterClient;
+import org.ei.telemedicine.view.viewHolder.ViewStubInflater;
+
+import android.content.Context;
+import android.util.AttributeSet;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.ViewStub;
+import android.widget.FrameLayout;
+import android.widget.TextView;
+
+public class ClientStatusView extends FrameLayout {
+
+    private Map&lt;String, ViewStubInflater&gt; statusLayouts;
+
+    @SuppressWarnings(&quot;UnusedDeclaration&quot;)
+    public ClientStatusView(Context context) {
+<span class="nc" id="L36">        this(context, null, 0);</span>
+<span class="nc" id="L37">    }</span>
+
+    @SuppressWarnings(&quot;UnusedDeclaration&quot;)
+    public ClientStatusView(Context context, AttributeSet attrs) {
+<span class="nc" id="L41">        this(context, attrs, 0);</span>
+<span class="nc" id="L42">    }</span>
+
+    public ClientStatusView(Context context, AttributeSet attrs, int defStyle) {
+<span class="nc" id="L45">        super(context, attrs, defStyle);</span>
+<span class="nc" id="L46">    }</span>
+
+    public void initialize() {
+<span class="nc" id="L49">        this.statusLayouts = new HashMap&lt;String, ViewStubInflater&gt;();</span>
+<span class="nc" id="L50">        ViewStubInflater commonECAndFPLayout = new ViewStubInflater((ViewStub) findViewById(R.id.ec_and_fp_status_layout));</span>
+
+<span class="nc" id="L52">        this.statusLayouts</span>
+                .put(EC_STATUS, commonECAndFPLayout);
+<span class="nc" id="L54">        this.statusLayouts</span>
+                .put(FP_STATUS, commonECAndFPLayout);
+<span class="nc" id="L56">        this.statusLayouts</span>
+                .put(ANC_STATUS, new ViewStubInflater((ViewStub) findViewById(R.id.anc_status_layout)));
+<span class="nc" id="L58">        this.statusLayouts</span>
+                .put(PNC_STATUS, new ViewStubInflater((ViewStub) findViewById(R.id.pnc_status_layout)));
+<span class="nc" id="L60">        this.statusLayouts</span>
+                .put(PNC_FP_STATUS, new ViewStubInflater((ViewStub) findViewById(R.id.pnc_and_fp_status_layout)));
+<span class="nc" id="L62">    }</span>
+
+    public void bindData(ECSmartRegisterClient client) {
+<span class="nc" id="L65">        hideAllLayout();</span>
+
+<span class="nc bnc" id="L67" title="All 2 branches missed.">        if (client.status().containsKey(STATUS_TYPE_FIELD)) {</span>
+<span class="nc" id="L68">            String statusType = client.status().get(STATUS_TYPE_FIELD);</span>
+<span class="nc" id="L69">            String statusDate = formatDate(client.status().get(STATUS_DATE_FIELD));</span>
+
+<span class="nc" id="L71">            ViewGroup statusViewGroup = statusLayout(statusType);</span>
+<span class="nc" id="L72">            statusViewGroup.setVisibility(View.VISIBLE);</span>
+<span class="nc" id="L73">            dateView(statusViewGroup).setText(statusDate);</span>
+
+<span class="nc bnc" id="L75" title="All 4 branches missed.">            if (EC_STATUS.equalsIgnoreCase(statusType) || FP_STATUS.equalsIgnoreCase(statusType)) {</span>
+<span class="nc" id="L76">                typeView(statusViewGroup)</span>
+                        .setText(StringUtils.upperCase(statusType));
+<span class="nc bnc" id="L78" title="All 2 branches missed.">            } else if (ANC_STATUS.equalsIgnoreCase(statusType)) {</span>
+<span class="nc" id="L79">                eddDateView(statusViewGroup)</span>
+                        .setText(formatDate(client.status().get(STATUS_EDD_FIELD)));
+<span class="nc bnc" id="L81" title="All 2 branches missed.">            } else if (PNC_FP_STATUS.equalsIgnoreCase(statusType)) {</span>
+<span class="nc" id="L82">                fpDateView(statusViewGroup)</span>
+                        .setText(formatDate(client.status().get(FP_METHOD_DATE_FIELD)));
+            }
+        }
+<span class="nc" id="L86">    }</span>
+
+    public ViewGroup statusLayout(String statusType) {
+<span class="nc" id="L89">        return statusLayouts.get(statusType).get();</span>
+    }
+
+    public void hideAllLayout() {
+<span class="nc bnc" id="L93" title="All 2 branches missed.">        for (String statusLayout : statusLayouts.keySet()) {</span>
+<span class="nc" id="L94">            statusLayouts.get(statusLayout).setVisibility(View.GONE);</span>
+<span class="nc" id="L95">        }</span>
+<span class="nc" id="L96">    }</span>
+
+    public TextView dateView(ViewGroup statusViewGroup) {
+<span class="nc" id="L99">        return ((TextView) statusViewGroup.findViewById(R.id.txt_status_date));</span>
+    }
+
+    public TextView typeView(ViewGroup statusViewGroup) {
+<span class="nc" id="L103">        return ((TextView) statusViewGroup.findViewById(R.id.txt_status_type));</span>
+    }
+
+    public TextView eddDateView(ViewGroup statusViewGroup) {
+<span class="nc" id="L107">        return ((TextView) statusViewGroup.findViewById(R.id.txt_anc_status_edd_date));</span>
+    }
+
+    public TextView fpDateView(ViewGroup statusViewGroup) {
+<span class="nc" id="L111">        return ((TextView) statusViewGroup.findViewById(R.id.txt_fp_status_date));</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.1.201405082137</span></div></body></html>

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>IndicatorReport.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">org.ei.telemedicine.view.contract</a> &gt; <span class="el_source">IndicatorReport.java</span></div><h1>IndicatorReport.java</h1><pre class="source lang-java linenums">package org.ei.telemedicine.view.contract;
+
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+
+public class IndicatorReport {
+    private String indicatorIdentifier;
+    private String description;
+    private String annualTarget;
+    private String currentProgress;
+    private String currentMonth;
+    private String year;
+    private String aggregatedProgress;
+
+    public IndicatorReport(String indicatorIdentifier, String description, String annualTarget, String currentProgress, String currentMonth,
+<span class="fc" id="L17">                           String year, String aggregatedProgress) {</span>
+<span class="fc" id="L18">        this.indicatorIdentifier = indicatorIdentifier;</span>
+<span class="fc" id="L19">        this.description = description;</span>
+<span class="fc" id="L20">        this.annualTarget = annualTarget;</span>
+<span class="fc" id="L21">        this.currentProgress = currentProgress;</span>
+<span class="fc" id="L22">        this.currentMonth = currentMonth;</span>
+<span class="fc" id="L23">        this.year = year;</span>
+<span class="fc" id="L24">        this.aggregatedProgress = aggregatedProgress;</span>
+<span class="fc" id="L25">    }</span>
+
+    @Override
+    public boolean equals(Object o) {
+<span class="nc" id="L29">        return EqualsBuilder.reflectionEquals(this, o);</span>
+    }
+
+    @Override
+    public int hashCode() {
+<span class="nc" id="L34">        return HashCodeBuilder.reflectionHashCode(this);</span>
+    }
+
+    @Override
+    public String toString() {
+<span class="nc" id="L39">        return ToStringBuilder.reflectionToString(this);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.1.201405082137</span></div></body></html>

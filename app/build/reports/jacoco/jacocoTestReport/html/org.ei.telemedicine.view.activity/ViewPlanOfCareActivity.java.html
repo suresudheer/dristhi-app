@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>ViewPlanOfCareActivity.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">org.ei.telemedicine.view.activity</a> &gt; <span class="el_source">ViewPlanOfCareActivity.java</span></div><h1>ViewPlanOfCareActivity.java</h1><pre class="source lang-java linenums">package org.ei.telemedicine.view.activity;
+
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.Menu;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import org.ei.telemedicine.AllConstants;
+import org.ei.telemedicine.Context;
+import org.ei.telemedicine.R;
+import org.ei.telemedicine.doctor.DoctorFormDataConstants;
+import org.ei.telemedicine.domain.Child;
+import org.ei.telemedicine.domain.EligibleCouple;
+import org.ei.telemedicine.domain.Mother;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+/**
+ * Created by naveen on 6/10/15.
+ */
+<span class="nc" id="L29">public class ViewPlanOfCareActivity extends SecuredActivity {</span>
+    EditText et_anc_num, et_woman_name, et_plan_of_care_date, et_doc_name, et_investigations, et_drugs, et_advice, et_diagnosis;
+    Button bt_close;
+    String entityId;
+<span class="nc" id="L33">    private String TAG = &quot;ViewPlanofCareActivity&quot;;</span>
+    String visitType, intentVisitType;
+    TextView tv_anc_number_title;
+
+    @Override
+    public void onCreation() {
+<span class="nc" id="L39">        Bundle bundle = getIntent().getExtras();</span>
+//        et_anc_num = (EditText) findViewById(R.id.et_anc_num);
+<span class="nc bnc" id="L41" title="All 2 branches missed.">        if (bundle != null) {</span>
+<span class="nc" id="L42">            entityId = bundle.getString(AllConstants.ENTITY_ID);</span>
+<span class="nc" id="L43">            intentVisitType = bundle.getString(AllConstants.VISIT_TYPE);</span>
+
+<span class="nc" id="L45">            setContentView(R.layout.view_anc_poc);</span>
+<span class="nc" id="L46">            bt_close = (Button) findViewById(R.id.bt_close);</span>
+//            bt_history = (Button) findViewById(R.id.bt_history);
+<span class="nc" id="L48">            et_anc_num = (EditText) findViewById(R.id.et_anc_num);</span>
+<span class="nc" id="L49">            et_woman_name = (EditText) findViewById(R.id.et_woman_name);</span>
+<span class="nc" id="L50">            et_plan_of_care_date = (EditText) findViewById(R.id.et_plan_of_care_date);</span>
+<span class="nc" id="L51">            et_doc_name = (EditText) findViewById(R.id.et_doctor_name);</span>
+<span class="nc" id="L52">            et_investigations = (EditText) findViewById(R.id.et_investigations);</span>
+<span class="nc" id="L53">            et_drugs = (EditText) findViewById(R.id.et_drugs);</span>
+<span class="nc" id="L54">            et_advice = (EditText) findViewById(R.id.et_advice_data);</span>
+<span class="nc" id="L55">            et_diagnosis = (EditText) findViewById(R.id.et_diagnosis);</span>
+<span class="nc" id="L56">            tv_anc_number_title = (TextView) findViewById(R.id.tv_anc_num_title);</span>
+
+//            bt_history.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View v) {
+//                    Toast.makeText(ViewPlanOfCareActivity.this, &quot;Poc History&quot;, Toast.LENGTH_SHORT).show();
+//                }
+//            });
+<span class="nc" id="L64">            bt_close.setOnClickListener(new View.OnClickListener() {</span>
+                @Override
+                public void onClick(View v) {
+<span class="nc" id="L67">                    finish();</span>
+<span class="nc" id="L68">                }</span>
+            });
+<span class="nc bnc" id="L70" title="All 2 branches missed.">            if (!intentVisitType.equalsIgnoreCase(&quot;child&quot;)) {</span>
+<span class="nc" id="L71">                Mother mother = Context.getInstance().childService().getMotherUseEntityId(entityId);</span>
+<span class="nc" id="L72">                EligibleCouple eligibleCouple = Context.getInstance().allEligibleCouples().findByCaseID(mother.ecCaseId());</span>
+<span class="nc" id="L73">                String docPocInfo = mother.getDetail(&quot;docPocInfo&quot;);</span>
+<span class="nc bnc" id="L74" title="All 2 branches missed.">                tv_anc_number_title.setText(intentVisitType.equals(DoctorFormDataConstants.ancvisit) ? &quot;ANC Number&quot; : &quot;PNC Number&quot;);</span>
+<span class="nc bnc" id="L75" title="All 4 branches missed.">                if (docPocInfo != null &amp;&amp; !docPocInfo.equals(&quot;&quot;)) {</span>
+<span class="nc" id="L76">                    Log.e(TAG, &quot;Doc Poc&quot; + docPocInfo);</span>
+                    try {
+<span class="nc" id="L78">                        JSONArray docPocInfoArray = new JSONArray(docPocInfo);</span>
+<span class="nc bnc" id="L79" title="All 2 branches missed.">                        JSONObject pocInfo = docPocInfoArray.length() != 0 ? docPocInfoArray.getJSONObject(docPocInfoArray.length() - 1)</span>
+                                : new JSONObject();
+<span class="nc bnc" id="L81" title="All 2 branches missed.">                        if (pocInfo.getString(&quot;pending&quot;).length() == 0) {</span>
+<span class="nc bnc" id="L82" title="All 2 branches missed.">                            JSONObject pocJson = pocInfo.has(&quot;poc&quot;) ? new JSONObject(pocInfo.getString(&quot;poc&quot;)) : new JSONObject();</span>
+<span class="nc" id="L83">                            Log.e(&quot;Pox&quot;, pocJson.toString());</span>
+<span class="nc" id="L84">                            visitType = getDataFromJson(pocJson.toString(), &quot;visitType&quot;);</span>
+<span class="nc bnc" id="L85" title="All 2 branches missed.">                            if (visitType.equals(intentVisitType)) {</span>
+<span class="nc" id="L86">                                et_woman_name.setText(eligibleCouple.wifeName());</span>
+<span class="nc" id="L87">                                et_investigations.setText(getDatafromArray(pocJson.getJSONArray(&quot;investigations&quot;).toString()));</span>
+<span class="nc" id="L88">                                et_doc_name.setText(getDataFromJson(pocJson.toString(), &quot;doctorName&quot;));</span>
+<span class="nc" id="L89">                                et_anc_num.setText(mother.getDetail(&quot;ancNumber&quot;));</span>
+<span class="nc bnc" id="L90" title="All 2 branches missed.">                                if (visitType.equals(&quot;PNC&quot;)) {</span>
+<span class="nc" id="L91">                                    tv_anc_number_title.setText(&quot;PNC Number&quot;);</span>
+<span class="nc" id="L92">                                    et_anc_num.setText(mother.getDetail(&quot;pncNumber&quot;));</span>
+                                }
+<span class="nc" id="L94">                                et_plan_of_care_date.setText(getDataFromJson(pocJson.toString(), &quot;planofCareDate&quot;));</span>
+<span class="nc" id="L95">                                et_drugs.setText(getDatafromDrugsArray(pocJson.getString(&quot;drugs&quot;)));</span>
+<span class="nc" id="L96">                                et_diagnosis.setText(getDatafromArray(pocJson.getJSONArray(&quot;diagnosis&quot;).toString()));</span>
+<span class="nc" id="L97">                                Log.e(TAG, &quot;Advice&quot; + pocJson.getString(&quot;advice&quot;));</span>
+<span class="nc" id="L98">                                et_advice.setText(getDataFromJson(pocJson.toString(), &quot;advice&quot;));</span>
+                            }
+<span class="nc" id="L100">                        } else {</span>
+<span class="nc" id="L101">                            Toast.makeText(ViewPlanOfCareActivity.this, &quot;Pending= &quot; + pocInfo.getString(&quot;pending&quot;), Toast.LENGTH_SHORT).show();</span>
+<span class="nc" id="L102">                            new AlertDialog.Builder(ViewPlanOfCareActivity.this).setTitle(&quot;Poc pending reason&quot;).setMessage(pocInfo.getString(&quot;pending&quot;)).setNeutralButton(&quot;Ok&quot;, new DialogInterface.OnClickListener() {</span>
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+<span class="nc" id="L105">                                    ViewPlanOfCareActivity.this.finish();</span>
+<span class="nc" id="L106">                                }</span>
+                            }).show();
+                        }
+<span class="nc" id="L109">                    } catch (JSONException e) {</span>
+<span class="nc" id="L110">                        e.printStackTrace();</span>
+<span class="nc" id="L111">                    }</span>
+                } else {
+<span class="nc" id="L113">                    showNoPoc();</span>
+<span class="nc" id="L114">                    Toast.makeText(ViewPlanOfCareActivity.this, &quot;No Plan Of Care&quot;, Toast.LENGTH_SHORT).show();</span>
+                }
+<span class="nc" id="L116">            } else {</span>
+<span class="nc" id="L117">                tv_anc_number_title.setVisibility(View.GONE);</span>
+<span class="nc" id="L118">                et_anc_num.setVisibility(View.GONE);</span>
+<span class="nc" id="L119">                Log.e(&quot;Entity Id Child&quot;, entityId);</span>
+<span class="nc" id="L120">                Child child = Context.getInstance().allBeneficiaries().findChild(entityId);</span>
+<span class="nc" id="L121">                Mother mother = Context.getInstance().childService().getMotherUseEntityId(child.motherCaseId());</span>
+<span class="nc" id="L122">                EligibleCouple eligibleCouple = Context.getInstance().allEligibleCouples().findByCaseID(mother.ecCaseId());</span>
+<span class="nc" id="L123">                String docPocInfo = child.getDetail(&quot;docPocInfo&quot;);</span>
+<span class="nc bnc" id="L124" title="All 4 branches missed.">                if (docPocInfo != null &amp;&amp; !docPocInfo.equals(&quot;&quot;)) {</span>
+<span class="nc" id="L125">                    Log.e(TAG, &quot;Child Doc Poc&quot; + docPocInfo);</span>
+                    try {
+<span class="nc" id="L127">                        JSONArray docPocInfoArray = new JSONArray(docPocInfo);</span>
+<span class="nc bnc" id="L128" title="All 2 branches missed.">                        JSONObject pocInfo = docPocInfoArray.length() != 0 ? docPocInfoArray.getJSONObject(docPocInfoArray.length() - 1)</span>
+                                : new JSONObject();
+<span class="nc bnc" id="L130" title="All 2 branches missed.">                        if (pocInfo.getString(&quot;pending&quot;).length() == 0) {</span>
+<span class="nc bnc" id="L131" title="All 2 branches missed.">                            JSONObject pocJson = pocInfo.has(&quot;poc&quot;) ? new JSONObject(pocInfo.getString(&quot;poc&quot;)) : new JSONObject();</span>
+<span class="nc" id="L132">                            visitType = getDataFromJson(pocJson.toString(), &quot;visitType&quot;);</span>
+<span class="nc bnc" id="L133" title="All 2 branches missed.">                            if (visitType.equalsIgnoreCase(intentVisitType)) {</span>
+<span class="nc" id="L134">                                et_woman_name.setText(eligibleCouple.wifeName());</span>
+<span class="nc" id="L135">                                et_investigations.setText(getDatafromArray(pocJson.getJSONArray(&quot;investigations&quot;).toString()));</span>
+<span class="nc" id="L136">                                et_doc_name.setText(getDataFromJson(pocJson.toString(), &quot;doctorName&quot;));</span>
+//                          et_anc_num.setText(mother.getDetail(&quot;ancNumber&quot;));
+//                          tv_anc_number_title.setText(&quot;PNC Number&quot;);
+<span class="nc" id="L139">                                et_plan_of_care_date.setText(getDataFromJson(pocJson.toString(), &quot;planofCareDate&quot;));</span>
+<span class="nc" id="L140">                                et_drugs.setText(getDatafromDrugsArray(pocJson.getString(&quot;drugs&quot;)));</span>
+<span class="nc" id="L141">                                et_diagnosis.setText(getDatafromArray(pocJson.getJSONArray(&quot;diagnosis&quot;).toString()));</span>
+<span class="nc" id="L142">                                Log.e(TAG, &quot;Advice&quot; + pocJson.getString(&quot;advice&quot;));</span>
+<span class="nc" id="L143">                                et_advice.setText(getDataFromJson(pocJson.toString(), &quot;advice&quot;));</span>
+                            }
+<span class="nc" id="L145">                        } else {</span>
+<span class="nc" id="L146">                            Toast.makeText(ViewPlanOfCareActivity.this, &quot;Pending= &quot; + pocInfo.getString(&quot;pending&quot;), Toast.LENGTH_SHORT).show();</span>
+<span class="nc" id="L147">                            new AlertDialog.Builder(ViewPlanOfCareActivity.this).setTitle(&quot;Poc pending reason&quot;).setMessage(pocInfo.getString(&quot;pending&quot;)).setNeutralButton(&quot;Ok&quot;, new DialogInterface.OnClickListener() {</span>
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+<span class="nc" id="L150">                                    ViewPlanOfCareActivity.this.finish();</span>
+<span class="nc" id="L151">                                }</span>
+                            }).show();
+                        }
+<span class="nc" id="L154">                    } catch (JSONException e) {</span>
+<span class="nc" id="L155">                        e.printStackTrace();</span>
+<span class="nc" id="L156">                    }</span>
+                } else {
+<span class="nc" id="L158">                    showNoPoc();</span>
+<span class="nc" id="L159">                    Toast.makeText(ViewPlanOfCareActivity.this, &quot;No Plan Of Care&quot;, Toast.LENGTH_SHORT).show();</span>
+                }
+            }
+        }
+
+
+<span class="nc" id="L165">    }</span>
+
+    @Override
+    public void onResumption() {
+
+<span class="nc" id="L170">    }</span>
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+<span class="nc" id="L174">        return false;</span>
+    }
+
+    private void showNoPoc() {
+<span class="nc" id="L178">        new AlertDialog.Builder(ViewPlanOfCareActivity.this).setTitle(&quot;Plan of care&quot;).setMessage(&quot;There is no plan of care.&quot;).setNeutralButton(&quot;CLOSE&quot;, new DialogInterface.OnClickListener() {</span>
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+<span class="nc" id="L181">                ViewPlanOfCareActivity.this.finish();</span>
+<span class="nc" id="L182">            }</span>
+        }).show();
+<span class="nc" id="L184">    }</span>
+
+    public String getDatafromArray(String jsonArray) {
+        try {
+<span class="nc" id="L188">            String result = &quot;&quot;;</span>
+<span class="nc bnc" id="L189" title="All 2 branches missed.">            if (jsonArray != null) {</span>
+<span class="nc" id="L190">                JSONArray jsonArray1 = new JSONArray(jsonArray);</span>
+<span class="nc bnc" id="L191" title="All 2 branches missed.">                for (int i = 0; i &lt; jsonArray1.length(); i++) {</span>
+<span class="nc" id="L192">                    result = result + &quot;\n&quot; + jsonArray1.getString(i);</span>
+                }
+<span class="nc" id="L194">                return result;</span>
+            }
+<span class="nc" id="L196">        } catch (Exception e) {</span>
+<span class="nc" id="L197">            e.printStackTrace();</span>
+<span class="nc" id="L198">        }</span>
+<span class="nc" id="L199">        return &quot;&quot;;</span>
+    }
+
+    public String getDatafromDrugsArray(String jsonArray) {
+        try {
+<span class="nc" id="L204">            Log.e(TAG, &quot;JsonArray &quot; + jsonArray);</span>
+<span class="nc" id="L205">            String result = &quot;&quot;;</span>
+<span class="nc bnc" id="L206" title="All 2 branches missed.">            if (jsonArray != null) {</span>
+<span class="nc" id="L207">                JSONArray jsonArray1 = new JSONArray(jsonArray);</span>
+<span class="nc bnc" id="L208" title="All 2 branches missed.">                for (int i = 0; i &lt; jsonArray1.length(); i++) {</span>
+<span class="nc" id="L209">                    JSONObject jsonObject = jsonArray1.getJSONObject(i);</span>
+<span class="nc" id="L210">                    String data = jsonObject.getString(&quot;drugName&quot;) + &quot;-&quot; + jsonObject.getString(&quot;direction&quot;) + &quot;-&quot; + jsonObject.getString(&quot;dosage&quot;) + &quot;-&quot; + jsonObject.getString(&quot;frequency&quot;) + &quot;- Days :&quot; + jsonObject.getString(&quot;drugNoOfDays&quot;) + &quot;- Qty :&quot; + jsonObject.getString(&quot;drugQty&quot;);</span>
+<span class="nc" id="L211">                    result = result + &quot;\n&quot; + data;</span>
+                }
+<span class="nc" id="L213">                return result;</span>
+            }
+<span class="nc" id="L215">        } catch (Exception e) {</span>
+<span class="nc" id="L216">            e.printStackTrace();</span>
+<span class="nc" id="L217">        }</span>
+<span class="nc" id="L218">        return &quot;&quot;;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.1.201405082137</span></div></body></html>

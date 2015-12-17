@@ -1,0 +1,294 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>NativeFPSmartRegisterActivity.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">org.ei.telemedicine.view.activity</a> &gt; <span class="el_source">NativeFPSmartRegisterActivity.java</span></div><h1>NativeFPSmartRegisterActivity.java</h1><pre class="source lang-java linenums">package org.ei.telemedicine.view.activity;
+
+import static com.google.common.collect.Iterables.concat;
+import static com.google.common.collect.Iterables.toArray;
+import static org.ei.telemedicine.AllConstants.FormNames.EC_REGISTRATION;
+import static org.ei.telemedicine.AllConstants.FormNames.FP_CHANGE;
+import static org.ei.telemedicine.AllConstants.FormNames.FP_COMPLICATIONS;
+import static org.ei.telemedicine.AllConstants.FormNames.RECORD_ECPS;
+
+import org.ei.telemedicine.AllConstants;
+import org.ei.telemedicine.R;
+import org.ei.telemedicine.adapter.SmartRegisterPaginatedAdapter;
+import org.ei.telemedicine.domain.form.FieldOverrides;
+import org.ei.telemedicine.provider.FPSmartRegisterClientsProvider;
+import org.ei.telemedicine.provider.SmartRegisterClientsProvider;
+import org.ei.telemedicine.view.contract.FPClient;
+import org.ei.telemedicine.view.contract.SmartRegisterClient;
+import org.ei.telemedicine.view.controller.FPSmartRegisterController;
+import org.ei.telemedicine.view.controller.VillageController;
+import org.ei.telemedicine.view.dialog.AllClientsFilter;
+import org.ei.telemedicine.view.dialog.DialogOption;
+import org.ei.telemedicine.view.dialog.DialogOptionMapper;
+import org.ei.telemedicine.view.dialog.DialogOptionModel;
+import org.ei.telemedicine.view.dialog.ECNumberSort;
+import org.ei.telemedicine.view.dialog.EditOption;
+import org.ei.telemedicine.view.dialog.FPAllMethodsServiceMode;
+import org.ei.telemedicine.view.dialog.FPCondomServiceMode;
+import org.ei.telemedicine.view.dialog.FPDMPAServiceMode;
+import org.ei.telemedicine.view.dialog.FPDialogOptionModel;
+import org.ei.telemedicine.view.dialog.FPFemaleSterilizationServiceMode;
+import org.ei.telemedicine.view.dialog.FPIUCDServiceMode;
+import org.ei.telemedicine.view.dialog.FPMaleSterilizationServiceMode;
+import org.ei.telemedicine.view.dialog.FPOCPServiceMode;
+import org.ei.telemedicine.view.dialog.FPOthersServiceMode;
+import org.ei.telemedicine.view.dialog.FPPrioritizationAllECServiceMode;
+import org.ei.telemedicine.view.dialog.FPPrioritizationHighPriorityServiceMode;
+import org.ei.telemedicine.view.dialog.FPPrioritizationOneChildrenServiceMode;
+import org.ei.telemedicine.view.dialog.FPPrioritizationTwoPlusChildrenServiceMode;
+import org.ei.telemedicine.view.dialog.FPSmartRegisterDialogFragment;
+import org.ei.telemedicine.view.dialog.FilterOption;
+import org.ei.telemedicine.view.dialog.HighPrioritySort;
+import org.ei.telemedicine.view.dialog.NameSort;
+import org.ei.telemedicine.view.dialog.OpenFormOption;
+import org.ei.telemedicine.view.dialog.ServiceModeOption;
+import org.ei.telemedicine.view.dialog.SortOption;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import android.app.Fragment;
+import android.app.FragmentTransaction;
+import android.os.Bundle;
+import android.view.View;
+
+<span class="nc" id="L55">public class NativeFPSmartRegisterActivity extends SecuredNativeSmartRegisterActivity {</span>
+
+    private static final String DIALOG_TAG = &quot;dialog&quot;;
+<span class="nc" id="L58">    private static int CHECKED_TAB_ID = R.id.rb_fp_method;</span>
+
+<span class="nc" id="L60">    private SmartRegisterClientsProvider clientProvider = null;</span>
+    private FPSmartRegisterController controller;
+    private VillageController villageController;
+    private DialogOptionMapper dialogOptionMapper;
+
+<span class="nc" id="L65">    private final ClientActionHandler clientActionHandler = new ClientActionHandler();</span>
+
+    @Override
+    protected SmartRegisterPaginatedAdapter adapter() {
+<span class="nc" id="L69">        return new SmartRegisterPaginatedAdapter(clientsProvider());</span>
+    }
+
+    @Override
+    protected DefaultOptionsProvider getDefaultOptionsProvider() {
+<span class="nc" id="L74">        return new DefaultOptionsProvider() {</span>
+
+            @Override
+            public ServiceModeOption serviceMode() {
+<span class="nc" id="L78">                return new FPAllMethodsServiceMode(clientsProvider());</span>
+            }
+
+            @Override
+            public FilterOption villageFilter() {
+<span class="nc" id="L83">                return new AllClientsFilter();</span>
+            }
+
+            @Override
+            public SortOption sortOption() {
+<span class="nc" id="L88">                return new NameSort();</span>
+            }
+
+            @Override
+            public String nameInShortFormForTitle() {
+<span class="nc" id="L93">                return getResources().getString(R.string.fp_register_title_in_short);</span>
+            }
+        };
+    }
+
+    @Override
+    protected NavBarOptionsProvider getNavBarOptionsProvider() {
+<span class="nc" id="L100">        return new NavBarOptionsProvider() {</span>
+
+            @Override
+            public DialogOption[] filterOptions() {
+<span class="nc" id="L104">                Iterable&lt;? extends DialogOption&gt; villageFilterOptions =</span>
+                        dialogOptionMapper.mapToVillageFilterOptions(villageController.getVillages());
+<span class="nc" id="L106">                return toArray(concat(DEFAULT_FILTER_OPTIONS, villageFilterOptions), DialogOption.class);</span>
+            }
+
+            @Override
+            public DialogOption[] serviceModeOptions() {
+
+<span class="nc" id="L112">                return new DialogOption[]{</span>
+                        new FPAllMethodsServiceMode(clientsProvider()),
+                        new FPCondomServiceMode(clientsProvider()),
+                        new FPDMPAServiceMode(clientsProvider()),
+                        new FPIUCDServiceMode(clientsProvider()),
+                        new FPOCPServiceMode(clientsProvider()),
+                        new FPFemaleSterilizationServiceMode(clientsProvider()),
+                        new FPMaleSterilizationServiceMode(clientsProvider()),
+                        new FPOthersServiceMode(clientsProvider())
+                };
+            }
+
+            @Override
+            public DialogOption[] sortingOptions() {
+<span class="nc" id="L126">                return new DialogOption[]{new NameSort(), new ECNumberSort(),</span>
+                        new HighPrioritySort()};
+            }
+
+            @Override
+            public String searchHint() {
+<span class="nc" id="L132">                return getString(R.string.str_fp_search_hint);</span>
+            }
+        };
+    }
+
+    @Override
+    protected SmartRegisterClientsProvider clientsProvider() {
+<span class="nc bnc" id="L139" title="All 2 branches missed.">        if (clientProvider == null) {</span>
+<span class="nc" id="L140">            clientProvider = new FPSmartRegisterClientsProvider(</span>
+                    this, clientActionHandler, controller);
+        }
+<span class="nc" id="L143">        return clientProvider;</span>
+    }
+
+    private DialogOption[] getUpdateOptions() {
+<span class="nc" id="L147">        return new DialogOption[]{</span>
+                new OpenFormOption(getString(R.string.str_fp_change_form), FP_CHANGE, formController),
+                new OpenFormOption(getString(R.string.str_record_ecp_form), RECORD_ECPS, formController),
+        };
+    }
+
+    @Override
+    protected void onInitialization() {
+<span class="nc" id="L155">        controller = new FPSmartRegisterController(context.allEligibleCouples(),</span>
+                context.allBeneficiaries(), context.alertService(),
+                context.listCache(), context.fpClientsCache());
+<span class="nc" id="L158">        villageController = new VillageController(context.allEligibleCouples(),</span>
+                context.listCache(), context.villagesCache());
+<span class="nc" id="L160">        dialogOptionMapper = new DialogOptionMapper();</span>
+<span class="nc" id="L161">        clientsProvider().onServiceModeSelected(new FPAllMethodsServiceMode(clientsProvider()));</span>
+<span class="nc" id="L162">    }</span>
+
+    @Override
+    public void setupViews() {
+<span class="nc" id="L166">        super.setupViews();</span>
+
+<span class="nc" id="L168">    }</span>
+
+    @Override
+    protected void startRegistration(String village) throws JSONException {
+<span class="nc" id="L172">        String locationJSON = context.anmLocationController().getFormInfoJSON();</span>
+<span class="nc" id="L173">        JSONObject formData = new JSONObject(locationJSON);</span>
+<span class="nc" id="L174">        formData.put(&quot;village&quot;, village.trim().replace(&quot; &quot;, &quot;%20&quot;));</span>
+<span class="nc" id="L175">        String customFields = context.allSettings().fetchFieldLabels(&quot;ECRegistration&quot;);</span>
+<span class="nc bnc" id="L176" title="All 4 branches missed.">        if (customFields != null &amp;&amp; !customFields.equals(&quot;&quot;)) {</span>
+<span class="nc" id="L177">            JSONArray customFieldsArray = new JSONArray(customFields);</span>
+<span class="nc bnc" id="L178" title="All 2 branches missed.">            for (int i = 0; i &lt; customFieldsArray.length(); i++) {</span>
+<span class="nc" id="L179">                formData.put(&quot;field&quot; + (i + 1), customFieldsArray.getString(i).trim().replace(&quot; &quot;, &quot;%20&quot;));</span>
+            }
+        }
+<span class="nc" id="L182">        FieldOverrides fieldOverrides = new FieldOverrides(formData.toString());</span>
+<span class="nc" id="L183">        startFormActivity(EC_REGISTRATION, null, fieldOverrides.getJSONString());</span>
+<span class="nc" id="L184">    }</span>
+
+<span class="nc" id="L186">    private class ClientActionHandler implements View.OnClickListener {</span>
+        @Override
+        public void onClick(View view) {
+<span class="nc bnc" id="L189" title="All 5 branches missed.">            switch (view.getId()) {</span>
+                case R.id.profile_info_layout:
+<span class="nc" id="L191">                    showProfileView((FPClient) view.getTag());</span>
+<span class="nc" id="L192">                    break;</span>
+                case R.id.btn_fp_method_update:
+<span class="nc" id="L194">                    NativeFPSmartRegisterActivity.super.showFragmentDialog(new UpdateDialogOptionModel(), view.getTag());</span>
+<span class="nc" id="L195">                    break;</span>
+                case R.id.btn_side_effects:
+<span class="nc" id="L197">                    SmartRegisterClient fpClient = (SmartRegisterClient) view.getTag();</span>
+<span class="nc" id="L198">                    startFormActivity(FP_COMPLICATIONS, fpClient.entityId(), null);</span>
+<span class="nc" id="L199">                    break;</span>
+                case R.id.lyt_fp_add:
+<span class="nc" id="L201">                    NativeFPSmartRegisterActivity.super.showFragmentDialog(new UpdateDialogOptionModel(), view.getTag());</span>
+                    break;
+
+            }
+<span class="nc" id="L205">        }</span>
+
+        private void showProfileView(FPClient client) {
+<span class="nc" id="L208">            navigationController.startFP(client.entityId());</span>
+<span class="nc" id="L209">        }</span>
+    }
+
+    @Override
+    public void showFragmentDialog(DialogOptionModel dialogOptionModel, Object tag) {
+<span class="nc bnc" id="L214" title="All 2 branches missed.">        if (dialogOptionModel.getDialogOptions().length &lt;= 0) {</span>
+<span class="nc" id="L215">            return;</span>
+        }
+
+<span class="nc bnc" id="L218" title="All 2 branches missed.">        if (!(dialogOptionModel instanceof ServiceModeDialogOptionModel)) {</span>
+<span class="nc" id="L219">            NativeFPSmartRegisterActivity.super.showFragmentDialog(dialogOptionModel, tag);</span>
+<span class="nc" id="L220">            return;</span>
+        }
+
+<span class="nc" id="L223">        FragmentTransaction ft = getFragmentManager().beginTransaction();</span>
+<span class="nc" id="L224">        Fragment prev = getFragmentManager().findFragmentByTag(DIALOG_TAG);</span>
+<span class="nc bnc" id="L225" title="All 2 branches missed.">        if (prev != null) {</span>
+<span class="nc" id="L226">            ft.remove(prev);</span>
+        }
+<span class="nc" id="L228">        ft.addToBackStack(null);</span>
+
+<span class="nc" id="L230">        dialogOptionModel = new FPServiceModeDialogOptionModel().cloneDialogOptionsWith(dialogOptionModel);</span>
+<span class="nc" id="L231">        FPSmartRegisterDialogFragment fpSmartRegisterDialogFragment = FPSmartRegisterDialogFragment</span>
+                .newInstance(this, dialogOptionModel, tag);
+<span class="nc" id="L233">        fpSmartRegisterDialogFragment.setSelectedListener(listener);</span>
+<span class="nc" id="L234">        fpSmartRegisterDialogFragment.setArguments(setAndReturnTabSelectionBundle());</span>
+<span class="nc" id="L235">        fpSmartRegisterDialogFragment.show(ft, DIALOG_TAG);</span>
+
+<span class="nc" id="L237">    }</span>
+
+<span class="nc" id="L239">    private class UpdateDialogOptionModel implements DialogOptionModel {</span>
+        @Override
+        public DialogOption[] getDialogOptions() {
+<span class="nc" id="L242">            return getUpdateOptions();</span>
+        }
+
+        @Override
+        public void onDialogOptionSelection(DialogOption option, Object tag) {
+<span class="nc" id="L247">            onEditSelection((EditOption) option, (SmartRegisterClient) tag);</span>
+<span class="nc" id="L248">        }</span>
+    }
+
+<span class="nc" id="L251">    private class FPServiceModeDialogOptionModel implements FPDialogOptionModel {</span>
+        private DialogOption[] parentDialogOption;
+
+        @Override
+        public DialogOption[] getPrioritizationDialogOptions() {
+<span class="nc" id="L256">            return new DialogOption[]{</span>
+                    new FPPrioritizationAllECServiceMode(clientsProvider()),
+                    new FPPrioritizationHighPriorityServiceMode(clientsProvider()),
+                    new FPPrioritizationTwoPlusChildrenServiceMode(clientsProvider()),
+                    new FPPrioritizationOneChildrenServiceMode(clientsProvider()),
+            };
+        }
+
+        @Override
+        public DialogOption[] getDialogOptions() {
+<span class="nc" id="L266">            return parentDialogOption;</span>
+        }
+
+        @Override
+        public void onDialogOptionSelection(DialogOption option, Object tag) {
+<span class="nc" id="L271">            NativeFPSmartRegisterActivity.super.onServiceModeSelection((ServiceModeOption) option);</span>
+<span class="nc" id="L272">        }</span>
+
+        public FPDialogOptionModel cloneDialogOptionsWith(DialogOptionModel dialogOptionModel) {
+<span class="nc" id="L275">            this.parentDialogOption = dialogOptionModel.getDialogOptions();</span>
+<span class="nc" id="L276">            return this;</span>
+        }
+    }
+
+    private Bundle setAndReturnTabSelectionBundle() {
+<span class="nc" id="L281">        Bundle bundle = new Bundle();</span>
+<span class="nc" id="L282">        bundle.putInt(AllConstants.FP_DIALOG_TAB_SELECTION, CHECKED_TAB_ID);</span>
+<span class="nc" id="L283">        return bundle;</span>
+    }
+
+<span class="nc" id="L286">    FPSmartRegisterDialogFragment.onSelectedListener listener = new FPSmartRegisterDialogFragment.onSelectedListener() {</span>
+        @Override
+        public void onSelected(int id) {
+<span class="nc" id="L289">            CHECKED_TAB_ID = id;</span>
+<span class="nc" id="L290">        }</span>
+    };
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.1.201405082137</span></div></body></html>

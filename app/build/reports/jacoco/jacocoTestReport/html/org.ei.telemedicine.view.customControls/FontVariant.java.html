@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>FontVariant.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">org.ei.telemedicine.view.customControls</a> &gt; <span class="el_source">FontVariant.java</span></div><h1>FontVariant.java</h1><pre class="source lang-java linenums">package org.ei.telemedicine.view.customControls;
+
+<span class="nc" id="L3">public enum FontVariant {</span>
+<span class="nc" id="L4">    THIN(0, &quot;roboto_v1.2/Roboto-Thin.ttf&quot;),</span>
+<span class="nc" id="L5">    LIGHT(1, &quot;roboto_v1.2/Roboto-Light.ttf&quot;),</span>
+<span class="nc" id="L6">    REGULAR(2, &quot;roboto_v1.2/Roboto-Regular.ttf&quot;),</span>
+<span class="nc" id="L7">    MEDIUM(3, &quot;roboto_v1.2/Roboto-Medium.ttf&quot;),</span>
+<span class="nc" id="L8">    BOLD(4, &quot;roboto_v1.2/Roboto-Bold.ttf&quot;),</span>
+<span class="nc" id="L9">    BLACK(5, &quot;roboto_v1.2/Roboto-Black.ttf&quot;);</span>
+
+    private int value;
+    private String fontFile;
+
+<span class="nc" id="L14">    FontVariant(int value, String fontFile) {</span>
+<span class="nc" id="L15">        this.value = value;</span>
+<span class="nc" id="L16">        this.fontFile = fontFile;</span>
+<span class="nc" id="L17">    }</span>
+
+    public String fontFile() {
+<span class="nc" id="L20">        return fontFile;</span>
+    }
+
+    public static FontVariant tryParse(int value, FontVariant defaultValue) {
+<span class="nc bnc" id="L24" title="All 2 branches missed.">        for (FontVariant fontVariant : values()) {</span>
+<span class="nc bnc" id="L25" title="All 2 branches missed.">            if (fontVariant.value == value) {</span>
+<span class="nc" id="L26">                return fontVariant;</span>
+            }
+        }
+<span class="nc" id="L29">        return defaultValue;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.1.201405082137</span></div></body></html>

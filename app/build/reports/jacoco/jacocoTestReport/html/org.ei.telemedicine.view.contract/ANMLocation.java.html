@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>ANMLocation.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">org.ei.telemedicine.view.contract</a> &gt; <span class="el_source">ANMLocation.java</span></div><h1>ANMLocation.java</h1><pre class="source lang-java linenums">package org.ei.telemedicine.view.contract;
+
+import com.google.gson.Gson;
+
+import org.ei.telemedicine.Context;
+
+import java.util.List;
+
+<span class="nc" id="L9">public class ANMLocation {</span>
+    private String district;
+    private String phcName;
+    private String phcIdentifier;
+    private String subCenter;
+    private List&lt;String&gt; villages;
+
+    public String asJSONString(String password, String wifeMINAge, String wifeMAXAge, String husbandMINAge, String husbandMAXAge, String countryCode) {
+<span class="nc" id="L17">        return new Gson().toJson(new ANMLocationJSONString(district, phcName, subCenter, password, wifeMINAge, wifeMAXAge, husbandMINAge, husbandMAXAge, countryCode, System.currentTimeMillis()));</span>
+    }
+
+<span class="nc" id="L20">    private class ANMLocationJSONString {</span>
+        private String district;
+        private String phc;
+        private String subCenter;
+        private String password;
+        private String wifeMINAge;
+        private String wifeMAXAge;
+        private String husbandMINAge;
+        private String husbandMAXAge;
+        private String countryCode;
+        private long regNo;
+
+<span class="nc" id="L32">        private ANMLocationJSONString(String district, String phc, String subCenter, String password, String wifeMINAge, String wifeMAXAge, String husbandMINAge, String husbandMAXAge, String countryCode, long regNo) {</span>
+<span class="nc" id="L33">            this.district = district;</span>
+<span class="nc" id="L34">            this.phc = phc;</span>
+<span class="nc" id="L35">            this.subCenter = subCenter;</span>
+<span class="nc" id="L36">            this.password = password;</span>
+<span class="nc" id="L37">            this.wifeMINAge = wifeMINAge;</span>
+<span class="nc" id="L38">            this.wifeMAXAge = wifeMAXAge;</span>
+<span class="nc" id="L39">            this.husbandMINAge = husbandMINAge;</span>
+<span class="nc" id="L40">            this.husbandMAXAge = husbandMAXAge;</span>
+<span class="nc" id="L41">            this.countryCode = countryCode;</span>
+<span class="nc" id="L42">            this.regNo = regNo;</span>
+<span class="nc" id="L43">        }</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.1.201405082137</span></div></body></html>

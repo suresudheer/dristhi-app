@@ -1,0 +1,355 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>NativeChildSmartRegisterViewHolder.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">org.ei.telemedicine.view.viewHolder</a> &gt; <span class="el_source">NativeChildSmartRegisterViewHolder.java</span></div><h1>NativeChildSmartRegisterViewHolder.java</h1><pre class="source lang-java linenums">package org.ei.telemedicine.view.viewHolder;
+
+import org.ei.telemedicine.R;
+import org.ei.telemedicine.view.customControls.ClientIdDetailsView;
+import org.ei.telemedicine.view.customControls.ClientProfileView;
+
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageButton;
+import android.widget.TextView;
+
+public class NativeChildSmartRegisterViewHolder {
+    private final ClientProfileView profileInfoLayout;
+    private final ClientIdDetailsView idDetailsView;
+    private final ImageButton editButton;
+    private final TextView txtDobView;
+
+    private final ViewGroup serviceModeViewsHolder;
+    private final ViewGroup serviceModeOverviewView;
+    private final ViewGroup serviceModeImmunization0to9View;
+    private final ViewGroup serviceModeImmunization9PlusView;
+    private final TextView txtLastServiceDate;
+    private final TextView txtLastServiceName;
+    private final TextView txtSickVisit;
+    private final TextView lblIllnessDate;
+    private final TextView txtIllness;
+    private final TextView txtIllnessDate;
+    private final View sicknessDeailLayout;
+    private final TextView txtBcgPendingView;
+    private final View layoutBcgOn;
+    private final TextView txtBcgDoneOn;
+    private final TextView txtHepBDoneOn;
+    private final TextView txtPentavDoneOn;
+    private final TextView txtOpvDoneOn;
+    private final TextView txtMeaslesDoneOn;
+    private final TextView txtOpvBoosterDoneOn;
+    private final TextView txtDptBoosterDoneOn;
+    private final TextView txtVitaminADoneOn;
+    private final TextView btnOpv;
+    private final View layoutOpvAlert;
+    private final TextView btnHepB;
+    private final View layoutHepBAlert;
+    private final TextView btnPentav;
+    private final View layoutPentavAlert;
+    private final TextView txtOpvAlertDueOn;
+    private final TextView txtHepBAlertDueOn;
+    private final TextView txtPentavAlertDueOn;
+    private final TextView txtOpvAlertDueType;
+    private final TextView txtHepBAlertDueType;
+    private final TextView txtPentavAlertDueType;
+    private final TextView btnMeasles;
+    private final View layoutMeaslesAlert;
+    private final TextView txtMeaslesAlertDueType;
+    private final TextView txtMeaslesAlertDueOn;
+    private final TextView btnOpvBooster;
+    private final View layoutOpvBoosterAlert;
+    private final TextView txtOpvBoosterAlertDueType;
+    private final TextView txtOpvBoosterAlertDueOn;
+    private final TextView btnDptBooster;
+    private final View layoutDptBoosterAlert;
+    private final TextView txtDptBoosterAlertDueType;
+    private final TextView txtDptBoosterAlertDueOn;
+    private final TextView btnVitaminA;
+    private final View layoutVitaminAAlert;
+    private final TextView txtVitaminAAlertDueType;
+    private final TextView txtVitaminAAlertDueOn;
+
+<span class="nc" id="L68">    public NativeChildSmartRegisterViewHolder(ViewGroup itemView) {</span>
+<span class="nc" id="L69">        profileInfoLayout = (ClientProfileView) itemView.findViewById(R.id.profile_info_layout);</span>
+<span class="nc" id="L70">        profileInfoLayout.initialize();</span>
+
+<span class="nc" id="L72">        idDetailsView = (ClientIdDetailsView) itemView.findViewById(R.id.client_id_details_layout);</span>
+<span class="nc" id="L73">        idDetailsView.initialize();</span>
+
+<span class="nc" id="L75">        serviceModeViewsHolder = (ViewGroup) itemView.findViewById(R.id.child_register_service_mode_options_view);</span>
+<span class="nc" id="L76">        serviceModeOverviewView = (ViewGroup) serviceModeViewsHolder.findViewById(R.id.overview_service_mode_views);</span>
+<span class="nc" id="L77">        serviceModeImmunization0to9View = (ViewGroup) serviceModeViewsHolder.findViewById(R.id.immunization0to9_service_mode_views);</span>
+<span class="nc" id="L78">        serviceModeImmunization9PlusView = (ViewGroup) serviceModeViewsHolder.findViewById(R.id.immunization9plus_service_mode_views);</span>
+
+<span class="nc" id="L80">        txtDobView = (TextView) serviceModeOverviewView.findViewById(R.id.child_register_dob);</span>
+<span class="nc" id="L81">        editButton = (ImageButton) serviceModeOverviewView.findViewById(R.id.btn_edit);</span>
+<span class="nc" id="L82">        txtLastServiceDate = (TextView) serviceModeOverviewView.findViewById(R.id.last_service_date);</span>
+<span class="nc" id="L83">        txtLastServiceName = (TextView) serviceModeOverviewView.findViewById(R.id.last_service_name);</span>
+<span class="nc" id="L84">        txtSickVisit = (TextView) serviceModeOverviewView.findViewById(R.id.btn_sick_visit);</span>
+<span class="nc" id="L85">        sicknessDeailLayout = serviceModeOverviewView.findViewById(R.id.sick_details_layout);</span>
+<span class="nc" id="L86">        lblIllnessDate = (TextView) sicknessDeailLayout.findViewById(R.id.lbl_illness_date);</span>
+<span class="nc" id="L87">        txtIllness = (TextView) sicknessDeailLayout.findViewById(R.id.txt_illness);</span>
+<span class="nc" id="L88">        txtIllnessDate = (TextView) sicknessDeailLayout.findViewById(R.id.txt_illness_date);</span>
+
+<span class="nc" id="L90">        txtBcgPendingView = (TextView) serviceModeImmunization0to9View.findViewById(R.id.txt_bcg_pending);</span>
+<span class="nc" id="L91">        layoutBcgOn = serviceModeImmunization0to9View.findViewById(R.id.layout_bcg_on);</span>
+<span class="nc" id="L92">        txtBcgDoneOn = (TextView) layoutBcgOn.findViewById(R.id.txt_bcg_on);</span>
+
+<span class="nc" id="L94">        btnOpv = (TextView) serviceModeImmunization0to9View.findViewById(R.id.btn_opv);</span>
+<span class="nc" id="L95">        layoutOpvAlert = serviceModeImmunization0to9View.findViewById(R.id.layout_opv_alert);</span>
+<span class="nc" id="L96">        txtOpvDoneOn = (TextView) serviceModeImmunization0to9View.findViewById(R.id.txt_opv_on);</span>
+<span class="nc" id="L97">        txtOpvAlertDueType = (TextView) serviceModeImmunization0to9View.findViewById(R.id.txt_opv_due_type);</span>
+<span class="nc" id="L98">        txtOpvAlertDueOn = (TextView) serviceModeImmunization0to9View.findViewById(R.id.txt_opv_due_on);</span>
+
+<span class="nc" id="L100">        btnHepB = (TextView) serviceModeImmunization0to9View.findViewById(R.id.btn_hep_b_birth);</span>
+<span class="nc" id="L101">        layoutHepBAlert = serviceModeImmunization0to9View.findViewById(R.id.layout_hep_b_birth_alert);</span>
+<span class="nc" id="L102">        txtHepBDoneOn = (TextView) serviceModeImmunization0to9View.findViewById(R.id.txt_hep_b_on);</span>
+<span class="nc" id="L103">        txtHepBAlertDueType = (TextView) serviceModeImmunization0to9View.findViewById(R.id.txt_hep_b_birth_due_type);</span>
+<span class="nc" id="L104">        txtHepBAlertDueOn = (TextView) serviceModeImmunization0to9View.findViewById(R.id.txt_hep_b_birth_due_on);</span>
+
+<span class="nc" id="L106">        txtPentavDoneOn = (TextView) serviceModeImmunization0to9View.findViewById(R.id.txt_pentav_on);</span>
+<span class="nc" id="L107">        btnPentav = (TextView) serviceModeImmunization0to9View.findViewById(R.id.btn_pentav);</span>
+<span class="nc" id="L108">        layoutPentavAlert = serviceModeImmunization0to9View.findViewById(R.id.layout_pentav_alert);</span>
+<span class="nc" id="L109">        txtPentavAlertDueType = (TextView) serviceModeImmunization0to9View.findViewById(R.id.txt_pentav_due_type);</span>
+<span class="nc" id="L110">        txtPentavAlertDueOn = (TextView) serviceModeImmunization0to9View.findViewById(R.id.txt_pentav_due_on);</span>
+
+<span class="nc" id="L112">        txtMeaslesDoneOn = (TextView) serviceModeImmunization9PlusView.findViewById(R.id.txt_measles_on);</span>
+<span class="nc" id="L113">        btnMeasles = (TextView) serviceModeImmunization9PlusView.findViewById(R.id.btn_measles);</span>
+<span class="nc" id="L114">        layoutMeaslesAlert = serviceModeImmunization9PlusView.findViewById(R.id.layout_measles_alert);</span>
+<span class="nc" id="L115">        txtMeaslesAlertDueType = (TextView) serviceModeImmunization9PlusView.findViewById(R.id.txt_measles_due_type);</span>
+<span class="nc" id="L116">        txtMeaslesAlertDueOn = (TextView) serviceModeImmunization9PlusView.findViewById(R.id.txt_measles_due_on);</span>
+
+<span class="nc" id="L118">        txtOpvBoosterDoneOn = (TextView) serviceModeImmunization9PlusView.findViewById(R.id.txt_opv_booster_on);</span>
+<span class="nc" id="L119">        btnOpvBooster = (TextView) serviceModeImmunization9PlusView.findViewById(R.id.btn_opv_booster);</span>
+<span class="nc" id="L120">        layoutOpvBoosterAlert = serviceModeImmunization9PlusView.findViewById(R.id.layout_opv_booster_alert);</span>
+<span class="nc" id="L121">        txtOpvBoosterAlertDueType = (TextView) serviceModeImmunization9PlusView.findViewById(R.id.txt_opv_booster_due_type);</span>
+<span class="nc" id="L122">        txtOpvBoosterAlertDueOn = (TextView) serviceModeImmunization9PlusView.findViewById(R.id.txt_opv_booster_due_on);</span>
+
+<span class="nc" id="L124">        txtDptBoosterDoneOn = (TextView) serviceModeImmunization9PlusView.findViewById(R.id.txt_dpt_booster_on);</span>
+<span class="nc" id="L125">        btnDptBooster = (TextView) serviceModeImmunization9PlusView.findViewById(R.id.btn_dpt_booster);</span>
+<span class="nc" id="L126">        layoutDptBoosterAlert = serviceModeImmunization9PlusView.findViewById(R.id.layout_dpt_booster_alert);</span>
+<span class="nc" id="L127">        txtDptBoosterAlertDueType = (TextView) serviceModeImmunization9PlusView.findViewById(R.id.txt_dpt_booster_due_type);</span>
+<span class="nc" id="L128">        txtDptBoosterAlertDueOn = (TextView) serviceModeImmunization9PlusView.findViewById(R.id.txt_dpt_booster_due_on);</span>
+
+<span class="nc" id="L130">        txtVitaminADoneOn = (TextView) serviceModeImmunization9PlusView.findViewById(R.id.txt_vitamin_a_on);</span>
+<span class="nc" id="L131">        btnVitaminA = (TextView) serviceModeImmunization9PlusView.findViewById(R.id.btn_vitamin_a);</span>
+<span class="nc" id="L132">        layoutVitaminAAlert = serviceModeImmunization9PlusView.findViewById(R.id.layout_vitamin_a_alert);</span>
+<span class="nc" id="L133">        txtVitaminAAlertDueType = (TextView) serviceModeImmunization9PlusView.findViewById(R.id.txt_vitamin_a_due_type);</span>
+<span class="nc" id="L134">        txtVitaminAAlertDueOn = (TextView) serviceModeImmunization9PlusView.findViewById(R.id.txt_vitamin_a_due_on);</span>
+<span class="nc" id="L135">    }</span>
+
+    public ClientProfileView profileInfoLayout() {
+<span class="nc" id="L138">        return profileInfoLayout;</span>
+    }
+
+    public ClientIdDetailsView idDetailsView() {
+<span class="nc" id="L142">        return idDetailsView;</span>
+    }
+
+    public TextView dobView() {
+<span class="nc" id="L146">        return txtDobView;</span>
+    }
+
+    public ImageButton editButton() {
+<span class="nc" id="L150">        return editButton;</span>
+    }
+
+    public ViewGroup serviceModeViewsHolder() {
+<span class="nc" id="L154">        return serviceModeViewsHolder;</span>
+    }
+
+    public ViewGroup serviceModeImmunization9PlusView() {
+<span class="nc" id="L158">        return serviceModeImmunization9PlusView;</span>
+    }
+
+    public ViewGroup serviceModeImmunization0to9View() {
+<span class="nc" id="L162">        return serviceModeImmunization0to9View;</span>
+    }
+
+    public ViewGroup serviceModeOverviewView() {
+<span class="nc" id="L166">        return serviceModeOverviewView;</span>
+    }
+
+    public void hideAllServiceModeOptions() {
+<span class="nc" id="L170">        serviceModeOverviewView().setVisibility(View.GONE);</span>
+<span class="nc" id="L171">        serviceModeImmunization0to9View().setVisibility(View.GONE);</span>
+<span class="nc" id="L172">        serviceModeImmunization9PlusView().setVisibility(View.GONE);</span>
+<span class="nc" id="L173">    }</span>
+
+    public TextView lastServiceDateView() {
+<span class="nc" id="L176">        return txtLastServiceDate;</span>
+    }
+
+    public TextView lastServiceNameView() {
+<span class="nc" id="L180">        return txtLastServiceName;</span>
+    }
+
+    public TextView sickVisitView() {
+<span class="nc" id="L184">        return txtSickVisit;</span>
+    }
+
+    public TextView illnessDateLabelView() {
+<span class="nc" id="L188">        return lblIllnessDate;</span>
+    }
+
+    public TextView illnessView() {
+<span class="nc" id="L192">        return txtIllness;</span>
+    }
+
+    public TextView illnessDateView() {
+<span class="nc" id="L196">        return txtIllnessDate;</span>
+    }
+
+    public View sicknessDetailLayout() {
+<span class="nc" id="L200">        return sicknessDeailLayout;</span>
+    }
+
+    public TextView bcgPendingView() {
+<span class="nc" id="L204">        return txtBcgPendingView;</span>
+    }
+
+    public View bcgDoneLayout() {
+<span class="nc" id="L208">        return layoutBcgOn;</span>
+    }
+
+    public TextView bcgDoneOnView() {
+<span class="nc" id="L212">        return txtBcgDoneOn;</span>
+    }
+
+    public TextView hepBDoneOnView() {
+<span class="nc" id="L216">        return txtHepBDoneOn;</span>
+    }
+
+    public TextView pentavDoneOnView() {
+<span class="nc" id="L220">        return txtPentavDoneOn;</span>
+    }
+
+    public TextView vitaminADoneOnView() {
+<span class="nc" id="L224">        return txtVitaminADoneOn;</span>
+    }
+
+    public TextView dptBoosterDoneOnView() {
+<span class="nc" id="L228">        return txtDptBoosterDoneOn;</span>
+    }
+
+    public TextView opvBoosterDoneOnView() {
+<span class="nc" id="L232">        return txtOpvBoosterDoneOn;</span>
+    }
+
+    public TextView measlesDoneOnView() {
+<span class="nc" id="L236">        return txtMeaslesDoneOn;</span>
+    }
+
+    public TextView opvDoneOnView() {
+<span class="nc" id="L240">        return txtOpvDoneOn;</span>
+    }
+
+    public View layoutPentavAlertView() {
+<span class="nc" id="L244">        return layoutPentavAlert;</span>
+    }
+
+    public TextView addPentavView() {
+<span class="nc" id="L248">        return btnPentav;</span>
+    }
+
+    public View layoutHepBAlertView() {
+<span class="nc" id="L252">        return layoutHepBAlert;</span>
+    }
+
+    public TextView addHepBView() {
+<span class="nc" id="L256">        return btnHepB;</span>
+    }
+
+    public View layoutOpvAlertView() {
+<span class="nc" id="L260">        return layoutOpvAlert;</span>
+    }
+
+    public TextView addOpvView() {
+<span class="nc" id="L264">        return btnOpv;</span>
+    }
+
+    public TextView opvAlertDueOnView() {
+<span class="nc" id="L268">        return txtOpvAlertDueOn;</span>
+    }
+
+    public TextView hepBAlertDueOnView() {
+<span class="nc" id="L272">        return txtHepBAlertDueOn;</span>
+    }
+
+    public TextView pentavAlertDueOnView() {
+<span class="nc" id="L276">        return txtPentavAlertDueOn;</span>
+    }
+
+    public TextView pentavAlertDueTypeView() {
+<span class="nc" id="L280">        return txtPentavAlertDueType;</span>
+    }
+
+    public TextView hepBAlertDueTypeView() {
+<span class="nc" id="L284">        return txtHepBAlertDueType;</span>
+    }
+
+    public TextView opvAlertDueTypeView() {
+<span class="nc" id="L288">        return txtOpvAlertDueType;</span>
+    }
+
+    public TextView vitaminAAlertDueOnView() {
+<span class="nc" id="L292">        return txtVitaminAAlertDueOn;</span>
+    }
+
+    public TextView vitaminAAlertDueTypeView() {
+<span class="nc" id="L296">        return txtVitaminAAlertDueType;</span>
+    }
+
+    public View layoutVitaminAAlertView() {
+<span class="nc" id="L300">        return layoutVitaminAAlert;</span>
+    }
+
+    public TextView addVitaminAView() {
+<span class="nc" id="L304">        return btnVitaminA;</span>
+    }
+
+    public TextView dptBoosterAlertDueOnView() {
+<span class="nc" id="L308">        return txtDptBoosterAlertDueOn;</span>
+    }
+
+    public TextView dptBoosterAlertDueTypeView() {
+<span class="nc" id="L312">        return txtDptBoosterAlertDueType;</span>
+    }
+
+    public View layoutDptBoosterAlertView() {
+<span class="nc" id="L316">        return layoutDptBoosterAlert;</span>
+    }
+
+    public TextView addDptBoosterView() {
+<span class="nc" id="L320">        return btnDptBooster;</span>
+    }
+
+    public TextView opvBoosterAlertDueOnView() {
+<span class="nc" id="L324">        return txtOpvBoosterAlertDueOn;</span>
+    }
+
+    public TextView opvBoosterAlertDueTypeView() {
+<span class="nc" id="L328">        return txtOpvBoosterAlertDueType;</span>
+    }
+
+    public View layoutOpvBoosterAlertView() {
+<span class="nc" id="L332">        return layoutOpvBoosterAlert;</span>
+    }
+
+    public TextView addOpvBoosterView() {
+<span class="nc" id="L336">        return btnOpvBooster;</span>
+    }
+
+    public TextView measlesAlertDueOnView() {
+<span class="nc" id="L340">        return txtMeaslesAlertDueOn;</span>
+    }
+
+    public TextView measlesAlertDueTypeView() {
+<span class="nc" id="L344">        return txtMeaslesAlertDueType;</span>
+    }
+
+    public View layoutMeaslesAlertView() {
+<span class="nc" id="L348">        return layoutMeaslesAlert;</span>
+    }
+
+    public TextView addMeaslesView() {
+<span class="nc" id="L352">        return btnMeasles;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.1.201405082137</span></div></body></html>

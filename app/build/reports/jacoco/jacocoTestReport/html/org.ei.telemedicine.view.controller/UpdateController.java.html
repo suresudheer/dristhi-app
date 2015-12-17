@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>UpdateController.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">org.ei.telemedicine.view.controller</a> &gt; <span class="el_source">UpdateController.java</span></div><h1>UpdateController.java</h1><pre class="source lang-java linenums">package org.ei.telemedicine.view.controller;
+
+import android.webkit.WebView;
+
+import org.ei.telemedicine.Context;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class UpdateController {
+    private WebView webView;
+<span class="nc" id="L12">    private boolean pageHasFinishedLoading = false;</span>
+    private List&lt;String&gt; urlsToLoad;
+
+<span class="nc" id="L15">    public UpdateController(WebView webView) {</span>
+<span class="nc" id="L16">        this.webView = webView;</span>
+<span class="nc" id="L17">        urlsToLoad = new ArrayList&lt;String&gt;();</span>
+<span class="nc" id="L18">    }</span>
+
+    public void pageHasFinishedLoading() {
+<span class="nc" id="L21">        pageHasFinishedLoading = true;</span>
+<span class="nc" id="L22">        flushUrlLoads();</span>
+<span class="nc" id="L23">    }</span>
+
+    private void flushUrlLoads() {
+<span class="nc bnc" id="L26" title="All 2 branches missed.">        if (pageHasFinishedLoading) {</span>
+<span class="nc bnc" id="L27" title="All 2 branches missed.">            for (String url : urlsToLoad) {</span>
+<span class="nc bnc" id="L28" title="All 2 branches missed.">                if (webView != null)</span>
+<span class="nc" id="L29">                    webView.loadUrl(url);</span>
+<span class="nc" id="L30">            }</span>
+        }
+<span class="nc" id="L32">    }</span>
+
+    public void destroy() {
+<span class="nc" id="L35">        webView = null;</span>
+<span class="nc" id="L36">    }</span>
+
+    public void updateANMDetails() {
+<span class="nc" id="L39">        UpdateANMDetailsTask task = new UpdateANMDetailsTask(Context.getInstance().anmController());</span>
+<span class="nc" id="L40">        task.fetch(new AfterANMDetailsFetchListener() {</span>
+            @Override
+            public void afterFetch(String anmDetails) {
+<span class="nc bnc" id="L43" title="All 2 branches missed.">                if (webView != null)</span>
+<span class="nc" id="L44">                    webView.loadUrl(&quot;javascript:pageView.updateANMDetails('&quot; + anmDetails + &quot;')&quot;);</span>
+<span class="nc" id="L45">            }</span>
+        });
+<span class="nc" id="L47">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.1.201405082137</span></div></body></html>

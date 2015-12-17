@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>ActionData.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">org.ei.telemedicine.dto</a> &gt; <span class="el_source">ActionData.java</span></div><h1>ActionData.java</h1><pre class="source lang-java linenums">package org.ei.telemedicine.dto;
+
+import java.util.HashMap;
+import java.util.Map;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
+
+public class ActionData
+{
+  private Map&lt;String, String&gt; data;
+  private Map&lt;String, String&gt; details;
+  private String target;
+  private String type;
+  
+  private ActionData(String paramString1, String paramString2)
+<span class="fc" id="L19">  {</span>
+<span class="fc" id="L20">    this.target = paramString1;</span>
+<span class="fc" id="L21">    this.type = paramString2;</span>
+<span class="fc" id="L22">    this.data = new HashMap();</span>
+<span class="fc" id="L23">    this.details = new HashMap();</span>
+<span class="fc" id="L24">  }</span>
+  
+  public static ActionData closeMother(String paramString)
+  {
+<span class="fc" id="L28">    return new ActionData(&quot;mother&quot;, &quot;close&quot;).with(&quot;reasonForClose&quot;, paramString);</span>
+  }
+  
+  public static ActionData createAlert(BeneficiaryType paramBeneficiaryType, String paramString1, String paramString2, AlertStatus paramAlertStatus, DateTime paramDateTime1, DateTime paramDateTime2)
+  {
+<span class="fc" id="L33">    return new ActionData(&quot;alert&quot;, &quot;createAlert&quot;).with(&quot;beneficiaryType&quot;, paramBeneficiaryType.value()).with(&quot;scheduleName&quot;, paramString1).with(&quot;visitCode&quot;, paramString2).with(&quot;alertStatus&quot;, paramAlertStatus.value()).with(&quot;startDate&quot;, paramDateTime1.toLocalDate().toString()).with(&quot;expiryDate&quot;, paramDateTime2.toLocalDate().toString());</span>
+  }
+
+  public static ActionData from(String paramString1, String paramString2, Map&lt;String, String&gt; paramMap1, Map&lt;String, String&gt; paramMap2)
+  {
+<span class="nc" id="L38">    ActionData localActionData = new ActionData(paramString2, paramString1);</span>
+<span class="nc" id="L39">    localActionData.data.putAll(paramMap1);</span>
+<span class="nc" id="L40">    localActionData.details.putAll(paramMap2);</span>
+<span class="nc" id="L41">    return localActionData;</span>
+  }
+  
+  public static ActionData markAlertAsClosed(String paramString1, String paramString2)
+  {
+<span class="fc" id="L46">    return new ActionData(&quot;alert&quot;, &quot;closeAlert&quot;).with(&quot;visitCode&quot;, paramString1).with(&quot;completionDate&quot;, paramString2);</span>
+  }
+  
+  public static ActionData reportForIndicator(String paramString1, String paramString2, String paramString3)
+  {
+<span class="fc" id="L51">    return new ActionData(&quot;report&quot;, paramString1).with(&quot;annualTarget&quot;, paramString2).with(&quot;monthlySummaries&quot;, paramString3);</span>
+  }
+  
+  private ActionData with(String paramString1, String paramString2)
+  {
+<span class="fc" id="L56">    this.data.put(paramString1, paramString2);</span>
+<span class="fc" id="L57">    return this;</span>
+  }
+  
+  private ActionData withDetails(Map&lt;String, String&gt; paramMap)
+  {
+<span class="nc" id="L62">    this.details.putAll(paramMap);</span>
+<span class="nc" id="L63">    return this;</span>
+  }
+  
+  public Map&lt;String, String&gt; data()
+  {
+<span class="fc" id="L68">    return this.data;</span>
+  }
+  
+  public Map&lt;String, String&gt; details()
+  {
+<span class="nc" id="L73">    return this.details;</span>
+  }
+  
+  public boolean equals(Object paramObject)
+  {
+<span class="nc" id="L78">    return EqualsBuilder.reflectionEquals(this, paramObject, new String[0]);</span>
+  }
+  
+  public int hashCode()
+  {
+<span class="nc" id="L83">    return HashCodeBuilder.reflectionHashCode(this, new String[0]);</span>
+  }
+  
+  public String target()
+  {
+<span class="nc" id="L88">    return this.target;</span>
+  }
+  
+  public String toString()
+  {
+<span class="nc" id="L93">    return ToStringBuilder.reflectionToString(this);</span>
+  }
+  
+  public String type()
+  {
+<span class="nc" id="L98">    return this.type;</span>
+  }
+}
+
+
+
+/* Location:           C:\Users\appaji.r\Downloads\classes-dex2.jar
+
+ * Qualified Name:     org.ei.drishti.dto.ActionData
+
+ * JD-Core Version:    0.7.0.1
+
+ */
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.1.201405082137</span></div></body></html>

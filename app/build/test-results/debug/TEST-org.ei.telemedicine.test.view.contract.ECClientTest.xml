@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="org.ei.telemedicine.test.view.contract.ECClientTest" tests="15" skipped="0" failures="0" errors="0" timestamp="2015-12-17T05:22:15" hostname="DIPL-PC0206" time="0.007">
+  <properties/>
+  <testcase name="testShouldReturnUpperCaseIUDPerson" classname="org.ei.telemedicine.test.view.contract.ECClientTest" time="0.0"/>
+  <testcase name="testShouldSatisfyFilterForBlankName" classname="org.ei.telemedicine.test.view.contract.ECClientTest" time="0.0"/>
+  <testcase name="testShouldReturn0YearsWhenDOBIs4_4_2014" classname="org.ei.telemedicine.test.view.contract.ECClientTest" time="0.002"/>
+  <testcase name="testShouldNotSatisfyFilterForNameNotStartingWithSameCharacters" classname="org.ei.telemedicine.test.view.contract.ECClientTest" time="0.0"/>
+  <testcase name="testShouldReturn34YearsWhenDOBIs4_4_1980" classname="org.ei.telemedicine.test.view.contract.ECClientTest" time="0.0"/>
+  <testcase name="testShouldReturnFalseForIsBPLWhenEconomicStatusIsAPLOrNothing" classname="org.ei.telemedicine.test.view.contract.ECClientTest" time="0.0"/>
+  <testcase name="testShouldReturnTrueWhenClientContainsCasteAsSC" classname="org.ei.telemedicine.test.view.contract.ECClientTest" time="0.0"/>
+  <testcase name="testShouldReturnTrueWhenClientContainsCasteAsST" classname="org.ei.telemedicine.test.view.contract.ECClientTest" time="0.0"/>
+  <testcase name="testShouldSatisfyFilterForNameStartingWithSameCharacters" classname="org.ei.telemedicine.test.view.contract.ECClientTest" time="0.0"/>
+  <testcase name="testShouldNotSatisfyFilterForECNumberNotStartingWithSameCharacters" classname="org.ei.telemedicine.test.view.contract.ECClientTest" time="0.0"/>
+  <testcase name="testShouldReturnTrueForIsBPLWhenEconomicStatusIsBPL" classname="org.ei.telemedicine.test.view.contract.ECClientTest" time="0.001"/>
+  <testcase name="testShouldSatisfyFilterForECNumberStartingWithSameCharacters" classname="org.ei.telemedicine.test.view.contract.ECClientTest" time="0.0"/>
+  <testcase name="testShouldSatisfyFilterForBlankECNumber" classname="org.ei.telemedicine.test.view.contract.ECClientTest" time="0.0"/>
+  <testcase name="testShouldReturn1YearsWhenDOBIs18_4_2013" classname="org.ei.telemedicine.test.view.contract.ECClientTest" time="0.0"/>
+  <testcase name="testShouldReturnUpperCaseIUDPlace" classname="org.ei.telemedicine.test.view.contract.ECClientTest" time="0.0"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

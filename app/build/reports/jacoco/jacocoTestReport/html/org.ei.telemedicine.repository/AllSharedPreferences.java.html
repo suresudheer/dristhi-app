@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>AllSharedPreferences.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">org.ei.telemedicine.repository</a> &gt; <span class="el_source">AllSharedPreferences.java</span></div><h1>AllSharedPreferences.java</h1><pre class="source lang-java linenums">package org.ei.telemedicine.repository;
+
+import android.content.SharedPreferences;
+
+import static org.ei.telemedicine.AllConstants.ANC_REGISTERS_KEY;
+import static org.ei.telemedicine.AllConstants.CHILD_REGISTERS_KEY;
+import static org.ei.telemedicine.AllConstants.DEFAULT_LOCALE;
+import static org.ei.telemedicine.AllConstants.EC_REGISTERS_KEY;
+import static org.ei.telemedicine.AllConstants.FP_REGISTERS_KEY;
+import static org.ei.telemedicine.AllConstants.IS_SYNC_IN_PROGRESS_PREFERENCE_KEY;
+import static org.ei.telemedicine.AllConstants.LANGUAGE_PREFERENCE_KEY;
+import static org.ei.telemedicine.AllConstants.PNC_REGISTERS_KEY;
+
+public class AllSharedPreferences {
+
+    public static final String ANM_IDENTIFIER_PREFERENCE_KEY = &quot;anmIdentifier&quot;;
+    public static final String IS_FIRST_LOGIN = &quot;isFirstLogin&quot;;
+    public static final String USER_ROLE_PREFERENCE_KEY = &quot;userRole&quot;;
+    public static final String FORM_NAME_KEY = &quot;formName&quot;;
+    public static final String VILLAGE_NAME_KEY = &quot;villageName&quot;;
+    public static final String ENTITY_KEY = &quot;entityId&quot;;
+    public static final String PASSWORD = &quot;password&quot;;
+    public static final String SCREEN = &quot;screen&quot;;
+    private SharedPreferences preferences;
+
+<span class="nc" id="L26">    public AllSharedPreferences(SharedPreferences preferences) {</span>
+<span class="nc" id="L27">        this.preferences = preferences;</span>
+<span class="nc" id="L28">    }</span>
+
+    public boolean clearPreferences() {
+<span class="nc" id="L31">        return preferences.edit().clear().commit();</span>
+    }
+
+    public void updateUserRole(String userRole) {
+<span class="nc" id="L35">        preferences.edit().putString(USER_ROLE_PREFERENCE_KEY, userRole).commit();</span>
+<span class="nc" id="L36">    }</span>
+
+    public String getUserRole() {
+<span class="nc" id="L39">        return preferences.getString(USER_ROLE_PREFERENCE_KEY, &quot;&quot;);</span>
+    }
+
+    public void saveFormName(String formName, String entityId) {
+<span class="nc" id="L43">        preferences.edit().putString(FORM_NAME_KEY, formName).commit();</span>
+<span class="nc" id="L44">        preferences.edit().putString(ENTITY_KEY, entityId).commit();</span>
+<span class="nc" id="L45">    }</span>
+
+    public void saveVillageName(String villageName) {
+<span class="nc" id="L48">        preferences.edit().putString(VILLAGE_NAME_KEY, villageName).commit();</span>
+<span class="nc" id="L49">    }</span>
+
+    public String getVillageName() {
+<span class="nc" id="L52">        return preferences.getString(VILLAGE_NAME_KEY, &quot;&quot;);</span>
+    }
+
+    public String getFormName() {
+<span class="nc" id="L56">        return preferences.getString(FORM_NAME_KEY, &quot;&quot;);</span>
+    }
+
+    public String getEntityKey() {
+<span class="nc" id="L60">        return preferences.getString(ENTITY_KEY, &quot;&quot;);</span>
+    }
+
+    public void updateANMUserName(String userName) {
+<span class="nc" id="L64">        preferences.edit().putString(ANM_IDENTIFIER_PREFERENCE_KEY, userName).commit();</span>
+<span class="nc" id="L65">    }</span>
+
+    public void updateIsFirstLogin(boolean isFirstLogin) {
+<span class="nc" id="L68">        preferences.edit().putBoolean(IS_FIRST_LOGIN, isFirstLogin).commit();</span>
+<span class="nc" id="L69">    }</span>
+
+    public boolean fetchIsFirstLogin() {
+<span class="nc" id="L72">        return preferences.getBoolean(IS_FIRST_LOGIN, false);</span>
+    }
+
+    public void savePwd(String password) {
+<span class="nc" id="L76">        preferences.edit().putString(PASSWORD, password).commit();</span>
+<span class="nc" id="L77">    }</span>
+
+    public void saveCurrent(String currentScreen) {
+<span class="nc" id="L80">        preferences.edit().putString(SCREEN, currentScreen).commit();</span>
+<span class="nc" id="L81">    }</span>
+
+    public String getScreen() {
+<span class="nc" id="L84">        return preferences.getString(SCREEN, &quot;&quot;);</span>
+    }
+
+    public String getPwd() {
+<span class="nc" id="L88">        return preferences.getString(PASSWORD, &quot;&quot;);</span>
+    }
+
+    public String fetchRegisteredANM() {
+<span class="nc" id="L92">        return preferences.getString(ANM_IDENTIFIER_PREFERENCE_KEY, &quot;&quot;).trim();</span>
+    }
+
+    public String fetchLanguagePreference() {
+<span class="nc" id="L96">        return preferences.getString(LANGUAGE_PREFERENCE_KEY, DEFAULT_LOCALE).trim();</span>
+    }
+
+    public void saveLanguagePreference(String languagePreference) {
+<span class="nc" id="L100">        preferences.edit().putString(LANGUAGE_PREFERENCE_KEY, languagePreference).commit();</span>
+<span class="nc" id="L101">    }</span>
+
+    public Boolean fetchIsSyncInProgress() {
+<span class="nc" id="L104">        return preferences.getBoolean(IS_SYNC_IN_PROGRESS_PREFERENCE_KEY, false);</span>
+    }
+
+
+    public void saveIsSyncInProgress(Boolean isSyncInProgress) {
+<span class="nc" id="L109">        preferences.edit().putBoolean(IS_SYNC_IN_PROGRESS_PREFERENCE_KEY, isSyncInProgress).commit();</span>
+<span class="nc" id="L110">    }</span>
+
+    public Boolean getIsSyncInProgress() {
+<span class="nc" id="L113">        return preferences.getBoolean(IS_SYNC_IN_PROGRESS_PREFERENCE_KEY, false);</span>
+    }
+
+
+    public void saveECRegisterState(Boolean state) {
+<span class="nc" id="L118">        preferences.edit().putBoolean(EC_REGISTERS_KEY, state).commit();</span>
+<span class="nc" id="L119">    }</span>
+
+    public void saveFPRegisterState(Boolean state) {
+<span class="nc" id="L122">        preferences.edit().putBoolean(FP_REGISTERS_KEY, state).commit();</span>
+<span class="nc" id="L123">    }</span>
+
+    public void saveANCRegisterState(Boolean state) {
+<span class="nc" id="L126">        preferences.edit().putBoolean(ANC_REGISTERS_KEY, state).commit();</span>
+<span class="nc" id="L127">    }</span>
+
+    public void savePNCRegisterState(Boolean state) {
+<span class="nc" id="L130">        preferences.edit().putBoolean(PNC_REGISTERS_KEY, state).commit();</span>
+<span class="nc" id="L131">    }</span>
+
+    public void saveCHILDRegisterState(Boolean state) {
+<span class="nc" id="L134">        preferences.edit().putBoolean(CHILD_REGISTERS_KEY, state).commit();</span>
+<span class="nc" id="L135">    }</span>
+
+    public Boolean registerState(String registername) {
+<span class="nc" id="L138">        return preferences.getBoolean(registername, true);</span>
+    }
+}
+
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.1.201405082137</span></div></body></html>

@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>ProfileImage.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">org.ei.telemedicine.domain</a> &gt; <span class="el_source">ProfileImage.java</span></div><h1>ProfileImage.java</h1><pre class="source lang-java linenums">package org.ei.telemedicine.domain;
+
+/**
+ * Created by naveen on 9/18/15.
+ */
+public class ProfileImage {
+
+    private String imageid;
+
+    private String anmId;
+
+    private String entityID;
+
+    private String contenttype;
+
+    private String filepath;
+
+    private String syncStatus;
+
+
+<span class="nc" id="L21">    public ProfileImage(String imageid, String anmId, String entityID, String contenttype, String filepath, String syncStatus) {</span>
+<span class="nc" id="L22">        this.imageid = imageid;</span>
+<span class="nc" id="L23">        this.entityID = entityID;</span>
+<span class="nc" id="L24">        this.anmId = anmId;</span>
+<span class="nc" id="L25">        this.contenttype = contenttype;</span>
+<span class="nc" id="L26">        this.filepath = filepath;</span>
+<span class="nc" id="L27">        this.syncStatus = syncStatus;</span>
+
+<span class="nc" id="L29">    }</span>
+
+
+    public String getImageid() {
+<span class="nc" id="L33">        return imageid;</span>
+
+    }
+
+
+    public void setImageid(String imageid) {
+<span class="nc" id="L39">        this.imageid = imageid;</span>
+
+<span class="nc" id="L41">    }</span>
+
+
+    public String getAnmId() {
+<span class="nc" id="L45">        return anmId;</span>
+
+    }
+
+
+    public void setAnmId(String anmId) {
+<span class="nc" id="L51">        this.anmId = anmId;</span>
+
+<span class="nc" id="L53">    }</span>
+
+
+    public String getEntityID() {
+<span class="nc" id="L57">        return entityID;</span>
+
+    }
+
+
+    public void setEntityID(String entityID) {
+<span class="nc" id="L63">        this.entityID = entityID;</span>
+
+<span class="nc" id="L65">    }</span>
+
+
+    public String getContenttype() {
+<span class="nc" id="L69">        return contenttype;</span>
+
+    }
+
+
+    public void setContenttype(String contenttype) {
+<span class="nc" id="L75">        this.contenttype = contenttype;</span>
+
+<span class="nc" id="L77">    }</span>
+
+
+    public String getFilepath() {
+<span class="nc" id="L81">        return filepath;</span>
+
+    }
+
+
+    public void setFilepath(String filepath) {
+<span class="nc" id="L87">        this.filepath = filepath;</span>
+
+<span class="nc" id="L89">    }</span>
+
+
+    public String getSyncStatus() {
+<span class="nc" id="L93">        return syncStatus;</span>
+
+    }
+
+
+    public void setSyncStatus(String syncStatus) {
+<span class="nc" id="L99">        this.syncStatus = syncStatus;</span>
+<span class="nc" id="L100">    }</span>
+
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.1.201405082137</span></div></body></html>

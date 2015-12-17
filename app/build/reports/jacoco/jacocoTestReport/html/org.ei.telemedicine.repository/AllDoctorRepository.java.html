@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>AllDoctorRepository.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">org.ei.telemedicine.repository</a> &gt; <span class="el_source">AllDoctorRepository.java</span></div><h1>AllDoctorRepository.java</h1><pre class="source lang-java linenums">package org.ei.telemedicine.repository;
+
+import android.content.ContentValues;
+import android.database.Cursor;
+import android.util.Log;
+
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
+import net.sqlcipher.database.SQLiteDatabase;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import org.ei.telemedicine.doctor.DoctorData;
+//import org.ei.telemedicine.doctor.DoctorDomain;
+import org.ei.telemedicine.domain.Mother;
+import org.ei.telemedicine.domain.TestDomain;
+import org.json.JSONException;
+
+public class AllDoctorRepository {
+    private DoctorRepository doctorRepository;
+<span class="nc" id="L24">    private String TAG = &quot;AllDoctorRepository&quot;;</span>
+
+<span class="nc" id="L26">    public AllDoctorRepository(DoctorRepository doctorRepository) {</span>
+<span class="nc" id="L27">        this.doctorRepository = doctorRepository;</span>
+<span class="nc" id="L28">    }</span>
+
+    public List&lt;Mother&gt; all() {
+<span class="nc" id="L31">        return doctorRepository.allmotherData();</span>
+    }
+
+    public int getChildCount() {
+<span class="nc" id="L35">        return 0;</span>
+    }
+
+    public void addData(DoctorData doctorData) {
+<span class="nc" id="L39">        Log.e(TAG, doctorData.getFormInformation());</span>
+<span class="nc" id="L40">        doctorRepository.add(doctorData);</span>
+<span class="nc" id="L41">    }</span>
+
+    public int getCount(String type) {
+<span class="nc" id="L44">        int countByType = doctorRepository.getCountByType(type);</span>
+<span class="nc" id="L45">        Log.e(TAG, type + &quot; Count= &quot; + countByType);</span>
+<span class="nc" id="L46">        return countByType;</span>
+    }
+    public ArrayList&lt;String&gt; getVillages(){
+<span class="nc" id="L49">        return doctorRepository.allVillages();</span>
+    }
+
+    public List&lt;DoctorData&gt; getAllConsultants() {
+        try {
+<span class="nc" id="L54">            return doctorRepository.allConsultantsData();</span>
+<span class="nc" id="L55">        } catch (JSONException e) {</span>
+<span class="nc" id="L56">            e.printStackTrace();</span>
+        }
+<span class="nc" id="L58">        return null;</span>
+    }
+
+    public void clearDataNoPoc() {
+<span class="nc" id="L62">        doctorRepository.deleteAll();</span>
+<span class="nc" id="L63">    }</span>
+
+    public String getPocInfoCaseId(String caseId) {
+<span class="nc" id="L66">        String data = doctorRepository.getPocInfo(caseId);</span>
+<span class="nc" id="L67">        return data;</span>
+    }
+
+    public void updatePocInLocal(String caseId, String pocInfo, String pocPendingInfo) {
+<span class="nc" id="L71">        doctorRepository.updateDetails(caseId, pocInfo, pocPendingInfo);</span>
+<span class="nc" id="L72">    }</span>
+
+    public void deleteUseCaseId(String caseId) {
+<span class="nc" id="L75">        doctorRepository.deleteUseCaseId(caseId);</span>
+<span class="nc" id="L76">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.1.201405082137</span></div></body></html>

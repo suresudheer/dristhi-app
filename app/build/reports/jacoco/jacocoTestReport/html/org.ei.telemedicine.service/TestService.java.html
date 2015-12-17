@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>TestService.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">org.ei.telemedicine.service</a> &gt; <span class="el_source">TestService.java</span></div><h1>TestService.java</h1><pre class="source lang-java linenums">package org.ei.telemedicine.service;
+
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
+
+import org.ei.telemedicine.AllConstants;
+import org.ei.telemedicine.domain.TimelineEvent;
+import org.ei.telemedicine.domain.form.FormSubmission;
+import org.ei.telemedicine.repository.AllBeneficiaries;
+import org.ei.telemedicine.repository.AllTestRepository;
+import org.ei.telemedicine.repository.AllTimelineEvents;
+
+public class TestService {
+	private final AllTestRepository allTest;
+	private final AllTimelineEvents allTimelineEvents;
+	private final AllBeneficiaries allBeneficiaries;
+
+	public TestService(AllTestRepository allTest,
+			AllTimelineEvents allTimelineEvents,
+<span class="nc" id="L19">			AllBeneficiaries allBeneficiaries) {</span>
+<span class="nc" id="L20">		this.allTest = allTest;</span>
+<span class="nc" id="L21">		this.allTimelineEvents = allTimelineEvents;</span>
+<span class="nc" id="L22">		this.allBeneficiaries = allBeneficiaries;</span>
+<span class="nc" id="L23">	}</span>
+
+	public void register(FormSubmission submission) {
+<span class="nc bnc" id="L26" title="All 2 branches missed.">		if (isNotBlank(submission</span>
+				.getFieldValue(AllConstants.CommonFormFields.SUBMISSION_DATE))) {
+<span class="nc" id="L28">			allTimelineEvents</span>
+					.add(TimelineEvent.forECRegistered(
+							submission.entityId(),
+							submission
+									.getFieldValue(AllConstants.CommonFormFields.SUBMISSION_DATE)));
+		}
+<span class="nc" id="L34">	}</span>
+
+//	public void closePregnantwoman(FormSubmission submission) {
+//		allTest.close(submission.entityId());
+//		allBeneficiaries.closeAllMothersForEC(submission.entityId());
+//	}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.1.201405082137</span></div></body></html>

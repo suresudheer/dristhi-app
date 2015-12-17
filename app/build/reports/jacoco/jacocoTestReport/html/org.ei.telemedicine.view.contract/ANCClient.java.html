@@ -1,0 +1,492 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>ANCClient.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">org.ei.telemedicine.view.contract</a> &gt; <span class="el_source">ANCClient.java</span></div><h1>ANCClient.java</h1><pre class="source lang-java linenums">package org.ei.telemedicine.view.contract;
+
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.ei.telemedicine.domain.ANCServiceType;
+import org.ei.telemedicine.util.IntegerUtil;
+import org.ei.telemedicine.util.Log;
+import org.joda.time.LocalDateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.ISODateTimeFormat;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.*;
+
+import static org.apache.commons.lang3.StringUtils.EMPTY;
+import static org.apache.commons.lang3.StringUtils.isBlank;
+import static org.ei.telemedicine.AllConstants.ECRegistrationFields.*;
+import static org.ei.telemedicine.AllConstants.*;
+import static org.ei.telemedicine.AllConstants.ANCVisitFields.BP_DIASTOLIC;
+import static org.ei.telemedicine.AllConstants.ANCVisitFields.BP_SYSTOLIC;
+import static org.ei.telemedicine.domain.ANCServiceType.*;
+import static org.ei.telemedicine.util.DateUtil.formatDate;
+import static org.ei.telemedicine.util.DateUtil.today;
+import static org.ei.telemedicine.util.StringUtil.humanize;
+import static org.ei.telemedicine.util.StringUtil.replaceAndHumanize;
+import static org.ei.telemedicine.view.contract.AlertDTO.emptyAlert;
+import static org.ei.telemedicine.view.contract.ServiceProvidedDTO.emptyService;
+import static org.joda.time.Days.daysBetween;
+import static org.joda.time.LocalDateTime.parse;
+
+public class ANCClient implements ANCSmartRegisterClient {
+
+    public static final String CATEGORY_ANC = &quot;anc&quot;;
+    public static final String CATEGORY_TT = &quot;tt&quot;;
+    public static final String CATEGORY_IFA = &quot;ifa&quot;;
+    public static final String CATEGORY_HB = &quot;hb&quot;;
+    public static final String CATEGORY_DELIVERY_PLAN = &quot;delivery_plan&quot;;
+    public static final String CATEGORY_PNC = &quot;pnc&quot;;
+
+<span class="fc" id="L44">    private static final String[] SERVICE_CATEGORIES = {CATEGORY_ANC, CATEGORY_TT, CATEGORY_IFA,</span>
+            CATEGORY_HB, CATEGORY_DELIVERY_PLAN, CATEGORY_PNC};
+
+<span class="fc" id="L47">    private static Map&lt;String, List&lt;ANCServiceType&gt;&gt; categoriesToServiceTypeMap = new HashMap&lt;String, List&lt;ANCServiceType&gt;&gt;();</span>
+
+    static {
+<span class="fc" id="L50">        categoriesToServiceTypeMap.put(CATEGORY_ANC, Arrays.asList(ANC_1, ANC_2, ANC_3, ANC_4));</span>
+<span class="fc" id="L51">        categoriesToServiceTypeMap.put(CATEGORY_TT, Arrays.asList(TT_1, TT_2, TT_BOOSTER));</span>
+<span class="fc" id="L52">        categoriesToServiceTypeMap.put(CATEGORY_IFA, Arrays.asList(IFA));</span>
+<span class="fc" id="L53">        categoriesToServiceTypeMap.put(CATEGORY_HB, Arrays.asList(HB_TEST));</span>
+<span class="fc" id="L54">        categoriesToServiceTypeMap.put(CATEGORY_DELIVERY_PLAN, Arrays.asList(DELIVERY_PLAN));</span>
+<span class="fc" id="L55">        categoriesToServiceTypeMap.put(CATEGORY_PNC, Arrays.asList(PNC));</span>
+<span class="fc" id="L56">    }</span>
+
+    private String entityId;
+    private String ec_number;
+    private String village;
+    private String name;
+    private String thayi;
+    private String ancNumber;
+    private String age;
+    private String husbandName;
+    private String photo_path;
+    private String edd;
+    private String lmp;
+    private boolean isHighPriority;
+    private boolean isHighRisk;
+    private String riskFactors;
+    private String locationStatus;
+    private String caste;
+    private String economicStatus;
+    private String pocInfo;
+    private List&lt;AlertDTO&gt; alerts;
+    private List&lt;ServiceProvidedDTO&gt; services_provided;
+    private String entityIdToSavePhoto;
+    private String ashaPhoneNumber;
+    private Map&lt;String, Visits&gt; serviceToVisitsMap;
+
+
+<span class="fc" id="L83">    public ANCClient(String entityId, String village, String name, String thayi, String edd, String lmp) {</span>
+<span class="fc" id="L84">        this.entityId = entityId;</span>
+<span class="fc" id="L85">        this.village = village;</span>
+<span class="fc" id="L86">        this.name = name;</span>
+<span class="fc" id="L87">        this.thayi = thayi;</span>
+<span class="fc" id="L88">        this.edd = parse(edd, DateTimeFormat.forPattern(FORM_DATE_TIME_FORMAT)).toString(ISODateTimeFormat.dateTime());</span>
+<span class="fc" id="L89">        this.lmp = lmp;</span>
+<span class="fc" id="L90">        this.serviceToVisitsMap = new HashMap&lt;String, Visits&gt;();</span>
+<span class="fc" id="L91">    }</span>
+
+    @Override
+    public String entityId() {
+<span class="nc" id="L95">        return entityId;</span>
+    }
+
+    @Override
+    public String name() {
+<span class="nc" id="L100">        return name;</span>
+    }
+
+    @Override
+    public String displayName() {
+<span class="nc" id="L105">        return humanize(name);</span>
+    }
+
+    @Override
+    public String village() {
+<span class="nc" id="L110">        return humanize(village);</span>
+    }
+
+    public String wifeName() {
+<span class="nc" id="L114">        return name;</span>
+    }
+
+    @Override
+    public String husbandName() {
+<span class="nc" id="L119">        return humanize(husbandName);</span>
+    }
+
+    @Override
+    public int age() {
+<span class="nc" id="L124">        return IntegerUtil.tryParse(age, 0);</span>
+    }
+
+    @Override
+    public int ageInDays() {
+<span class="nc" id="L129">        return IntegerUtil.tryParse(age, 0) * 365;</span>
+    }
+
+    @Override
+    public String ageInString() {
+<span class="nc" id="L134">        return &quot;(&quot; + age + &quot;)&quot;;</span>
+    }
+
+    @Override
+    public boolean isSC() {
+<span class="nc bnc" id="L139" title="All 4 branches missed.">        return caste != null &amp;&amp; caste.equalsIgnoreCase(SC_VALUE);</span>
+    }
+
+    @Override
+    public boolean isST() {
+<span class="nc bnc" id="L144" title="All 4 branches missed.">        return caste != null &amp;&amp; caste.equalsIgnoreCase(ST_VALUE);</span>
+    }
+
+    @Override
+    public boolean isHighRisk() {
+<span class="nc" id="L149">        return isHighRisk;</span>
+    }
+
+    @Override
+    public boolean isHighPriority() {
+<span class="nc" id="L154">        return isHighPriority;</span>
+    }
+
+    @Override
+    public boolean isBPL() {
+//        return economicStatus != null &amp;&amp; economicStatus.equalsIgnoreCase(BPL_VALUE);
+<span class="nc bnc" id="L160" title="All 4 branches missed.">        return economicStatus != null &amp;&amp; economicStatus.equalsIgnoreCase(BPL_VALUE);</span>
+    }
+
+    @Override
+    public boolean isPOC() {
+<span class="nc bnc" id="L165" title="All 4 branches missed.">        return pocInfo != null &amp;&amp; !pocInfo.equals(&quot;&quot;);</span>
+    }
+
+    @Override
+    public boolean isPocPending() {
+        try {
+<span class="nc bnc" id="L171" title="All 4 branches missed.">            if (pocInfo != null &amp;&amp; !pocInfo.equals(&quot;&quot;)) {</span>
+<span class="nc" id="L172">                JSONArray docPocInfoArray = new JSONArray(pocInfo);</span>
+<span class="nc bnc" id="L173" title="All 2 branches missed.">                JSONObject pocInfo = docPocInfoArray.length() != 0 ? docPocInfoArray.getJSONObject(docPocInfoArray.length() - 1)</span>
+                        : new JSONObject();
+<span class="nc bnc" id="L175" title="All 2 branches missed.">                if (pocInfo.getString(&quot;pending&quot;).length() != 0) {</span>
+<span class="nc" id="L176">                    android.util.Log.e(&quot;Pen&quot;, name + &quot;---&quot; + pocInfo.getString(&quot;pending&quot;));</span>
+<span class="nc" id="L177">                    return true;</span>
+                }
+            }
+<span class="nc" id="L180">        } catch (JSONException e) {</span>
+<span class="nc" id="L181">            e.printStackTrace();</span>
+<span class="nc" id="L182">        }</span>
+
+<span class="nc" id="L184">        return false;</span>
+    }
+
+
+    @Override
+    public String profilePhotoPath() {
+<span class="nc" id="L190">        return photo_path;</span>
+    }
+
+    @Override
+    public String locationStatus() {
+<span class="nc" id="L195">        return locationStatus;</span>
+    }
+
+    @Override
+    public boolean satisfiesFilter(String filterCriterion) {
+<span class="pc bpc" id="L200" title="1 of 6 branches missed.">        return name.toLowerCase(Locale.getDefault()).startsWith(filterCriterion.toLowerCase())</span>
+                || String.valueOf(ec_number).startsWith(filterCriterion)
+                || String.valueOf(thayi).startsWith(filterCriterion);
+    }
+
+    @Override
+    public int compareName(SmartRegisterClient client) {
+<span class="nc" id="L207">        return this.name().compareToIgnoreCase(client.name());</span>
+    }
+
+    @Override
+    public String eddForDisplay() {
+<span class="nc" id="L212">        return formatDate(parse(edd).toLocalDate().toString(), &quot;dd/MM/yy&quot;);</span>
+    }
+
+    @Override
+    public LocalDateTime edd() {
+<span class="nc" id="L217">        return parse(edd);</span>
+    }
+
+    @Override
+    public String pastDueInDays() {
+<span class="nc bnc" id="L222" title="All 2 branches missed.">        return isBlank(edd) ? &quot;0&quot;</span>
+                : Integer.toString(daysBetween(parse(edd).toLocalDate(), today()).getDays());
+    }
+
+    @Override
+    public String weeksAfterLMP() {
+<span class="nc bnc" id="L228" title="All 2 branches missed.">        return isBlank(lmp) ? &quot;0&quot;</span>
+                : Integer.toString(daysBetween(parse(lmp).toLocalDate(), today()).getDays() / 7);
+    }
+
+    @Override
+    public AlertDTO getAlert(ANCServiceType type) {
+<span class="nc" id="L234">        return serviceToProvide(type.category());</span>
+    }
+
+    @Override
+    public boolean isVisitsDone() {
+<span class="nc" id="L239">        return isServiceProvided(CATEGORY_ANC);</span>
+    }
+
+
+    @Override
+    public boolean isTTDone() {
+<span class="nc" id="L245">        return isServiceProvided(CATEGORY_TT);</span>
+    }
+
+    @Override
+    public boolean isIFADone() {
+<span class="nc" id="L250">        return isServiceProvided(CATEGORY_IFA);</span>
+    }
+
+    @Override
+    public String ifaDoneDate() {
+<span class="nc" id="L255">        return serviceProvidedToACategory(CATEGORY_IFA).servicedOnWithServiceName();</span>
+    }
+
+    @Override
+    public String ttDoneDate() {
+<span class="nc" id="L260">        return serviceProvidedToACategory(CATEGORY_TT).servicedOnWithServiceName();</span>
+    }
+
+    @Override
+    public String visitDoneDateWithVisitName() {
+<span class="nc" id="L265">        return serviceProvidedToACategory(CATEGORY_ANC).servicedOnWithServiceName();</span>
+    }
+
+    @Override
+    public String thayiCardNumber() {
+<span class="nc" id="L270">        return thayi;</span>
+    }
+
+    @Override
+    public String ancNumber() {
+<span class="nc" id="L275">        return ancNumber;</span>
+    }
+
+    @Override
+    public String lmp() {
+<span class="nc" id="L280">        return formatDate(lmp, &quot;dd/MM/yy&quot;);</span>
+    }
+
+    @Override
+    public String riskFactors() {
+<span class="nc bnc" id="L285" title="All 2 branches missed.">        if (StringUtils.isNotEmpty(riskFactors)) {</span>
+<span class="nc" id="L286">            return replaceAndHumanize(riskFactors.trim(), COLON, COMMA_WITH_SPACE);</span>
+        }
+<span class="nc" id="L288">        return null;</span>
+    }
+
+    @Override
+    public List&lt;ServiceProvidedDTO&gt; allServicesProvidedForAServiceType(String serviceType) {
+<span class="nc" id="L293">        List&lt;ServiceProvidedDTO&gt; servicesProvided = new ArrayList&lt;ServiceProvidedDTO&gt;();</span>
+<span class="nc bnc" id="L294" title="All 2 branches missed.">        for (ServiceProvidedDTO serviceProvided : services_provided) {</span>
+<span class="nc bnc" id="L295" title="All 2 branches missed.">            if (serviceProvided.name().equalsIgnoreCase(serviceType))</span>
+<span class="nc" id="L296">                servicesProvided.add(serviceProvided);</span>
+<span class="nc" id="L297">        }</span>
+<span class="nc" id="L298">        return servicesProvided;</span>
+    }
+
+    @Override
+    public String ashaPhoneNumber() {
+<span class="nc" id="L303">        return ashaPhoneNumber;</span>
+    }
+
+
+    public Map&lt;String, Visits&gt; serviceToVisitsMap() {
+<span class="nc" id="L308">        return serviceToVisitsMap;</span>
+    }
+
+    public ANCClient withHusbandName(String husbandName) {
+<span class="fc" id="L312">        this.husbandName = husbandName;</span>
+<span class="fc" id="L313">        return this;</span>
+    }
+
+    public ANCClient withAge(String age) {
+<span class="fc" id="L317">        this.age = age;</span>
+<span class="fc" id="L318">        return this;</span>
+    }
+
+    public ANCClient withECNumber(String ecNumber) {
+<span class="fc" id="L322">        this.ec_number = ecNumber;</span>
+<span class="fc" id="L323">        return this;</span>
+    }
+
+    public ANCClient withANCNumber(String ancNumber) {
+<span class="fc" id="L327">        this.ancNumber = ancNumber;</span>
+<span class="fc" id="L328">        return this;</span>
+    }
+
+    public ANCClient withIsHighPriority(boolean highPriority) {
+<span class="fc" id="L332">        this.isHighPriority = highPriority;</span>
+<span class="fc" id="L333">        return this;</span>
+    }
+
+    public ANCClient withIsHighRisk(boolean highRisk) {
+<span class="fc" id="L337">        this.isHighRisk = highRisk;</span>
+<span class="fc" id="L338">        return this;</span>
+    }
+
+    public ANCClient withIsOutOfArea(boolean outOfArea) {
+<span class="pc bpc" id="L342" title="1 of 2 branches missed.">        this.locationStatus = outOfArea ? OUT_OF_AREA : IN_AREA;</span>
+<span class="fc" id="L343">        return this;</span>
+    }
+
+    public ANCClient withCaste(String caste) {
+<span class="fc" id="L347">        this.caste = caste;</span>
+<span class="fc" id="L348">        return this;</span>
+    }
+
+    public ANCClient withHighRiskReason(String highRiskReason) {
+<span class="fc" id="L352">        this.riskFactors = highRiskReason;</span>
+<span class="fc" id="L353">        return this;</span>
+    }
+
+    public ANCClient withEconomicStatus(String economicStatus) {
+<span class="fc" id="L357">        this.economicStatus = economicStatus;</span>
+<span class="fc" id="L358">        return this;</span>
+    }
+
+    public ANCClient withPoc(String pocInfo) {
+<span class="fc" id="L362">        this.pocInfo = pocInfo;</span>
+<span class="fc" id="L363">        return this;</span>
+    }
+
+    public ANCClient withPhotoPath(String photoPath) {
+<span class="fc" id="L367">        this.photo_path = photoPath;</span>
+<span class="fc" id="L368">        return this;</span>
+    }
+
+    public ANCClient withAlerts(List&lt;AlertDTO&gt; alerts) {
+<span class="fc" id="L372">        this.alerts = alerts;</span>
+<span class="fc" id="L373">        return this;</span>
+    }
+
+    public ANCClient withServicesProvided(List&lt;ServiceProvidedDTO&gt; servicesProvided) {
+<span class="fc" id="L377">        this.services_provided = servicesProvided;</span>
+<span class="fc" id="L378">        return this;</span>
+    }
+
+    public ANCClient withEntityIdToSavePhoto(String entityIdToSavePhoto) {
+<span class="fc" id="L382">        this.entityIdToSavePhoto = entityIdToSavePhoto;</span>
+<span class="fc" id="L383">        return this;</span>
+    }
+
+    public ANCClient withAshaPhoneNumber(String ashaPhoneNumber) {
+<span class="fc" id="L387">        this.ashaPhoneNumber = ashaPhoneNumber;</span>
+<span class="fc" id="L388">        return this;</span>
+    }
+
+    public ANCClient withPreProcess() {
+<span class="fc" id="L392">        initialize(SERVICE_CATEGORIES, serviceToVisitsMap);</span>
+<span class="fc" id="L393">        initializeAllServiceToProvideAndProvided(categoriesToServiceTypeMap);</span>
+<span class="fc" id="L394">        return this;</span>
+    }
+
+    public ANCClient withServiceToVisitMap(Map&lt;String, Visits&gt; serviceToVisitMap) {
+<span class="nc" id="L398">        this.serviceToVisitsMap = serviceToVisitMap;</span>
+<span class="nc" id="L399">        return this;</span>
+    }
+
+    private void initialize(String[] types, Map&lt;String, Visits&gt; serviceToVisitsMap) {
+<span class="fc bfc" id="L403" title="All 2 branches covered.">        for (String type : types) {</span>
+<span class="fc" id="L404">            serviceToVisitsMap.put(type, new Visits());</span>
+        }
+<span class="fc" id="L406">    }</span>
+
+    private void initializeAllServiceToProvideAndProvided(Map&lt;String, List&lt;ANCServiceType&gt;&gt; categoriesToServiceTypeMap) {
+<span class="fc" id="L409">        Set&lt;String&gt; keys = categoriesToServiceTypeMap.keySet();</span>
+<span class="fc bfc" id="L410" title="All 2 branches covered.">        for (String key : keys) {</span>
+<span class="fc" id="L411">            initializeServiceToProvideAndProvided(categoriesToServiceTypeMap.get(key));</span>
+<span class="fc" id="L412">        }</span>
+<span class="fc" id="L413">    }</span>
+
+    private void initializeServiceToProvideAndProvided(List&lt;ANCServiceType&gt; types) {
+<span class="fc bfc" id="L416" title="All 2 branches covered.">        for (ANCServiceType type : types) {</span>
+<span class="fc" id="L417">            initializeServiceToProvideAndProvided(type);</span>
+<span class="fc" id="L418">        }</span>
+<span class="fc" id="L419">    }</span>
+
+    private void initializeServiceToProvideAndProvided(ANCServiceType type) {
+<span class="pc bpc" id="L422" title="1 of 2 branches missed.">        for (AlertDTO alert : alerts) {</span>
+<span class="nc bnc" id="L423" title="All 2 branches missed.">            if (type.equals(alert.ancServiceType())) {</span>
+<span class="nc" id="L424">                serviceToVisitsMap.get(type.category()).toProvide = alert;</span>
+            }
+<span class="nc" id="L426">        }</span>
+
+<span class="pc bpc" id="L428" title="1 of 2 branches missed.">        for (ServiceProvidedDTO service : services_provided) {</span>
+<span class="nc bnc" id="L429" title="All 2 branches missed.">            if (type.equals(service.ancServiceType())) {</span>
+<span class="nc" id="L430">                serviceToVisitsMap.get(type.category()).provided = service;</span>
+            }
+<span class="nc" id="L432">        }</span>
+<span class="fc" id="L433">    }</span>
+
+    private boolean isServiceProvided(String category) {
+<span class="nc bnc" id="L436" title="All 2 branches missed.">        if (StringUtils.isBlank(category)) {</span>
+<span class="nc" id="L437">            return false;</span>
+        }
+<span class="nc bnc" id="L439" title="All 2 branches missed.">        return serviceToVisitsMap.get(category).provided != emptyService;</span>
+    }
+
+    public ServiceProvidedDTO serviceProvidedToACategory(String category) {
+<span class="nc bnc" id="L443" title="All 2 branches missed.">        if (StringUtils.isBlank(category)) {</span>
+<span class="nc" id="L444">            return emptyService;</span>
+        }
+<span class="nc" id="L446">        return serviceToVisitsMap.get(category).provided;</span>
+    }
+
+    private AlertDTO serviceToProvide(String category) {
+<span class="nc bnc" id="L450" title="All 2 branches missed.">        if (StringUtils.isBlank(category)) {</span>
+<span class="nc" id="L451">            return emptyAlert;</span>
+        }
+<span class="nc" id="L453">        return serviceToVisitsMap.get(category).toProvide;</span>
+    }
+
+    @Override
+    public String getHyperTension(ServiceProvidedDTO ancServiceProvided) {
+<span class="nc" id="L458">        String systolic = ancServiceProvided.data().get(BP_SYSTOLIC);</span>
+<span class="nc" id="L459">        String diastolic = ancServiceProvided.data().get(BP_DIASTOLIC);</span>
+<span class="nc bnc" id="L460" title="All 4 branches missed.">        if (StringUtils.isEmpty(systolic) &amp;&amp; StringUtils.isEmpty(diastolic)) {</span>
+<span class="nc" id="L461">            return EMPTY;</span>
+        }
+<span class="nc" id="L463">        return systolic + SLASH_STRING + diastolic;</span>
+    }
+
+    @Override
+    public ServiceProvidedDTO getServiceProvidedDTO(String serviceName) {
+<span class="nc bnc" id="L468" title="All 2 branches missed.">        for (ServiceProvidedDTO serviceProvidedDTO : services_provided) {</span>
+<span class="nc bnc" id="L469" title="All 2 branches missed.">            if (serviceProvidedDTO.name().equalsIgnoreCase(serviceName)) {</span>
+<span class="nc" id="L470">                return serviceProvidedDTO;</span>
+            }
+<span class="nc" id="L472">        }</span>
+<span class="nc" id="L473">        return null;</span>
+    }
+
+
+    @Override
+    public boolean equals(Object o) {
+<span class="fc" id="L479">        return EqualsBuilder.reflectionEquals(this, o);</span>
+    }
+
+    @Override
+    public int hashCode() {
+<span class="fc" id="L484">        return HashCodeBuilder.reflectionHashCode(this);</span>
+    }
+
+    @Override
+    public String toString() {
+<span class="fc" id="L489">        return ToStringBuilder.reflectionToString(this);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.1.201405082137</span></div></body></html>

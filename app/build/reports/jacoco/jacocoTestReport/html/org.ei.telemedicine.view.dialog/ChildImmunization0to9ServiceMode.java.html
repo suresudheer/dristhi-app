@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>ChildImmunization0to9ServiceMode.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">org.ei.telemedicine.view.dialog</a> &gt; <span class="el_source">ChildImmunization0to9ServiceMode.java</span></div><h1>ChildImmunization0to9ServiceMode.java</h1><pre class="source lang-java linenums">package org.ei.telemedicine.view.dialog;
+
+import static org.ei.telemedicine.AllConstants.FormNames.CHILD_IMMUNIZATIONS;
+import static org.ei.telemedicine.view.contract.AlertDTO.emptyAlert;
+
+import org.ei.telemedicine.Context;
+import org.ei.telemedicine.R;
+import org.ei.telemedicine.domain.ChildServiceType;
+import org.ei.telemedicine.provider.SmartRegisterClientsProvider;
+import org.ei.telemedicine.view.activity.SecuredNativeSmartRegisterActivity.ClientsHeaderProvider;
+import org.ei.telemedicine.view.contract.ANCSmartRegisterClient;
+import org.ei.telemedicine.view.contract.AlertDTO;
+import org.ei.telemedicine.view.contract.AlertStatus;
+import org.ei.telemedicine.view.contract.ChildSmartRegisterClient;
+import org.ei.telemedicine.view.contract.FPSmartRegisterClient;
+import org.ei.telemedicine.view.contract.pnc.PNCSmartRegisterClient;
+import org.ei.telemedicine.view.viewHolder.NativeANCSmartRegisterViewHolder;
+import org.ei.telemedicine.view.viewHolder.NativeChildSmartRegisterViewHolder;
+import org.ei.telemedicine.view.viewHolder.NativeFPSmartRegisterViewHolder;
+import org.ei.telemedicine.view.viewHolder.NativePNCSmartRegisterViewHolder;
+import org.ei.telemedicine.view.viewHolder.OnClickFormLauncher;
+
+import android.view.View;
+import android.widget.TextView;
+
+public class ChildImmunization0to9ServiceMode extends ServiceModeOption {
+
+    public ChildImmunization0to9ServiceMode(SmartRegisterClientsProvider provider) {
+<span class="nc" id="L29">        super(provider);</span>
+<span class="nc" id="L30">    }</span>
+
+    @Override
+    public String name() {
+<span class="nc" id="L34">        return Context.getInstance().getStringResource(R.string.child_service_mode_immunization_0_to_9);</span>
+    }
+
+    @Override
+    public ClientsHeaderProvider getHeaderProvider() {
+<span class="nc" id="L39">        return new ClientsHeaderProvider() {</span>
+            @Override
+            public int count() {
+<span class="nc" id="L42">                return 6;</span>
+            }
+
+            @Override
+            public int weightSum() {
+<span class="nc" id="L47">                return 100;</span>
+            }
+
+            @Override
+            public int[] weights() {
+<span class="nc" id="L52">                return new int[]{26, 14, 15, 15, 15, 15};</span>
+            }
+
+            @Override
+            public int[] headerTextResourceIds() {
+<span class="nc" id="L57">                return new int[]{</span>
+                        R.string.header_name, R.string.header_id_no, R.string.header_bcg,
+                        R.string.header_hep_b_birth, R.string.header_opv, R.string.header_pentavalent};
+            }
+        };
+
+    }
+
+    @Override
+    public void setupListView(ChildSmartRegisterClient client,
+                              NativeChildSmartRegisterViewHolder viewHolder,
+                              View.OnClickListener clientSectionClickListener) {
+<span class="nc" id="L69">        viewHolder.serviceModeImmunization0to9View().setVisibility(View.VISIBLE);</span>
+
+<span class="nc" id="L71">        setupBcgLayout(client, viewHolder);</span>
+<span class="nc" id="L72">        setupHepBLayout(client, viewHolder);</span>
+<span class="nc" id="L73">        setupOpvLayout(client, viewHolder);</span>
+<span class="nc" id="L74">        setupPentavLayout(client, viewHolder);</span>
+<span class="nc" id="L75">    }</span>
+
+    @Override
+    public void setupListView(ANCSmartRegisterClient client, NativeANCSmartRegisterViewHolder viewHolder, View.OnClickListener clientSectionClickListener) {
+
+<span class="nc" id="L80">    }</span>
+
+    @Override
+    public void setupListView(FPSmartRegisterClient client, NativeFPSmartRegisterViewHolder viewHolder, View.OnClickListener clientSectionClickListener) {
+
+<span class="nc" id="L85">    }</span>
+
+    @Override
+    public void setupListView(PNCSmartRegisterClient client, NativePNCSmartRegisterViewHolder viewHolder, View.OnClickListener clientSectionClickListener) {
+
+<span class="nc" id="L90">    }</span>
+
+
+    private void setupBcgLayout(ChildSmartRegisterClient client,
+                                NativeChildSmartRegisterViewHolder viewHolder) {
+<span class="nc bnc" id="L95" title="All 2 branches missed.">        if (client.isBcgDone()) {</span>
+<span class="nc" id="L96">            viewHolder.bcgDoneLayout().setVisibility(View.VISIBLE);</span>
+<span class="nc" id="L97">            viewHolder.bcgDoneOnView().setText(&quot;On &quot; + client.bcgDoneDate());</span>
+<span class="nc" id="L98">            viewHolder.bcgPendingView().setVisibility(View.INVISIBLE);</span>
+        } else {
+<span class="nc" id="L100">            viewHolder.bcgDoneLayout().setVisibility(View.INVISIBLE);</span>
+<span class="nc" id="L101">            viewHolder.bcgPendingView().setVisibility(View.VISIBLE);</span>
+<span class="nc" id="L102">            viewHolder.bcgPendingView().setOnClickListener(launchChildImmunizationForm(client));</span>
+        }
+<span class="nc" id="L104">    }</span>
+
+    public void setupHepBLayout(ChildSmartRegisterClient client,
+                                NativeChildSmartRegisterViewHolder viewHolder) {
+<span class="nc bnc" id="L108" title="All 2 branches missed.">        if (client.isHepBDone()) {</span>
+<span class="nc" id="L109">            viewHolder.hepBDoneOnView().setVisibility(View.VISIBLE);</span>
+<span class="nc" id="L110">            viewHolder.hepBDoneOnView().setText(client.hepBDoneDate());</span>
+        } else {
+<span class="nc" id="L112">            viewHolder.hepBDoneOnView().setVisibility(View.INVISIBLE);</span>
+        }
+
+<span class="nc" id="L115">        AlertDTO hepBAlert = client.getAlert(ChildServiceType.HEPB_0);</span>
+<span class="nc bnc" id="L116" title="All 2 branches missed.">        if (hepBAlert != emptyAlert) {</span>
+<span class="nc" id="L117">            viewHolder.addHepBView().setVisibility(View.INVISIBLE);</span>
+<span class="nc" id="L118">            viewHolder.layoutHepBAlertView().setVisibility(View.VISIBLE);</span>
+<span class="nc" id="L119">            viewHolder.layoutHepBAlertView().setOnClickListener(launchChildImmunizationForm(client));</span>
+<span class="nc" id="L120">            setAlertLayout(viewHolder.layoutHepBAlertView(),</span>
+                    viewHolder.hepBAlertDueTypeView(),
+                    viewHolder.hepBAlertDueOnView(),
+                    hepBAlert);
+        } else {
+<span class="nc" id="L125">            viewHolder.layoutHepBAlertView().setVisibility(View.INVISIBLE);</span>
+<span class="nc" id="L126">            viewHolder.addHepBView().setVisibility(View.VISIBLE);</span>
+<span class="nc" id="L127">            viewHolder.addHepBView().setOnClickListener(launchChildImmunizationForm(client));</span>
+        }
+<span class="nc" id="L129">    }</span>
+
+    public void setupOpvLayout(ChildSmartRegisterClient client,
+                               NativeChildSmartRegisterViewHolder viewHolder) {
+<span class="nc bnc" id="L133" title="All 2 branches missed.">        if (client.isOpvDone()) {</span>
+<span class="nc" id="L134">            viewHolder.opvDoneOnView().setVisibility(View.VISIBLE);</span>
+<span class="nc" id="L135">            viewHolder.opvDoneOnView().setText(client.opvDoneDate());</span>
+        } else {
+<span class="nc" id="L137">            viewHolder.opvDoneOnView().setVisibility(View.INVISIBLE);</span>
+        }
+
+<span class="nc" id="L140">        AlertDTO opvAlert = client.getAlert(ChildServiceType.OPV_0);</span>
+<span class="nc bnc" id="L141" title="All 2 branches missed.">        if (opvAlert != emptyAlert) {</span>
+<span class="nc" id="L142">            viewHolder.addOpvView().setVisibility(View.INVISIBLE);</span>
+<span class="nc" id="L143">            viewHolder.layoutOpvAlertView().setVisibility(View.VISIBLE);</span>
+<span class="nc" id="L144">            viewHolder.layoutOpvAlertView().setOnClickListener(launchChildImmunizationForm(client));</span>
+<span class="nc" id="L145">            setAlertLayout(viewHolder.layoutOpvAlertView(),</span>
+                    viewHolder.opvAlertDueTypeView(),
+                    viewHolder.opvAlertDueOnView(),
+                    opvAlert);
+        } else {
+<span class="nc" id="L150">            viewHolder.layoutOpvAlertView().setVisibility(View.INVISIBLE);</span>
+<span class="nc" id="L151">            viewHolder.addOpvView().setVisibility(View.VISIBLE);</span>
+<span class="nc" id="L152">            viewHolder.addOpvView().setOnClickListener(launchChildImmunizationForm(client));</span>
+        }
+<span class="nc" id="L154">    }</span>
+
+    public void setupPentavLayout(ChildSmartRegisterClient client,
+                                  NativeChildSmartRegisterViewHolder viewHolder) {
+<span class="nc bnc" id="L158" title="All 2 branches missed.">        if (client.isPentavDone()) {</span>
+<span class="nc" id="L159">            viewHolder.pentavDoneOnView().setVisibility(View.VISIBLE);</span>
+<span class="nc" id="L160">            viewHolder.pentavDoneOnView().setText(client.pentavDoneDate());</span>
+        } else {
+<span class="nc" id="L162">            viewHolder.pentavDoneOnView().setVisibility(View.INVISIBLE);</span>
+        }
+
+<span class="nc" id="L165">        AlertDTO pentavAlert = client.getAlert(ChildServiceType.PENTAVALENT_1);</span>
+<span class="nc bnc" id="L166" title="All 2 branches missed.">        if (pentavAlert != emptyAlert) {</span>
+<span class="nc" id="L167">            viewHolder.addPentavView().setVisibility(View.INVISIBLE);</span>
+<span class="nc" id="L168">            viewHolder.layoutPentavAlertView().setVisibility(View.VISIBLE);</span>
+<span class="nc" id="L169">            viewHolder.layoutPentavAlertView().setOnClickListener(launchChildImmunizationForm(client));</span>
+<span class="nc" id="L170">            setAlertLayout(viewHolder.layoutPentavAlertView(),</span>
+                    viewHolder.pentavAlertDueTypeView(),
+                    viewHolder.pentavAlertDueOnView(),
+                    pentavAlert);
+        } else {
+<span class="nc" id="L175">            viewHolder.layoutPentavAlertView().setVisibility(View.INVISIBLE);</span>
+<span class="nc" id="L176">            viewHolder.addPentavView().setVisibility(View.VISIBLE);</span>
+<span class="nc" id="L177">            viewHolder.addPentavView().setOnClickListener(launchChildImmunizationForm(client));</span>
+        }
+<span class="nc" id="L179">    }</span>
+    private OnClickFormLauncher launchChildImmunizationForm(ChildSmartRegisterClient client) {
+<span class="nc" id="L181">        return provider().newFormLauncher(CHILD_IMMUNIZATIONS, client.entityId(), null);</span>
+    }
+    private void setAlertLayout(View layout, TextView typeView,
+                                TextView dateView, AlertDTO alert) {
+<span class="nc" id="L185">        typeView.setText(alert.type().shortName());</span>
+<span class="nc" id="L186">        dateView.setText(&quot;due &quot; + alert.shortDate());</span>
+
+<span class="nc" id="L188">        final AlertStatus alertStatus = alert.alertStatus();</span>
+<span class="nc" id="L189">        layout.setBackgroundResource(alertStatus.backgroundColorResourceId());</span>
+<span class="nc" id="L190">        typeView.setTextColor(alertStatus.fontColor());</span>
+<span class="nc" id="L191">        dateView.setTextColor(alertStatus.fontColor());</span>
+<span class="nc" id="L192">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.1.201405082137</span></div></body></html>

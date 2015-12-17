@@ -1,0 +1,404 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>BluetoothService.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">org.ei.telemedicine.bluetooth.pulse</a> &gt; <span class="el_source">BluetoothService.java</span></div><h1>BluetoothService.java</h1><pre class="source lang-java linenums">package org.ei.telemedicine.bluetooth.pulse;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+
+import android.annotation.SuppressLint;
+import android.annotation.TargetApi;
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothSocket;
+import android.content.Context;
+import android.os.Build;
+import android.util.Log;
+
+import com.contec.cms50dj_jar.DeviceCommand;
+
+import org.ei.telemedicine.bluetooth.Constants;
+
+@TargetApi(Build.VERSION_CODES.ECLAIR)
+@SuppressLint(&quot;NewApi&quot;)
+public class BluetoothService implements Constants {
+	// Debugging
+	private static final String TAG = &quot;BluetoothChatService&quot;;
+	private static final boolean D = true;
+
+	// Member fields
+	private final BluetoothAdapter mAdapter;
+
+	private ConnectThread mConnectThread;
+	private ConnectedThread mConnectedThread;
+	private int mState;
+	private CallBack call;
+
+	/**
+	 * Constructor. Prepares a new BluetoothChat session.
+	 * 
+	 * @param context
+	 *            The UI Activity Context
+	 * @paramhandler
+	 *            A Handler to send messages back to the UI Activity
+	 */
+<span class="nc" id="L43">	public BluetoothService(Context context, CallBack c) {</span>
+<span class="nc" id="L44">		mAdapter = BluetoothAdapter.getDefaultAdapter();</span>
+<span class="nc" id="L45">		mState = STATE_NONE;</span>
+<span class="nc" id="L46">		call = c;</span>
+<span class="nc" id="L47">	}</span>
+
+	/**
+	 * Set the current state of the chat connection
+	 * 
+	 * @param state
+	 *            An integer defining the current connection state
+	 */
+	private synchronized void setState(int state) {
+		if (D)
+<span class="nc" id="L57">			Log.d(TAG, &quot;setState() &quot; + mState + &quot; -&gt; &quot; + state);</span>
+<span class="nc" id="L58">		mState = state;</span>
+
+		// Give the new state to the Handler so the UI Activity can update
+<span class="nc" id="L61">	}</span>
+
+	/**
+	 * Return the current connection state.
+	 */
+	public synchronized int getState() {
+<span class="nc" id="L67">		return mState;</span>
+	}
+
+	/**
+	 * Start the chat service. Specifically start AcceptThread to begin a
+	 * session in listening (server) mode. Called by the Activity onResume()
+	 */
+	public synchronized void start() {
+		if (D)
+<span class="nc" id="L76">			Log.d(TAG, &quot;start&quot;);</span>
+
+		// Cancel any thread attempting to make a connection
+<span class="nc bnc" id="L79" title="All 2 branches missed.">		if (mConnectThread != null) {</span>
+<span class="nc" id="L80">			mConnectThread.cancel();</span>
+<span class="nc" id="L81">			mConnectThread = null;</span>
+		}
+
+		// Cancel any thread currently running a connection
+<span class="nc bnc" id="L85" title="All 2 branches missed.">		if (mConnectedThread != null) {</span>
+<span class="nc" id="L86">			mConnectedThread.cancel();</span>
+<span class="nc" id="L87">			mConnectedThread = null;</span>
+		}
+
+		// Start the thread to listen on a BluetoothServerSocket
+
+<span class="nc" id="L92">		setState(STATE_LISTEN);</span>
+<span class="nc" id="L93">	}</span>
+
+	/**
+	 * Start the ConnectThread to initiate a connection to a remote device.
+	 * 
+	 * @param device
+	 *            The BluetoothDevice to connect
+	 */
+	public synchronized void connect(BluetoothDevice device, Context context,
+			int deviceNum) {
+		if (D)
+<span class="nc" id="L104">			Log.d(TAG, &quot;connect to: &quot; + device);</span>
+
+		// Cancel any thread attempting to make a connection
+<span class="nc bnc" id="L107" title="All 2 branches missed.">		if (mState == STATE_CONNECTING) {</span>
+<span class="nc bnc" id="L108" title="All 2 branches missed.">			if (mConnectThread != null) {</span>
+<span class="nc" id="L109">				mConnectThread.cancel();</span>
+<span class="nc" id="L110">				mConnectThread = null;</span>
+			}
+		}
+
+		// Cancel any thread currently running a connection
+<span class="nc bnc" id="L115" title="All 2 branches missed.">		if (mConnectedThread != null) {</span>
+<span class="nc" id="L116">			mConnectedThread.cancel();</span>
+<span class="nc" id="L117">			mConnectedThread = null;</span>
+		}
+
+		// Start the thread to connect with the given device
+<span class="nc" id="L121">		mConnectThread = new ConnectThread(device, context, deviceNum);</span>
+<span class="nc" id="L122">		mConnectThread.start();</span>
+<span class="nc" id="L123">		setState(STATE_CONNECTING);</span>
+<span class="nc" id="L124">	}</span>
+
+	/**
+	 * Start the ConnectedThread to begin managing a Bluetooth connection
+	 * 
+	 * @param socket
+	 *            The BluetoothSocket on which the connection was made
+	 * @param device
+	 *            The BluetoothDevice that has been connected
+	 */
+	public synchronized void connected(BluetoothSocket socket,
+			BluetoothDevice device, Context context, int deviceNum) {
+		if (D)
+<span class="nc" id="L137">			Log.d(TAG, &quot;connected&quot;);</span>
+
+		// Cancel the thread that completed the connection
+<span class="nc bnc" id="L140" title="All 2 branches missed.">		if (mConnectThread != null) {</span>
+<span class="nc" id="L141">			mConnectThread.cancel();</span>
+<span class="nc" id="L142">			mConnectThread = null;</span>
+		}
+
+		// Cancel any thread currently running a connection
+<span class="nc bnc" id="L146" title="All 2 branches missed.">		if (mConnectedThread != null) {</span>
+<span class="nc" id="L147">			mConnectedThread.cancel();</span>
+<span class="nc" id="L148">			mConnectedThread = null;</span>
+		}
+
+		// Cancel the accept thread because we only want to connect to one
+		// device
+
+		// Start the thread to manage the connection and perform transmissions
+<span class="nc" id="L155">		mConnectedThread = new ConnectedThread(socket, context, deviceNum);</span>
+<span class="nc" id="L156">		mConnectedThread.start();</span>
+
+		// Send the name of the connected device back to the UI Activity
+
+<span class="nc" id="L160">		setState(STATE_CONNECTED);</span>
+<span class="nc" id="L161">	}</span>
+
+	/**
+	 * Stop all threads
+	 */
+	public synchronized void stop() {
+		if (D)
+<span class="nc" id="L168">			Log.d(TAG, &quot;stop&quot;);</span>
+<span class="nc bnc" id="L169" title="All 2 branches missed.">		if (mConnectThread != null) {</span>
+<span class="nc" id="L170">			mConnectThread.cancel();</span>
+<span class="nc" id="L171">			mConnectThread = null;</span>
+		}
+<span class="nc bnc" id="L173" title="All 2 branches missed.">		if (mConnectedThread != null) {</span>
+<span class="nc" id="L174">			mConnectedThread.cancel();</span>
+<span class="nc" id="L175">			mConnectedThread = null;</span>
+		}
+
+<span class="nc" id="L178">		setState(STATE_NONE);</span>
+<span class="nc" id="L179">	}</span>
+
+	/**
+	 * Write to the ConnectedThread in an unsynchronized manner
+	 * 
+	 * @param out
+	 *            The bytes to write
+	 * @see ConnectedThread#write(byte[])
+	 */
+	public void write(byte[] out) {
+		// Create temporary object
+		ConnectedThread r;
+		// Synchronize a copy of the ConnectedThread
+<span class="nc" id="L192">		synchronized (this) {</span>
+<span class="nc bnc" id="L193" title="All 2 branches missed.">			if (mState != STATE_CONNECTED)</span>
+<span class="nc" id="L194">				return;</span>
+<span class="nc" id="L195">			r = mConnectedThread;</span>
+<span class="nc" id="L196">		}</span>
+		// Perform the write unsynchronized
+<span class="nc" id="L198">		r.write(out);</span>
+<span class="nc" id="L199">	}</span>
+
+	/**
+	 * Indicate that the connection attempt failed and notify the UI Activity.
+	 */
+	private void connectionFailed() {
+<span class="nc" id="L205">		setState(STATE_LISTEN);</span>
+<span class="nc" id="L206">	}</span>
+
+	/**
+	 * Indicate that the connection was lost and notify the UI Activity.
+	 */
+	private void connectionLost() {
+<span class="nc" id="L212">		setState(STATE_LISTEN);</span>
+
+<span class="nc" id="L214">	}</span>
+
+	/**
+	 * This thread runs while attempting to make an outgoing connection with a
+	 * device. It runs straight through; the connection either succeeds or
+	 * fails.
+	 */
+	private class ConnectThread extends Thread {
+		private final BluetoothSocket mmSocket;
+		private final BluetoothDevice mmDevice;
+		Context context;
+		int deviceNum;
+
+		public ConnectThread(BluetoothDevice device, Context context,
+<span class="nc" id="L228">				int deviceNum) {</span>
+<span class="nc" id="L229">			mmDevice = device;</span>
+<span class="nc" id="L230">			BluetoothSocket tmp = null;</span>
+<span class="nc" id="L231">			this.context = context;</span>
+<span class="nc" id="L232">			this.deviceNum = deviceNum;</span>
+			// Get a BluetoothSocket for a connection with the
+			// given BluetoothDevice
+			try {
+<span class="nc" id="L236">				tmp = device.createRfcommSocketToServiceRecord(MY_UUID);</span>
+<span class="nc" id="L237">			} catch (IOException e) {</span>
+<span class="nc bnc" id="L238" title="All 2 branches missed.">				for (int i = 0; i &lt; 300; i++)</span>
+<span class="nc" id="L239">					Log.e(TAG, &quot;create() failed&quot;, e);</span>
+<span class="nc" id="L240">			}</span>
+<span class="nc" id="L241">			mmSocket = tmp;</span>
+<span class="nc" id="L242">		}</span>
+
+		public void run() {
+<span class="nc bnc" id="L245" title="All 2 branches missed.">			for (int i = 0; i &lt; 10; i++)</span>
+<span class="nc" id="L246">				Log.i(TAG, &quot;BEGIN mConnectThread&quot;);</span>
+<span class="nc" id="L247">			setName(&quot;ConnectThread&quot;);</span>
+
+			// Always cancel discovery because it will slow down a connection
+<span class="nc" id="L250">			mAdapter.cancelDiscovery();</span>
+
+			// Make a connection to the BluetoothSocket
+			try {
+				// This is a blocking call and will only return on a
+				// successful connection or an exception
+<span class="nc" id="L256">				mmSocket.connect();</span>
+
+<span class="nc" id="L258">			} catch (IOException e) {</span>
+<span class="nc" id="L259">				e.printStackTrace();</span>
+
+<span class="nc" id="L261">				connectionFailed();</span>
+				// Close the socket
+				try {
+<span class="nc bnc" id="L264" title="All 2 branches missed.">					if (mmSocket != null) {</span>
+<span class="nc" id="L265">						mmSocket.close();</span>
+					}
+
+<span class="nc" id="L268">				} catch (IOException e2) {</span>
+<span class="nc" id="L269">					Log.e(TAG,</span>
+							&quot;unable to close() socket during connection failure&quot;,
+							e2);
+<span class="nc" id="L272">				}</span>
+				// Start the service over to restart listening mode
+<span class="nc" id="L274">				BluetoothService.this.start();</span>
+<span class="nc" id="L275">				return;</span>
+<span class="nc" id="L276">			}</span>
+
+			// Reset the ConnectThread because we're done
+<span class="nc" id="L279">			synchronized (BluetoothService.this) {</span>
+<span class="nc" id="L280">				mConnectThread = null;</span>
+<span class="nc" id="L281">			}</span>
+
+			// Start the connected thread
+<span class="nc" id="L284">			connected(mmSocket, mmDevice, context, deviceNum);</span>
+<span class="nc" id="L285">		}</span>
+
+		public void cancel() {
+			try {
+<span class="nc" id="L289">				mmSocket.close();</span>
+<span class="nc" id="L290">			} catch (IOException e) {</span>
+<span class="nc" id="L291">				Log.e(TAG, &quot;close() of connect socket failed&quot;, e);</span>
+<span class="nc" id="L292">			}</span>
+<span class="nc" id="L293">		}</span>
+	}
+
+	/**
+	 * This thread runs during a connection with a remote device. It handles all
+	 * incoming and outgoing transmissions.
+	 */
+<span class="nc" id="L300">	public static int x = 0;</span>
+<span class="nc" id="L301">	public static byte[] m_nowtimebyte = null;</span>
+
+	private class ConnectedThread extends Thread {
+		private final BluetoothSocket mmSocket;
+		private final InputStream mmInStream;
+		private final OutputStream mmOutStream;
+		Context context;
+		int deviceNum;
+
+		public ConnectedThread(BluetoothSocket socket, Context context,
+<span class="nc" id="L311">				int deviceNum) {</span>
+
+<span class="nc" id="L313">			this.context = context;</span>
+<span class="nc" id="L314">			this.deviceNum = deviceNum;</span>
+<span class="nc" id="L315">			Log.d(TAG, &quot;create ConnectedThread&quot;);</span>
+<span class="nc" id="L316">			mmSocket = socket;</span>
+<span class="nc" id="L317">			InputStream tmpIn = null;</span>
+<span class="nc" id="L318">			OutputStream tmpOut = null;</span>
+
+			// Get the BluetoothSocket input and output streams
+			try {
+<span class="nc" id="L322">				tmpIn = socket.getInputStream();</span>
+<span class="nc" id="L323">				tmpOut = socket.getOutputStream();</span>
+<span class="nc" id="L324">				Log.i(TAG, &quot;send verify time command&quot;);</span>
+<span class="nc" id="L325">				tmpOut.write(DeviceCommand.deviceConfirmCommand());</span>
+<span class="nc" id="L326">			} catch (IOException e) {</span>
+<span class="nc" id="L327">				Log.e(TAG, &quot;temp sockets not created&quot;, e);</span>
+<span class="nc" id="L328">			}</span>
+
+<span class="nc" id="L330">			mmInStream = tmpIn;</span>
+<span class="nc" id="L331">			mmOutStream = tmpOut;</span>
+<span class="nc" id="L332">		}</span>
+
+		public void run() {
+<span class="nc" id="L335">			Log.i(TAG, &quot;BEGIN mConnectedThread&quot;);</span>
+<span class="nc" id="L336">			byte[] buffer = new byte[1024];</span>
+			int bytes;
+
+<span class="nc" id="L339">			boolean run = true;</span>
+			// Keep listening to the InputStream while connected
+<span class="nc bnc" id="L341" title="All 2 branches missed.">			while (run) {</span>
+				try {
+					// // Read from the InputStream
+<span class="nc" id="L344">					bytes = mmInStream.read(buffer);</span>
+<span class="nc" id="L345">					call.m_mtbuf.write(buffer, bytes, mmOutStream, context,deviceNum);</span>
+<span class="nc" id="L346">					x = x + 1;</span>
+<span class="nc" id="L347">				} catch (IOException e) {</span>
+
+<span class="nc" id="L349">					Log.e(TAG, &quot;disconnected&quot;, e);</span>
+<span class="nc bnc" id="L350" title="All 2 branches missed.">					if (mmInStream != null) {</span>
+						try {
+<span class="nc" id="L352">							mmInStream.close();</span>
+<span class="nc" id="L353">						} catch (IOException e1) {</span>
+							// TODO Auto-generated catch block
+<span class="nc" id="L355">							e1.printStackTrace();</span>
+<span class="nc" id="L356">						}</span>
+					}
+<span class="nc" id="L358">					connectionLost();</span>
+<span class="nc" id="L359">					run = false;</span>
+<span class="nc" id="L360">					break;</span>
+<span class="nc" id="L361">				} catch (Exception e) {</span>
+					// TODO Auto-generated catch block
+<span class="nc" id="L363">					Log.e(TAG, &quot;disconnected2&quot;, e);</span>
+<span class="nc bnc" id="L364" title="All 2 branches missed.">					if (mmInStream != null) {</span>
+						try {
+<span class="nc" id="L366">							mmInStream.close();</span>
+<span class="nc" id="L367">						} catch (IOException e1) {</span>
+							// TODO Auto-generated catch block
+<span class="nc" id="L369">							e1.printStackTrace();</span>
+<span class="nc" id="L370">						}</span>
+					}
+<span class="nc" id="L372">					connectionLost();</span>
+<span class="nc" id="L373">					run = false;</span>
+<span class="nc" id="L374">				}</span>
+			}
+<span class="nc" id="L376">		}</span>
+
+		/**
+		 * Write to the connected OutStream.
+		 * 
+		 * @param buffer
+		 *            The bytes to write
+		 */
+		public void write(byte[] buffer) {
+			try {
+<span class="nc" id="L386">				mmOutStream.write(buffer);</span>
+<span class="nc" id="L387">				Log.e(TAG, &quot;write&quot;);</span>
+
+				// Share the sent message back to the UI Activity
+<span class="nc" id="L390">			} catch (IOException e) {</span>
+<span class="nc" id="L391">				Log.e(TAG, &quot;Exception during write&quot;, e);</span>
+<span class="nc" id="L392">			}</span>
+<span class="nc" id="L393">		}</span>
+
+		public void cancel() {
+			try {
+<span class="nc" id="L397">				mmSocket.close();</span>
+<span class="nc" id="L398">			} catch (IOException e) {</span>
+<span class="nc" id="L399">				Log.e(TAG, &quot;close() of connect socket failed&quot;, e);</span>
+<span class="nc" id="L400">			}</span>
+<span class="nc" id="L401">		}</span>
+	}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.1.201405082137</span></div></body></html>

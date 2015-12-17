@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>ANCOverviewServiceMode.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">org.ei.telemedicine.view.dialog</a> &gt; <span class="el_source">ANCOverviewServiceMode.java</span></div><h1>ANCOverviewServiceMode.java</h1><pre class="source lang-java linenums">package org.ei.telemedicine.view.dialog;
+
+import static android.view.View.VISIBLE;
+import static org.ei.telemedicine.AllConstants.FormNames.ANC_VISIT;
+import static org.ei.telemedicine.AllConstants.FormNames.IFA;
+import static org.ei.telemedicine.AllConstants.FormNames.TT;
+import static org.ei.telemedicine.Context.getInstance;
+import static org.ei.telemedicine.view.contract.AlertDTO.emptyAlert;
+import static org.ei.telemedicine.view.contract.AlertStatus.COMPLETE;
+import static org.ei.telemedicine.view.contract.AlertStatus.INPROCESS;
+
+import org.apache.commons.lang3.StringUtils;
+import org.ei.telemedicine.Context;
+import org.ei.telemedicine.R;
+import org.ei.telemedicine.domain.ANCServiceType;
+import org.ei.telemedicine.provider.SmartRegisterClientsProvider;
+import org.ei.telemedicine.view.activity.SecuredNativeSmartRegisterActivity.ClientsHeaderProvider;
+import org.ei.telemedicine.view.contract.ANCSmartRegisterClient;
+import org.ei.telemedicine.view.contract.AlertDTO;
+import org.ei.telemedicine.view.contract.AlertStatus;
+import org.ei.telemedicine.view.contract.ChildSmartRegisterClient;
+import org.ei.telemedicine.view.contract.FPSmartRegisterClient;
+import org.ei.telemedicine.view.contract.ServiceProvidedDTO;
+import org.ei.telemedicine.view.contract.pnc.PNCSmartRegisterClient;
+import org.ei.telemedicine.view.viewHolder.NativeANCSmartRegisterViewHolder;
+import org.ei.telemedicine.view.viewHolder.NativeChildSmartRegisterViewHolder;
+import org.ei.telemedicine.view.viewHolder.NativeFPSmartRegisterViewHolder;
+import org.ei.telemedicine.view.viewHolder.NativePNCSmartRegisterViewHolder;
+import org.ei.telemedicine.view.viewHolder.OnClickFormLauncher;
+
+import android.graphics.drawable.Drawable;
+import android.view.View;
+import android.widget.TextView;
+
+public class ANCOverviewServiceMode extends ServiceModeOption {
+
+    private Drawable iconPencilDrawable;
+
+
+    public ANCOverviewServiceMode(SmartRegisterClientsProvider provider) {
+<span class="nc" id="L41">        super(provider);</span>
+<span class="nc" id="L42">    }</span>
+
+    @Override
+    public String name() {
+<span class="nc" id="L46">        return Context.getInstance().getStringResource(R.string.anc_service_mode_overview);</span>
+    }
+
+    @Override
+    public ClientsHeaderProvider getHeaderProvider() {
+<span class="nc" id="L51">        return new ClientsHeaderProvider() {</span>
+            @Override
+            public int count() {
+<span class="nc" id="L54">                return 7;</span>
+            }
+
+            @Override
+            public int weightSum() {
+<span class="nc" id="L59">                return 100;</span>
+            }
+
+            @Override
+            public int[] weights() {
+<span class="nc" id="L64">                return new int[]{21, 9, 12, 12, 12, 12, 22};</span>
+            }
+
+            @Override
+            public int[] headerTextResourceIds() {
+<span class="nc" id="L69">                return new int[]{</span>
+                        R.string.header_name, R.string.header_id, R.string.header_anc_status,
+                        R.string.header_risk_factors, R.string.header_visits, R.string.header_tt, R.string.header_ifa};
+            }
+        };
+    }
+
+    @Override
+    public void setupListView(ChildSmartRegisterClient client, NativeChildSmartRegisterViewHolder viewHolder, View.OnClickListener clientSectionClickListener) {
+
+<span class="nc" id="L79">    }</span>
+
+    @Override
+    public void setupListView(ANCSmartRegisterClient client,
+                              NativeANCSmartRegisterViewHolder viewHolder,
+                              View.OnClickListener clientSectionClickListener) {
+<span class="nc" id="L85">        viewHolder.serviceModeOverviewView().setVisibility(VISIBLE);</span>
+
+<span class="nc" id="L87">        setupRiskFactorsView(client, viewHolder);</span>
+<span class="nc" id="L88">        setupANCVisitLayout(client, viewHolder);</span>
+<span class="nc" id="L89">        setupTTLayout(client, viewHolder);</span>
+<span class="nc" id="L90">        setupIFALayout(client, viewHolder);</span>
+<span class="nc" id="L91">        setupEditView(client, viewHolder, clientSectionClickListener);</span>
+<span class="nc" id="L92">    }</span>
+
+    private void setupRiskFactorsView(ANCSmartRegisterClient client, NativeANCSmartRegisterViewHolder viewHolder) {
+<span class="nc" id="L95">        viewHolder.txtRiskFactors().setText(client.riskFactors());</span>
+<span class="nc" id="L96">    }</span>
+
+    @Override
+    public void setupListView(FPSmartRegisterClient client, NativeFPSmartRegisterViewHolder viewHolder, View.OnClickListener clientSectionClickListener) {
+
+<span class="nc" id="L101">    }</span>
+
+    @Override
+    public void setupListView(PNCSmartRegisterClient client, NativePNCSmartRegisterViewHolder viewHolder, View.OnClickListener clientSectionClickListener) {
+
+<span class="nc" id="L106">    }</span>
+
+
+    public void setupANCVisitLayout(ANCSmartRegisterClient client,
+                                    NativeANCSmartRegisterViewHolder viewHolder) {
+<span class="nc bnc" id="L111" title="All 2 branches missed.">        if (client.isVisitsDone()) {</span>
+<span class="nc" id="L112">            viewHolder.txtANCVisitDoneOn().setVisibility(VISIBLE);</span>
+<span class="nc" id="L113">            viewHolder.txtANCVisitDoneOn().setText(client.visitDoneDateWithVisitName());</span>
+        } else {
+<span class="nc" id="L115">            viewHolder.txtANCVisitDoneOn().setVisibility(View.INVISIBLE);</span>
+        }
+
+<span class="nc" id="L118">        AlertDTO ancVisitAlert = client.getAlert(ANCServiceType.ANC_1);</span>
+<span class="nc bnc" id="L119" title="All 2 branches missed.">        if (ancVisitAlert != emptyAlert) {</span>
+<span class="nc" id="L120">            viewHolder.btnAncVisitView().setVisibility(View.INVISIBLE);</span>
+<span class="nc" id="L121">            viewHolder.layoutANCVisitAlert().setVisibility(VISIBLE);</span>
+<span class="nc" id="L122">            viewHolder.layoutANCVisitAlert().setOnClickListener(launchForm(client, ancVisitAlert, ANC_VISIT));</span>
+<span class="nc" id="L123">            setAlertLayout(viewHolder.layoutANCVisitAlert(),</span>
+                    viewHolder.txtANCVisitDueType(),
+                    ancVisitAlert);
+<span class="nc" id="L126">            setAlertDateDetails(client, ancVisitAlert, viewHolder.txtANCVisitAlertDueOn());</span>
+        } else {
+<span class="nc" id="L128">            viewHolder.layoutANCVisitAlert().setVisibility(View.INVISIBLE);</span>
+<span class="nc" id="L129">            viewHolder.btnAncVisitView().setVisibility(View.INVISIBLE);</span>
+<span class="nc" id="L130">            viewHolder.btnAncVisitView().setOnClickListener(launchForm(client, ancVisitAlert, ANC_VISIT));</span>
+        }
+<span class="nc" id="L132">    }</span>
+
+    private void setAlertDateDetails(ANCSmartRegisterClient client, AlertDTO alert, TextView dateView) {
+<span class="nc" id="L135">        ServiceProvidedDTO servicesProvided = client.getServiceProvidedDTO(alert.name());</span>
+<span class="nc bnc" id="L136" title="All 4 branches missed.">        if (isAlertStatusCompleteOrInProcess(alert) &amp;&amp; servicesProvided != null) {</span>
+<span class="nc" id="L137">            setAlertDate(dateView, alert, servicesProvided.ancServicedOn());</span>
+        } else
+<span class="nc" id="L139">            setAlertDate(dateView, alert, null);</span>
+<span class="nc" id="L140">    }</span>
+
+    private boolean isAlertStatusCompleteOrInProcess(AlertDTO ancVisitAlert) {
+<span class="nc bnc" id="L143" title="All 4 branches missed.">        return ancVisitAlert.status().equalsIgnoreCase(INPROCESS.name())</span>
+                || ancVisitAlert.status().equalsIgnoreCase(COMPLETE.name());
+    }
+
+    public void setupTTLayout(ANCSmartRegisterClient client,
+                              NativeANCSmartRegisterViewHolder viewHolder) {
+<span class="nc bnc" id="L149" title="All 2 branches missed.">        if (client.isTTDone()) {</span>
+<span class="nc" id="L150">            viewHolder.txtTTDoneOn().setVisibility(VISIBLE);</span>
+<span class="nc" id="L151">            viewHolder.txtTTDoneOn().setText(client.ttDoneDate());</span>
+        } else {
+<span class="nc" id="L153">            viewHolder.txtTTDoneOn().setVisibility(View.INVISIBLE);</span>
+        }
+
+<span class="nc" id="L156">        AlertDTO ttAlert = client.getAlert(ANCServiceType.TT_1);</span>
+<span class="nc bnc" id="L157" title="All 2 branches missed.">        if (ttAlert != emptyAlert) {</span>
+<span class="nc" id="L158">            viewHolder.btnTTView().setVisibility(View.INVISIBLE);</span>
+<span class="nc" id="L159">            viewHolder.layoutTTAlert().setVisibility(VISIBLE);</span>
+<span class="nc" id="L160">            viewHolder.layoutTTAlert().setOnClickListener(launchForm(client, ttAlert, TT));</span>
+<span class="nc" id="L161">            setAlertLayout(viewHolder.layoutTTAlert(),</span>
+                    viewHolder.txtTTDueType(),
+                    ttAlert);
+<span class="nc" id="L164">            setAlertDateDetails(client, ttAlert, viewHolder.txtTTDueOn());</span>
+        } else {
+<span class="nc" id="L166">            viewHolder.layoutTTAlert().setVisibility(View.INVISIBLE);</span>
+<span class="nc" id="L167">            viewHolder.btnTTView().setVisibility(View.INVISIBLE);</span>
+<span class="nc" id="L168">            viewHolder.btnTTView().setOnClickListener(launchForm(client, ttAlert, TT));</span>
+        }
+<span class="nc" id="L170">    }</span>
+
+    public void setupIFALayout(ANCSmartRegisterClient client,
+                               NativeANCSmartRegisterViewHolder viewHolder) {
+<span class="nc bnc" id="L174" title="All 2 branches missed.">        if (client.isIFADone()) {</span>
+<span class="nc" id="L175">            viewHolder.txtIFADoneOn().setVisibility(VISIBLE);</span>
+<span class="nc" id="L176">            viewHolder.txtIFADoneOn().setText(client.ifaDoneDate());</span>
+        } else {
+<span class="nc" id="L178">            viewHolder.txtIFADoneOn().setVisibility(View.INVISIBLE);</span>
+        }
+
+<span class="nc" id="L181">        AlertDTO ifaAlert = client.getAlert(ANCServiceType.IFA);</span>
+<span class="nc bnc" id="L182" title="All 2 branches missed.">        if (ifaAlert != emptyAlert) {</span>
+<span class="nc" id="L183">            viewHolder.btnIFAView().setVisibility(View.INVISIBLE);</span>
+<span class="nc" id="L184">            viewHolder.layoutIFAAlert().setVisibility(VISIBLE);</span>
+<span class="nc" id="L185">            viewHolder.layoutIFAAlert().setOnClickListener(launchForm(client, ifaAlert, IFA));</span>
+<span class="nc" id="L186">            setAlertLayout(viewHolder.layoutIFAAlert(),</span>
+                    viewHolder.txtIFADueType(),
+                    ifaAlert);
+<span class="nc" id="L189">            viewHolder.txtIFADueType().setText(ifaAlert.name());</span>
+<span class="nc" id="L190">            setAlertDateDetails(client, ifaAlert, viewHolder.txtIFADueOn());</span>
+        } else {
+<span class="nc" id="L192">            viewHolder.layoutIFAAlert().setVisibility(View.INVISIBLE);</span>
+<span class="nc" id="L193">            viewHolder.btnIFAView().setVisibility(View.INVISIBLE);</span>
+<span class="nc" id="L194">            viewHolder.btnIFAView().setOnClickListener(launchForm(client, ifaAlert, IFA));</span>
+        }
+<span class="nc" id="L196">    }</span>
+
+    private void setupEditView(ANCSmartRegisterClient client, NativeANCSmartRegisterViewHolder viewHolder, View.OnClickListener onClickListener) {
+<span class="nc bnc" id="L199" title="All 2 branches missed.">        if (iconPencilDrawable == null) {</span>
+<span class="nc" id="L200">            iconPencilDrawable = Context.getInstance().getDrawableResource(R.drawable.ic_pencil);</span>
+        }
+<span class="nc" id="L202">        viewHolder.btnEditView().setImageDrawable(iconPencilDrawable);</span>
+<span class="nc" id="L203">        viewHolder.btnEditView().setOnClickListener(onClickListener);</span>
+<span class="nc" id="L204">        viewHolder.btnEditView().setTag(client);</span>
+<span class="nc" id="L205">    }</span>
+
+    private OnClickFormLauncher launchForm(ANCSmartRegisterClient client, AlertDTO alert, String formName) {
+<span class="nc" id="L208">        return provider().newFormLauncher(formName, client.entityId(), &quot;{\&quot;entityId\&quot;:\&quot;&quot; + client.entityId() + &quot;\&quot;,\&quot;alertName\&quot;:\&quot;&quot; + alert.name() + &quot;\&quot;}&quot;);</span>
+    }
+
+    private void setAlertLayout(View layout, TextView typeView,
+                                AlertDTO alert) {
+
+<span class="nc" id="L214">        typeView.setText(alert.ancServiceType().shortName());</span>
+
+<span class="nc" id="L216">        final AlertStatus alertStatus = alert.alertStatus();</span>
+<span class="nc" id="L217">        layout.setBackgroundResource(alertStatus.backgroundColorResourceId());</span>
+<span class="nc" id="L218">        typeView.setTextColor(alertStatus.fontColor());</span>
+<span class="nc" id="L219">    }</span>
+
+    private void setAlertDate(TextView dateView, AlertDTO alert, String serviceDate) {
+<span class="nc bnc" id="L222" title="All 2 branches missed.">        if (StringUtils.isNotEmpty(serviceDate))</span>
+<span class="nc" id="L223">            dateView.setText(serviceDate);</span>
+        else
+<span class="nc" id="L225">            dateView.setText(getInstance().getStringResource(R.string.str_due) + alert.shortDate());</span>
+<span class="nc" id="L226">        dateView.setTextColor(alert.alertStatus().fontColor());</span>
+<span class="nc" id="L227">    }</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.1.201405082137</span></div></body></html>

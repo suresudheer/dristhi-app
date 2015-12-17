@@ -1,0 +1,330 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>NativeDoctorActivity.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">org.ei.telemedicine.doctor</a> &gt; <span class="el_source">NativeDoctorActivity.java</span></div><h1>NativeDoctorActivity.java</h1><pre class="source lang-java linenums">package org.ei.telemedicine.doctor;
+
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.app.Fragment;
+import android.app.FragmentTransaction;
+import android.app.ProgressDialog;
+import android.content.ComponentName;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.database.DataSetObserver;
+import android.os.AsyncTask;
+import android.os.Bundle;
+import android.os.Environment;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.util.Log;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.ListView;
+import android.widget.ProgressBar;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import org.ei.telemedicine.AllConstants;
+import org.ei.telemedicine.Context;
+import org.ei.telemedicine.R;
+import org.ei.telemedicine.event.Listener;
+import org.ei.telemedicine.repository.AllDoctorRepository;
+
+import org.ei.telemedicine.sync.SyncAfterFetchListener;
+import org.ei.telemedicine.sync.SyncProgressIndicator;
+import org.ei.telemedicine.sync.UpdateActionsTask;
+import org.ei.telemedicine.view.activity.LoginActivity;
+import org.ei.telemedicine.view.customControls.CustomFontTextView;
+import org.json.JSONObject;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.channels.FileChannel;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Locale;
+
+import static com.google.common.collect.Iterables.concat;
+import static com.google.common.collect.Iterables.toArray;
+import static java.lang.String.valueOf;
+import static java.util.Arrays.asList;
+import static org.ei.telemedicine.doctor.DoctorFormDataConstants.*;
+import static org.ei.telemedicine.doctor.DoctorFormDataConstants.visit_type;
+import static org.ei.telemedicine.event.Event.ACTION_HANDLED;
+import static org.ei.telemedicine.event.Event.SYNC_COMPLETED;
+import static org.ei.telemedicine.event.Event.SYNC_STARTED;
+
+/**
+ * Created by naveen on 5/20/15.
+ */
+
+<span class="nc" id="L69">public class NativeDoctorActivity extends Activity implements View.OnClickListener {</span>
+    ListView lv_pending_consultants;
+    ImageButton ib_start_sync_doc_data, ib_clear_search, ib_filter_selection, ib_sort_selection, ib_logout;
+    ProgressBar sync_progressBar;
+    ImageView iv_profile;
+    EditText edt_search;
+    TextView tv_anc_count, tv_pnc_count, tv_child_count;
+    int anc_count, pnc_count, child_count;
+    AllDoctorRepository allDoctorRepository;
+    private Context context;
+
+    PendingConsultantBaseAdapter adapter;
+
+    List&lt;DoctorData&gt; doctorDatas;
+    static ArrayList&lt;DoctorData&gt; doctorDataArrayList;
+<span class="nc" id="L84">    private String TAG = &quot;NativeDoctorActivity&quot;;</span>
+
+
+    Dialog popup_dialog;
+    Object obj;
+    private MenuItem updateMenuItem;
+    private static final String DIALOG_TAG = &quot;dialog&quot;;
+    public static org.ei.telemedicine.view.customControls.CustomFontTextView sorted_by_name, village_name_view;
+
+<span class="nc" id="L93">    private Listener&lt;Boolean&gt; onSyncStartListener = new Listener&lt;Boolean&gt;() {</span>
+        @Override
+        public void onEvent(Boolean data) {
+<span class="nc bnc" id="L96" title="All 4 branches missed.">            if (ib_start_sync_doc_data != null &amp;&amp; sync_progressBar != null) {</span>
+<span class="nc" id="L97">                sync_progressBar.setVisibility(View.VISIBLE);</span>
+<span class="nc" id="L98">                ib_start_sync_doc_data.setVisibility(View.INVISIBLE);</span>
+            }
+<span class="nc" id="L100">        }</span>
+    };
+<span class="nc" id="L102">    private Listener&lt;Boolean&gt; onSyncCompleteListener = new Listener&lt;Boolean&gt;() {</span>
+        @Override
+        public void onEvent(Boolean data) {
+<span class="nc bnc" id="L105" title="All 4 branches missed.">            if (ib_start_sync_doc_data != null &amp;&amp; sync_progressBar != null) {</span>
+<span class="nc" id="L106">                sync_progressBar.setVisibility(View.INVISIBLE);</span>
+<span class="nc" id="L107">                ib_start_sync_doc_data.setVisibility(View.VISIBLE);</span>
+            }
+<span class="nc" id="L109">            updateInfo(adapter);</span>
+<span class="nc" id="L110">        }</span>
+    };
+<span class="nc" id="L112">    private Listener&lt;String&gt; updateANMDetailsListener = new Listener&lt;String&gt;() {</span>
+        @Override
+        public void onEvent(String data) {
+<span class="nc" id="L115">            updateInfo(adapter);</span>
+<span class="nc" id="L116">            Toast.makeText(NativeDoctorActivity.this, &quot;Completed&quot;, Toast.LENGTH_SHORT).show();</span>
+<span class="nc" id="L117">        }</span>
+    };
+
+    private ArrayList&lt;DoctorData&gt; updateRegisterCounts() {
+<span class="nc" id="L121">        ArrayList&lt;DoctorData&gt; _doctorDataArrayList = new ArrayList&lt;DoctorData&gt;();</span>
+<span class="nc" id="L122">        _doctorDataArrayList.addAll(allDoctorRepository.getAllConsultants());</span>
+
+<span class="nc bnc" id="L124" title="All 10 branches missed.">        if (allDoctorRepository != null &amp;&amp; tv_anc_count != null &amp;&amp; tv_pnc_count != null &amp;&amp; tv_child_count != null &amp;&amp; lv_pending_consultants != null) {</span>
+<span class="nc" id="L125">            anc_count = 0;</span>
+<span class="nc" id="L126">            pnc_count = 0;</span>
+<span class="nc" id="L127">            child_count = 0;</span>
+<span class="nc bnc" id="L128" title="All 2 branches missed.">            if (_doctorDataArrayList.size() != 0) {</span>
+<span class="nc bnc" id="L129" title="All 2 branches missed.">                for (DoctorData doctorDataInfo : _doctorDataArrayList) {</span>
+<span class="nc bnc" id="L130" title="All 2 branches missed.">                    if (doctorDataInfo.getVisitType().equalsIgnoreCase(&quot;ANC&quot;))</span>
+<span class="nc" id="L131">                        anc_count = anc_count + 1;</span>
+<span class="nc bnc" id="L132" title="All 2 branches missed.">                    else if (doctorDataInfo.getVisitType().equalsIgnoreCase(&quot;PNC&quot;))</span>
+<span class="nc" id="L133">                        pnc_count = pnc_count + 1;</span>
+                    else
+<span class="nc" id="L135">                        child_count = child_count + 1;</span>
+<span class="nc" id="L136">                }</span>
+//                tv_anc_count.setText(anc_count + &quot;&quot;);
+<span class="nc" id="L138">                tv_pnc_count.setText(pnc_count + &quot;&quot;);</span>
+<span class="nc" id="L139">                tv_child_count.setText(child_count + &quot;&quot;);</span>
+            }
+        }
+<span class="nc" id="L142">        tv_anc_count.setText(allDoctorRepository.getCount(DoctorFormDataConstants.ancvisit) + &quot;&quot;);</span>
+<span class="nc" id="L143">        return _doctorDataArrayList;</span>
+    }
+
+    public void updateInfo(PendingConsultantBaseAdapter pendingConsultantBaseAdapter) {
+<span class="nc" id="L147">        ArrayList&lt;DoctorData&gt; doctorDatas = updateRegisterCounts();</span>
+<span class="nc bnc" id="L148" title="All 2 branches missed.">        if (pendingConsultantBaseAdapter == null)</span>
+<span class="nc" id="L149">            pendingConsultantBaseAdapter = new PendingConsultantBaseAdapter(NativeDoctorActivity.this, doctorDatas, this);</span>
+<span class="nc" id="L150">        pendingConsultantBaseAdapter.notifyDataSetChanged(doctorDatas);</span>
+<span class="nc" id="L151">    }</span>
+
+
+    private void setupViews() {
+<span class="nc" id="L155">        village_name_view = (CustomFontTextView) findViewById(R.id.village);</span>
+<span class="nc" id="L156">        sorted_by_name = (CustomFontTextView) findViewById(R.id.sorted_by);</span>
+
+<span class="nc" id="L158">        lv_pending_consultants = (ListView) findViewById(R.id.consultants_list);</span>
+<span class="nc" id="L159">        ib_start_sync_doc_data = (ImageButton) findViewById(R.id.start_sync_doc_data);</span>
+<span class="nc" id="L160">        sync_progressBar = (ProgressBar) findViewById(R.id.doc_client_list_progress);</span>
+<span class="nc" id="L161">        iv_profile = (ImageView) findViewById(R.id.iv_profile);</span>
+<span class="nc" id="L162">        tv_anc_count = (TextView) findViewById(R.id.anc_count);</span>
+<span class="nc" id="L163">        tv_pnc_count = (TextView) findViewById(R.id.pnc_count);</span>
+<span class="nc" id="L164">        tv_child_count = (TextView) findViewById(R.id.child_count);</span>
+<span class="nc" id="L165">        edt_search = (EditText) findViewById(R.id.edt_doc_search);</span>
+
+<span class="nc" id="L167">        ib_clear_search = (ImageButton) findViewById(R.id.ib_doc_search_cancel);</span>
+<span class="nc" id="L168">        ib_filter_selection = (ImageButton) findViewById(R.id.ib_filter_selection);</span>
+<span class="nc" id="L169">        ib_sort_selection = (ImageButton) findViewById(R.id.ib_sort_selection);</span>
+<span class="nc" id="L170">        ib_logout = (ImageButton) findViewById(R.id.ib_logout);</span>
+
+<span class="nc" id="L172">        ib_start_sync_doc_data.setOnClickListener(this);</span>
+<span class="nc" id="L173">        ib_filter_selection.setOnClickListener(this);</span>
+<span class="nc" id="L174">        ib_sort_selection.setOnClickListener(this);</span>
+<span class="nc" id="L175">        ib_clear_search.setOnClickListener(this);</span>
+<span class="nc" id="L176">        ib_logout.setOnClickListener(this);</span>
+<span class="nc" id="L177">    }</span>
+
+    private void initalize() {
+<span class="nc" id="L180">        SYNC_STARTED.addListener(onSyncStartListener);</span>
+<span class="nc" id="L181">        SYNC_COMPLETED.addListener(onSyncCompleteListener);</span>
+<span class="nc" id="L182">        ACTION_HANDLED.addListener(updateANMDetailsListener);</span>
+<span class="nc" id="L183">        context = Context.getInstance().updateApplicationContext(this.getApplicationContext());</span>
+<span class="nc" id="L184">        allDoctorRepository = context.allDoctorRepository();</span>
+<span class="nc" id="L185">    }</span>
+
+    public void updateFromServer() {
+//        allDoctorRepository.clearDataNoPoc();
+<span class="nc" id="L189">        UpdateActionsTask updateActionsTask = new UpdateActionsTask(</span>
+                this, context.actionService(), context.formSubmissionSyncService(), new SyncProgressIndicator());
+<span class="nc" id="L191">        updateActionsTask.updateFromServer(new SyncAfterFetchListener(),&quot;&quot;);</span>
+<span class="nc" id="L192">    }</span>
+
+    @Override
+    protected void onResume() {
+<span class="nc" id="L196">        super.onResume();</span>
+<span class="nc bnc" id="L197" title="All 4 branches missed.">        if (adapter != null &amp;&amp; lv_pending_consultants != null)</span>
+<span class="nc" id="L198">            updateInfo(adapter);</span>
+<span class="nc" id="L199">    }</span>
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+<span class="nc" id="L203">        super.onCreate(savedInstanceState);</span>
+<span class="nc" id="L204">        setContentView(R.layout.doctor_home_screen);</span>
+//        _context = Context.getInstance().updateApplicationContext(this.getApplicationContext());
+
+<span class="nc" id="L207">        setupViews();</span>
+<span class="nc" id="L208">        initalize();</span>
+
+//        updateRegisterCounts();
+<span class="nc" id="L211">        adapter = new PendingConsultantBaseAdapter(NativeDoctorActivity.this, updateRegisterCounts(), this);</span>
+<span class="nc" id="L212">        lv_pending_consultants.setAdapter(adapter);</span>
+<span class="nc" id="L213">        updateInfo(adapter);</span>
+
+<span class="nc" id="L215">        edt_search.addTextChangedListener(new TextWatcher() {</span>
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+<span class="nc" id="L219">            }</span>
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+<span class="nc" id="L224">            }</span>
+
+            @Override
+            public void afterTextChanged(Editable s) {
+<span class="nc" id="L228">                ib_clear_search.setVisibility(View.VISIBLE);</span>
+<span class="nc" id="L229">                String text = edt_search.getText().toString().toLowerCase(Locale.getDefault());</span>
+<span class="nc" id="L230">                adapter.notifyDataSetChanged(adapter.filter(text, updateRegisterCounts()));</span>
+
+<span class="nc" id="L232">            }</span>
+        });
+<span class="nc" id="L234">    }</span>
+
+    @Override
+    protected void onDestroy() {
+<span class="nc" id="L238">        super.onDestroy();</span>
+<span class="nc" id="L239">        SYNC_STARTED.removeListener(onSyncStartListener);</span>
+<span class="nc" id="L240">        SYNC_COMPLETED.removeListener(onSyncCompleteListener);</span>
+<span class="nc" id="L241">        ACTION_HANDLED.removeListener(updateANMDetailsListener);</span>
+<span class="nc" id="L242">    }</span>
+
+    public void showFragmentDialog(ArrayList&lt;String&gt; arrayList, String tag) {
+<span class="nc" id="L245">        FragmentTransaction ft = getFragmentManager().beginTransaction();</span>
+<span class="nc" id="L246">        Fragment prev = getFragmentManager().findFragmentByTag(DIALOG_TAG);</span>
+<span class="nc bnc" id="L247" title="All 2 branches missed.">        if (prev != null) {</span>
+<span class="nc" id="L248">            ft.remove(prev);</span>
+        }
+<span class="nc" id="L250">        ft.addToBackStack(null);</span>
+
+<span class="nc" id="L252">        DoctorSmartRegisterDialogFragment.newInstance(this, arrayList, tag, adapter, updateRegisterCounts())</span>
+                .show(ft, DIALOG_TAG);
+<span class="nc" id="L254">    }</span>
+
+    public void logoutUser() {
+<span class="nc" id="L257">        context.userService().logout();</span>
+<span class="nc" id="L258">        Intent intent = new Intent(this, LoginActivity.class);</span>
+<span class="nc" id="L259">        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);</span>
+<span class="nc" id="L260">        startActivity(intent);</span>
+<span class="nc" id="L261">        this.finish();</span>
+<span class="nc" id="L262">    }</span>
+
+    private void backup() {
+<span class="nc" id="L265">        File sd = Environment.getExternalStorageDirectory();</span>
+<span class="nc" id="L266">        File data = Environment.getDataDirectory();</span>
+<span class="nc" id="L267">        FileChannel source = null;</span>
+<span class="nc" id="L268">        FileChannel destination = null;</span>
+<span class="nc" id="L269">        String SAMPLE_DB_NAME = &quot;drishti.db&quot;;</span>
+<span class="nc" id="L270">        String currentDBPath = &quot;/data/&quot; + &quot;org.ei.telemedicine&quot; + &quot;/databases/&quot; + SAMPLE_DB_NAME;</span>
+<span class="nc" id="L271">        String backupDBPath = SAMPLE_DB_NAME;</span>
+<span class="nc" id="L272">        File currentDB = new File(data, currentDBPath);</span>
+<span class="nc" id="L273">        File backupDB = new File(sd, backupDBPath);</span>
+        try {
+<span class="nc" id="L275">            source = new FileInputStream(currentDB).getChannel();</span>
+<span class="nc" id="L276">            destination = new FileOutputStream(backupDB).getChannel();</span>
+<span class="nc" id="L277">            destination.transferFrom(source, 0, source.size());</span>
+<span class="nc" id="L278">            source.close();</span>
+<span class="nc" id="L279">            destination.close();</span>
+<span class="nc" id="L280">            Toast.makeText(this, &quot;DB Exported!&quot;, Toast.LENGTH_LONG).show();</span>
+<span class="nc" id="L281">        } catch (IOException e) {</span>
+<span class="nc" id="L282">            e.printStackTrace();</span>
+<span class="nc" id="L283">        }</span>
+<span class="nc" id="L284">        Toast.makeText(this, &quot;Comple&quot;, Toast.LENGTH_SHORT).show();</span>
+
+<span class="nc" id="L286">    }</span>
+
+    @Override
+    public void onClick(View v) {
+<span class="nc bnc" id="L290" title="All 6 branches missed.">        switch (v.getId()) {</span>
+            case R.id.ib_doc_search_cancel:
+<span class="nc" id="L292">                edt_search.setText(&quot;&quot;);</span>
+<span class="nc" id="L293">                ib_clear_search.setVisibility(View.INVISIBLE);</span>
+<span class="nc" id="L294">                break;</span>
+            case R.id.ib_filter_selection:
+<span class="nc" id="L296">                ArrayList&lt;String&gt; villages_with_all = new ArrayList&lt;String&gt;();</span>
+<span class="nc" id="L297">                villages_with_all.add(&quot;All&quot;);</span>
+<span class="nc" id="L298">                villages_with_all.addAll(Context.getInstance().allDoctorRepository().getVillages());</span>
+<span class="nc" id="L299">                showFragmentDialog(villages_with_all, &quot;Filter&quot;);</span>
+<span class="nc" id="L300">                break;</span>
+            case R.id.ib_sort_selection:
+<span class="nc" id="L302">                ArrayList&lt;String&gt; sortingList = new ArrayList&lt;String&gt;();</span>
+<span class="nc" id="L303">                sortingList.add(sorting_name);</span>
+<span class="nc" id="L304">                sortingList.add(sorting_anc);</span>
+<span class="nc" id="L305">                sortingList.add(sorting_pnc);</span>
+<span class="nc" id="L306">                sortingList.add(sorting_child);</span>
+<span class="nc" id="L307">                sortingList.add(sorting_hr);</span>
+
+<span class="nc" id="L309">                showFragmentDialog(sortingList, &quot;Sort&quot;);</span>
+<span class="nc" id="L310">                break;</span>
+            case R.id.start_sync_doc_data:
+<span class="nc" id="L312">                updateFromServer();</span>
+<span class="nc" id="L313">                break;</span>
+            case R.id.ib_logout:
+<span class="nc" id="L315">                new AlertDialog.Builder(this).setTitle(&quot;Do you want logout?&quot;).setPositiveButton(&quot;Logout&quot;, new DialogInterface.OnClickListener() {</span>
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+<span class="nc" id="L318">                        logoutUser();</span>
+//                        backup();
+<span class="nc" id="L320">                    }</span>
+<span class="nc" id="L321">                }).setNegativeButton(&quot;No&quot;, new DialogInterface.OnClickListener() {</span>
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+<span class="nc" id="L324">                    }</span>
+                }).show();
+                break;
+        }
+<span class="nc" id="L328">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.1.201405082137</span></div></body></html>

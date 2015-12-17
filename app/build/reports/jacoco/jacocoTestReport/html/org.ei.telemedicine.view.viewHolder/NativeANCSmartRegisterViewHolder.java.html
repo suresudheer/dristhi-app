@@ -1,0 +1,793 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>NativeANCSmartRegisterViewHolder.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">org.ei.telemedicine.view.viewHolder</a> &gt; <span class="el_source">NativeANCSmartRegisterViewHolder.java</span></div><h1>NativeANCSmartRegisterViewHolder.java</h1><pre class="source lang-java linenums">package org.ei.telemedicine.view.viewHolder;
+
+import org.ei.telemedicine.R;
+import org.ei.telemedicine.view.customControls.ANCClientIdDetailsView;
+import org.ei.telemedicine.view.customControls.ANCStatusView;
+import org.ei.telemedicine.view.customControls.ClientProfileView;
+
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+
+public class NativeANCSmartRegisterViewHolder {
+    private final ClientProfileView profileInfoLayout;
+    private final ANCClientIdDetailsView ancClientIdDetailsView;
+    private final ANCStatusView ancStatusView;
+
+    private final TextView btnAncVisitView;
+    private final View layoutANCVisitAlert;
+    private final TextView txtANCVisitDoneOn;
+    private final TextView txtANCVisitDueType;
+    private final TextView txtANCVisitAlertDueOn;
+    private final ViewGroup serviceModeViewsHolder;
+    private final ViewGroup serviceModeOverviewView;
+    private final TextView txtRiskFactors;
+    private final TextView btnTTView;
+    private final View layoutTTAlert;
+    private final TextView txtTTDoneOn;
+    private final TextView txtTTDueType;
+    private final TextView txtTTDueOn;
+    private final TextView btnIFAView;
+    private final View layoutIFAAlert;
+    private final TextView txtIFADoneOn;
+    private final TextView txtIFADueType;
+    private final TextView txtIFADueOn;
+    private final ImageButton btnEditView;
+    private final ViewGroup serviceModeANCVisitsView;
+    private final View layoutANCVisit1Alert;
+    private final View layoutANCVisit1ServiceProvided;
+    private final TextView txtANCVisit1DueType;
+    private final TextView txtANCVisit1DueOn;
+    private final TextView txtANCVisit1DoneDate;
+    private final TextView lblANCVisit1Bp;
+    private final TextView lblANCVisit1Weight;
+    private final TextView txtANCVisit1BpValue;
+    private final TextView txtANCVisit1WeightValue;
+    private final View layoutANCVisit2Alert;
+    private final View layoutANCVisit2ServiceProvided;
+    private final TextView txtANCVisit2DueType;
+    private final TextView txtANCVisit2DueOn;
+    private final TextView txtANCVisit2DoneDate;
+    private final TextView lblANCVisit2Bp;
+    private final TextView lblANCVisit2Weight;
+    private final TextView txtANCVisit2BpValue;
+    private final TextView txtANCVisit2WeightValue;
+    private final View layoutANCVisit3Alert;
+    private final View layoutANCVisit3ServiceProvided;
+    private final TextView txtANCVisit3DueType;
+    private final TextView txtANCVisit3DueOn;
+    private final TextView txtANCVisit3DoneDate;
+    private final TextView lblANCVisit3Bp;
+    private final TextView lblANCVisit3Weight;
+    private final TextView txtANCVisit3BpValue;
+    private final TextView txtANCVisit3WeightValue;
+    private final TextView btnOtherANCVisit;
+    private final View layoutANCVisit4Alert;
+    private final View layoutANCVisit4ServiceProvided;
+    private final TextView txtANCVisit4DueType;
+    private final TextView txtANCVisit4DueOn;
+    private final TextView txtANCVisit4DoneDate;
+    private final TextView lblANCVisit4Bp;
+    private final TextView lblANCVisit4Weight;
+    private final TextView txtANCVisit4BpValue;
+    private final TextView txtANCVisit4WeightValue;
+    private final ViewGroup serviceModeTTView;
+    private final View layoutTT1Alert;
+    private final TextView txtTT1DoneTick;
+    private final TextView txtTT1Type;
+    private final TextView txtTT1Date;
+    private final View layoutTT2Alert;
+    private final TextView txtTT2DoneTick;
+    private final TextView txtTT2Type;
+    private final TextView txtTT2Date;
+    private final View layoutTTBoosterAlert;
+    private final TextView txtTTBoosterDoneTick;
+    private final TextView txtTTBoosterType;
+    private final TextView txtTTBoosterDate;
+    private final ViewGroup serviceModeHbIFAViewsHolder;
+    private final LinearLayout layoutHbDetailsViewHolder;
+    private final View layoutHbAlert;
+    private final TextView txtHbDueType;
+    private final TextView txtHbDueOn;
+    private final TextView btnHbView;
+    private final LinearLayout layoutIFADetailsViewHolder;
+    private final View layoutIFAAlertInHbIFAServiceMode;
+    private final TextView txtIFADoneTick;
+    private final TextView txtIFAType;
+    private final TextView txtIFADate;
+    private final ViewGroup serviceModeDeliveryPlanViewsHolder;
+    private final View layoutDeliveryPlanAlert;
+    private final TextView txtDeliveryPlanDueType;
+    private final TextView txtDeliveryPlanDueOn;
+    private final View layoutDeliveryPlanServiceProvided;
+    private final TextView lblDeliveryPlace;
+    private final TextView txtDeliveryPlace;
+    private final TextView txtTransport;
+    private final TextView lblTransport;
+    private final TextView lblHasCompanion;
+    private final TextView txtHasCompanion;
+    private final TextView lblAshaPhoneNumber;
+    private final TextView txtAshaPhoneNumber;
+    private final TextView lblContactPhoneNumber;
+    private final TextView txtContactPhoneNumber;
+    private final TextView txtRisksReviewed;
+    private final TextView lblRisksReviewed;
+    private final ImageView imgDeliveryPlaceStatus;
+    private final ImageView imgTransportStatus;
+    private final ImageView imgHasCompanionStatus;
+    private final ImageView imgAshaPhoneNumberStatus;
+    private final ImageView imgContactPhoneNumberStatus;
+    private final ImageView imgRisksReviewedStatus;
+
+<span class="nc" id="L125">    public NativeANCSmartRegisterViewHolder(ViewGroup itemView) {</span>
+<span class="nc" id="L126">        profileInfoLayout = (ClientProfileView) itemView.findViewById(R.id.profile_info_layout);</span>
+<span class="nc" id="L127">        profileInfoLayout.initialize();</span>
+
+<span class="nc" id="L129">        ancClientIdDetailsView = (ANCClientIdDetailsView) itemView.findViewById(R.id.client_id_details_layout);</span>
+<span class="nc" id="L130">        ancClientIdDetailsView.initialize();</span>
+
+<span class="nc" id="L132">        ancStatusView = (ANCStatusView) itemView.findViewById(R.id.client_status_layout);</span>
+<span class="nc" id="L133">        ancStatusView.initialize();</span>
+
+<span class="nc" id="L135">        serviceModeViewsHolder = (ViewGroup) itemView.findViewById(R.id.anc_register_service_mode_options_view);</span>
+<span class="nc" id="L136">        serviceModeOverviewView = (ViewGroup) serviceModeViewsHolder.findViewById(R.id.overview_service_mode_views);</span>
+<span class="nc" id="L137">        serviceModeANCVisitsView = (ViewGroup) serviceModeViewsHolder.findViewById(R.id.anc_visit_service_mode_views);</span>
+<span class="nc" id="L138">        serviceModeTTView = (ViewGroup) serviceModeViewsHolder.findViewById(R.id.tt_service_mode_views);</span>
+<span class="nc" id="L139">        serviceModeHbIFAViewsHolder = (ViewGroup) serviceModeViewsHolder.findViewById(R.id.hb_ifa_service_mode_views);</span>
+<span class="nc" id="L140">        serviceModeDeliveryPlanViewsHolder = (ViewGroup) serviceModeViewsHolder.findViewById(R.id.delivery_plan_service_mode_views);</span>
+
+<span class="nc" id="L142">        txtRiskFactors = (TextView) serviceModeOverviewView.findViewById(R.id.txt_risk_factors);</span>
+
+<span class="nc" id="L144">        btnAncVisitView = (TextView) serviceModeOverviewView.findViewById(R.id.btn_anc_visit);</span>
+<span class="nc" id="L145">        layoutANCVisitAlert = serviceModeOverviewView.findViewById(R.id.layout_anc_visit_alert);</span>
+<span class="nc" id="L146">        txtANCVisitDoneOn = (TextView) serviceModeOverviewView.findViewById(R.id.txt_anc_visit_on);</span>
+<span class="nc" id="L147">        txtANCVisitDueType = (TextView) serviceModeOverviewView.findViewById(R.id.txt_anc_visit_due_type);</span>
+<span class="nc" id="L148">        txtANCVisitAlertDueOn = (TextView) serviceModeOverviewView.findViewById(R.id.txt_anc_visit_due_on);</span>
+
+<span class="nc" id="L150">        btnTTView = (TextView) serviceModeOverviewView.findViewById(R.id.btn_tt);</span>
+<span class="nc" id="L151">        layoutTTAlert = serviceModeOverviewView.findViewById(R.id.layout_tt_alert);</span>
+<span class="nc" id="L152">        txtTTDoneOn = (TextView) serviceModeOverviewView.findViewById(R.id.txt_tt_on);</span>
+<span class="nc" id="L153">        txtTTDueType = (TextView) serviceModeOverviewView.findViewById(R.id.txt_tt_due_type);</span>
+<span class="nc" id="L154">        txtTTDueOn = (TextView) serviceModeOverviewView.findViewById(R.id.txt_tt_due_on);</span>
+
+<span class="nc" id="L156">        btnIFAView = (TextView) serviceModeOverviewView.findViewById(R.id.btn_ifa);</span>
+<span class="nc" id="L157">        layoutIFAAlert = serviceModeOverviewView.findViewById(R.id.layout_ifa_alert);</span>
+<span class="nc" id="L158">        txtIFADoneOn = (TextView) serviceModeOverviewView.findViewById(R.id.txt_ifa_on);</span>
+<span class="nc" id="L159">        txtIFADueType = (TextView) serviceModeOverviewView.findViewById(R.id.txt_ifa_due_type);</span>
+<span class="nc" id="L160">        txtIFADueOn = (TextView) serviceModeOverviewView.findViewById(R.id.txt_ifa_due_on);</span>
+
+<span class="nc" id="L162">        btnEditView = (ImageButton) serviceModeOverviewView.findViewById(R.id.btn_edit);</span>
+
+<span class="nc" id="L164">        layoutANCVisit1Alert = serviceModeANCVisitsView.findViewById(R.id.layout_anc_visit_1_alert);</span>
+<span class="nc" id="L165">        layoutANCVisit1ServiceProvided = serviceModeANCVisitsView.findViewById(R.id.layout_anc_visit_1_service_provided);</span>
+<span class="nc" id="L166">        txtANCVisit1DueType = (TextView) serviceModeANCVisitsView.findViewById(R.id.txt_anc_visit_1_due_type);</span>
+<span class="nc" id="L167">        txtANCVisit1DueOn = (TextView) serviceModeANCVisitsView.findViewById(R.id.txt_anc_visit_1_due_on);</span>
+<span class="nc" id="L168">        txtANCVisit1DoneDate = (TextView) serviceModeANCVisitsView.findViewById(R.id.txt_anc_visit_1_done_date);</span>
+<span class="nc" id="L169">        lblANCVisit1Bp = (TextView) serviceModeANCVisitsView.findViewById(R.id.lbl_anc_visit_1_bp);</span>
+<span class="nc" id="L170">        lblANCVisit1Weight = (TextView) serviceModeANCVisitsView.findViewById(R.id.lbl_anc_visit_1_weight);</span>
+<span class="nc" id="L171">        txtANCVisit1BpValue = (TextView) serviceModeANCVisitsView.findViewById(R.id.txt_anc_visit_1_bp_value);</span>
+<span class="nc" id="L172">        txtANCVisit1WeightValue = (TextView) serviceModeANCVisitsView.findViewById(R.id.txt_anc_visit_1_weight_value);</span>
+
+<span class="nc" id="L174">        layoutANCVisit2Alert = serviceModeANCVisitsView.findViewById(R.id.layout_anc_visit_2_alert);</span>
+<span class="nc" id="L175">        layoutANCVisit2ServiceProvided = serviceModeANCVisitsView.findViewById(R.id.layout_anc_visit_2_service_provided);</span>
+<span class="nc" id="L176">        txtANCVisit2DueType = (TextView) serviceModeANCVisitsView.findViewById(R.id.txt_anc_visit_2_due_type);</span>
+<span class="nc" id="L177">        txtANCVisit2DueOn = (TextView) serviceModeANCVisitsView.findViewById(R.id.txt_anc_visit_2_due_on);</span>
+<span class="nc" id="L178">        txtANCVisit2DoneDate = (TextView) serviceModeANCVisitsView.findViewById(R.id.txt_anc_visit_2_done_date);</span>
+<span class="nc" id="L179">        lblANCVisit2Bp = (TextView) serviceModeANCVisitsView.findViewById(R.id.lbl_anc_visit_2_bp);</span>
+<span class="nc" id="L180">        lblANCVisit2Weight = (TextView) serviceModeANCVisitsView.findViewById(R.id.lbl_anc_visit_2_weight);</span>
+<span class="nc" id="L181">        txtANCVisit2BpValue = (TextView) serviceModeANCVisitsView.findViewById(R.id.txt_anc_visit_2_bp_value);</span>
+<span class="nc" id="L182">        txtANCVisit2WeightValue = (TextView) serviceModeANCVisitsView.findViewById(R.id.txt_anc_visit_2_weight_value);</span>
+
+<span class="nc" id="L184">        layoutANCVisit3Alert = serviceModeANCVisitsView.findViewById(R.id.layout_anc_visit_3_alert);</span>
+<span class="nc" id="L185">        layoutANCVisit3ServiceProvided = serviceModeANCVisitsView.findViewById(R.id.layout_anc_visit_3_service_provided);</span>
+<span class="nc" id="L186">        txtANCVisit3DueType = (TextView) serviceModeANCVisitsView.findViewById(R.id.txt_anc_visit_3_due_type);</span>
+<span class="nc" id="L187">        txtANCVisit3DueOn = (TextView) serviceModeANCVisitsView.findViewById(R.id.txt_anc_visit_3_due_on);</span>
+<span class="nc" id="L188">        txtANCVisit3DoneDate = (TextView) serviceModeANCVisitsView.findViewById(R.id.txt_anc_visit_3_done_date);</span>
+<span class="nc" id="L189">        lblANCVisit3Bp = (TextView) serviceModeANCVisitsView.findViewById(R.id.lbl_anc_visit_3_bp);</span>
+<span class="nc" id="L190">        lblANCVisit3Weight = (TextView) serviceModeANCVisitsView.findViewById(R.id.lbl_anc_visit_3_weight);</span>
+<span class="nc" id="L191">        txtANCVisit3BpValue = (TextView) serviceModeANCVisitsView.findViewById(R.id.txt_anc_visit_3_bp_value);</span>
+<span class="nc" id="L192">        txtANCVisit3WeightValue = (TextView) serviceModeANCVisitsView.findViewById(R.id.txt_anc_visit_3_weight_value);</span>
+
+<span class="nc" id="L194">        layoutANCVisit4Alert = serviceModeANCVisitsView.findViewById(R.id.layout_anc_visit_4_alert);</span>
+<span class="nc" id="L195">        layoutANCVisit4ServiceProvided = serviceModeANCVisitsView.findViewById(R.id.layout_anc_visit_4_service_provided);</span>
+<span class="nc" id="L196">        txtANCVisit4DueType = (TextView) serviceModeANCVisitsView.findViewById(R.id.txt_anc_visit_4_due_type);</span>
+<span class="nc" id="L197">        txtANCVisit4DueOn = (TextView) serviceModeANCVisitsView.findViewById(R.id.txt_anc_visit_4_due_on);</span>
+<span class="nc" id="L198">        txtANCVisit4DoneDate = (TextView) serviceModeANCVisitsView.findViewById(R.id.txt_anc_visit_4_done_date);</span>
+<span class="nc" id="L199">        lblANCVisit4Bp = (TextView) serviceModeANCVisitsView.findViewById(R.id.lbl_anc_visit_4_bp);</span>
+<span class="nc" id="L200">        lblANCVisit4Weight = (TextView) serviceModeANCVisitsView.findViewById(R.id.lbl_anc_visit_4_weight);</span>
+<span class="nc" id="L201">        txtANCVisit4BpValue = (TextView) serviceModeANCVisitsView.findViewById(R.id.txt_anc_visit_4_bp_value);</span>
+<span class="nc" id="L202">        txtANCVisit4WeightValue = (TextView) serviceModeANCVisitsView.findViewById(R.id.txt_anc_visit_4_weight_value);</span>
+
+<span class="nc" id="L204">        btnOtherANCVisit = (TextView) serviceModeANCVisitsView.findViewById(R.id.btn_other_anc_visit);</span>
+
+<span class="nc" id="L206">        layoutTT1Alert = serviceModeTTView.findViewById(R.id.layout_tt_1);</span>
+<span class="nc" id="L207">        txtTT1DoneTick = (TextView) serviceModeTTView.findViewById(R.id.txt_tt_1_done);</span>
+<span class="nc" id="L208">        txtTT1Type = (TextView) serviceModeTTView.findViewById(R.id.txt_tt_1_type);</span>
+<span class="nc" id="L209">        txtTT1Date = (TextView) serviceModeTTView.findViewById(R.id.txt_tt_1_date);</span>
+
+<span class="nc" id="L211">        layoutTT2Alert = serviceModeTTView.findViewById(R.id.layout_tt_2);</span>
+<span class="nc" id="L212">        txtTT2DoneTick = (TextView) serviceModeTTView.findViewById(R.id.txt_tt_2_done);</span>
+<span class="nc" id="L213">        txtTT2Type = (TextView) serviceModeTTView.findViewById(R.id.txt_tt_2_type);</span>
+<span class="nc" id="L214">        txtTT2Date = (TextView) serviceModeTTView.findViewById(R.id.txt_tt_2_date);</span>
+
+<span class="nc" id="L216">        layoutTTBoosterAlert = serviceModeTTView.findViewById(R.id.layout_tt_booster);</span>
+<span class="nc" id="L217">        txtTTBoosterDoneTick = (TextView) serviceModeTTView.findViewById(R.id.txt_tt_booster_done);</span>
+<span class="nc" id="L218">        txtTTBoosterType = (TextView) serviceModeTTView.findViewById(R.id.txt_tt_booster_type);</span>
+<span class="nc" id="L219">        txtTTBoosterDate = (TextView) serviceModeTTView.findViewById(R.id.txt_tt_booster_date);</span>
+
+<span class="nc" id="L221">        layoutHbDetailsViewHolder = (LinearLayout) serviceModeHbIFAViewsHolder.findViewById(R.id.layout_hb_details_holder);</span>
+
+<span class="nc" id="L223">        layoutHbAlert = serviceModeHbIFAViewsHolder.findViewById(R.id.layout_hb_alert);</span>
+<span class="nc" id="L224">        btnHbView = (TextView) serviceModeHbIFAViewsHolder.findViewById(R.id.btn_hb);</span>
+<span class="nc" id="L225">        txtHbDueType = (TextView) serviceModeHbIFAViewsHolder.findViewById(R.id.txt_hb_due_type);</span>
+<span class="nc" id="L226">        txtHbDueOn = (TextView) serviceModeHbIFAViewsHolder.findViewById(R.id.txt_hb_due_on);</span>
+
+<span class="nc" id="L228">        layoutIFADetailsViewHolder = (LinearLayout) serviceModeHbIFAViewsHolder.findViewById(R.id.layout_ifa_details_holder);</span>
+
+<span class="nc" id="L230">        layoutIFAAlertInHbIFAServiceMode = serviceModeHbIFAViewsHolder.findViewById(R.id.layout_ifa);</span>
+<span class="nc" id="L231">        txtIFADoneTick = (TextView) serviceModeHbIFAViewsHolder.findViewById(R.id.txt_ifa_done);</span>
+<span class="nc" id="L232">        txtIFAType = (TextView) serviceModeHbIFAViewsHolder.findViewById(R.id.txt_ifa_type);</span>
+<span class="nc" id="L233">        txtIFADate = (TextView) serviceModeHbIFAViewsHolder.findViewById(R.id.txt_ifa_date);</span>
+
+<span class="nc" id="L235">        layoutDeliveryPlanAlert = serviceModeDeliveryPlanViewsHolder.findViewById(R.id.layout_delivery_plan_alert);</span>
+<span class="nc" id="L236">        layoutDeliveryPlanServiceProvided = serviceModeDeliveryPlanViewsHolder.findViewById(R.id.layout_delivery_plan_service_provided);</span>
+<span class="nc" id="L237">        txtDeliveryPlanDueType = (TextView) serviceModeDeliveryPlanViewsHolder.findViewById(R.id.txt_delivery_plan_due_type);</span>
+<span class="nc" id="L238">        txtDeliveryPlanDueOn = (TextView) serviceModeDeliveryPlanViewsHolder.findViewById(R.id.txt_delivery_plan_due_on);</span>
+<span class="nc" id="L239">        imgDeliveryPlaceStatus = (ImageView) serviceModeDeliveryPlanViewsHolder.findViewById(R.id.img_delivery_place_status);</span>
+<span class="nc" id="L240">        lblDeliveryPlace = (TextView) serviceModeDeliveryPlanViewsHolder.findViewById(R.id.lbl_delivery_place);</span>
+<span class="nc" id="L241">        txtDeliveryPlace = (TextView) serviceModeDeliveryPlanViewsHolder.findViewById(R.id.txt_delivery_place);</span>
+<span class="nc" id="L242">        imgTransportStatus = (ImageView) serviceModeDeliveryPlanViewsHolder.findViewById(R.id.img_transport_status);</span>
+<span class="nc" id="L243">        lblTransport = (TextView) serviceModeDeliveryPlanViewsHolder.findViewById(R.id.lbl_transport);</span>
+<span class="nc" id="L244">        txtTransport = (TextView) serviceModeDeliveryPlanViewsHolder.findViewById(R.id.txt_transport);</span>
+<span class="nc" id="L245">        imgHasCompanionStatus = (ImageView) serviceModeDeliveryPlanViewsHolder.findViewById(R.id.img_has_companion_status);</span>
+<span class="nc" id="L246">        lblHasCompanion = (TextView) serviceModeDeliveryPlanViewsHolder.findViewById(R.id.lbl_has_companion);</span>
+<span class="nc" id="L247">        txtHasCompanion = (TextView) serviceModeDeliveryPlanViewsHolder.findViewById(R.id.txt_has_companion);</span>
+<span class="nc" id="L248">        imgAshaPhoneNumberStatus = (ImageView) serviceModeDeliveryPlanViewsHolder.findViewById(R.id.img_asha_phone_number_status);</span>
+<span class="nc" id="L249">        lblAshaPhoneNumber = (TextView) serviceModeDeliveryPlanViewsHolder.findViewById(R.id.lbl_asha_phone_number);</span>
+<span class="nc" id="L250">        txtAshaPhoneNumber = (TextView) serviceModeDeliveryPlanViewsHolder.findViewById(R.id.txt_asha_phone_number);</span>
+<span class="nc" id="L251">        imgContactPhoneNumberStatus = (ImageView) serviceModeDeliveryPlanViewsHolder.findViewById(R.id.img_contact_phone_number_status);</span>
+<span class="nc" id="L252">        lblContactPhoneNumber = (TextView) serviceModeDeliveryPlanViewsHolder.findViewById(R.id.lbl_contact_phone_number);</span>
+<span class="nc" id="L253">        txtContactPhoneNumber = (TextView) serviceModeDeliveryPlanViewsHolder.findViewById(R.id.txt_contact_phone_number);</span>
+<span class="nc" id="L254">        imgRisksReviewedStatus = (ImageView) serviceModeDeliveryPlanViewsHolder.findViewById(R.id.img_risk_reviewed_status);</span>
+<span class="nc" id="L255">        lblRisksReviewed = (TextView) serviceModeDeliveryPlanViewsHolder.findViewById(R.id.lbl_risks_reviewed);</span>
+<span class="nc" id="L256">        txtRisksReviewed = (TextView) serviceModeDeliveryPlanViewsHolder.findViewById(R.id.txt_risks_reviewed);</span>
+<span class="nc" id="L257">    }</span>
+
+    public ClientProfileView profileInfoLayout() {
+<span class="nc" id="L260">        return profileInfoLayout;</span>
+    }
+
+    public ANCClientIdDetailsView ancClientIdDetailsView() {
+<span class="nc" id="L264">        return ancClientIdDetailsView;</span>
+    }
+
+    public ANCStatusView ancStatusView() {
+<span class="nc" id="L268">        return ancStatusView;</span>
+    }
+
+    public TextView btnAncVisitView() {
+<span class="nc" id="L272">        return btnAncVisitView;</span>
+    }
+
+    public View layoutANCVisitAlert() {
+<span class="nc" id="L276">        return layoutANCVisitAlert;</span>
+    }
+
+    public TextView txtANCVisitDoneOn() {
+<span class="nc" id="L280">        return txtANCVisitDoneOn;</span>
+    }
+
+    public TextView txtANCVisitDueType() {
+<span class="nc" id="L284">        return txtANCVisitDueType;</span>
+    }
+
+    public TextView txtANCVisitAlertDueOn() {
+<span class="nc" id="L288">        return txtANCVisitAlertDueOn;</span>
+    }
+
+    public TextView txtRiskFactors() {
+<span class="nc" id="L292">        return txtRiskFactors;</span>
+    }
+
+    public ViewGroup serviceModeOverviewView() {
+<span class="nc" id="L296">        return serviceModeOverviewView;</span>
+    }
+
+    public TextView btnTTView() {
+<span class="nc" id="L300">        return btnTTView;</span>
+    }
+
+    public View layoutTTAlert() {
+<span class="nc" id="L304">        return layoutTTAlert;</span>
+    }
+
+    public TextView txtTTDoneOn() {
+<span class="nc" id="L308">        return txtTTDoneOn;</span>
+    }
+
+    public TextView txtTTDueType() {
+<span class="nc" id="L312">        return txtTTDueType;</span>
+    }
+
+    public TextView txtTTDueOn() {
+<span class="nc" id="L316">        return txtTTDueOn;</span>
+    }
+
+    public TextView btnIFAView() {
+<span class="nc" id="L320">        return btnIFAView;</span>
+    }
+
+    public View layoutIFAAlert() {
+<span class="nc" id="L324">        return layoutIFAAlert;</span>
+    }
+
+    public TextView txtIFADoneOn() {
+<span class="nc" id="L328">        return txtIFADoneOn;</span>
+    }
+
+    public TextView txtIFADueType() {
+<span class="nc" id="L332">        return txtIFADueType;</span>
+    }
+
+    public TextView txtIFADueOn() {
+<span class="nc" id="L336">        return txtIFADueOn;</span>
+    }
+
+    public ImageButton btnEditView() {
+<span class="nc" id="L340">        return btnEditView;</span>
+    }
+
+    public ViewGroup serviceModeANCVisitsView() {
+<span class="nc" id="L344">        return serviceModeANCVisitsView;</span>
+    }
+
+    public View layoutANCVisit1Alert() {
+<span class="nc" id="L348">        return layoutANCVisit1Alert;</span>
+    }
+
+    public TextView txtANCVisit1DueType() {
+<span class="nc" id="L352">        return txtANCVisit1DueType;</span>
+    }
+
+    public TextView txtANCVisit1DueOn() {
+<span class="nc" id="L356">        return txtANCVisit1DueOn;</span>
+    }
+
+    public TextView txtANCVisit1DoneDate() {
+<span class="nc" id="L360">        return txtANCVisit1DoneDate;</span>
+    }
+
+    public TextView lblANCVisit1Bp() {
+<span class="nc" id="L364">        return lblANCVisit1Bp;</span>
+    }
+
+    public TextView lblANCVisit1Weight() {
+<span class="nc" id="L368">        return lblANCVisit1Weight;</span>
+    }
+
+    public TextView txtANCVisit1BpValue() {
+<span class="nc" id="L372">        return txtANCVisit1BpValue;</span>
+    }
+
+    public TextView txtANCVisit1WeightValue() {
+<span class="nc" id="L376">        return txtANCVisit1WeightValue;</span>
+    }
+
+    public void hideAllServiceModeOptions() {
+<span class="nc" id="L380">        serviceModeOverviewView().setVisibility(View.GONE);</span>
+<span class="nc" id="L381">        serviceModeANCVisitsView().setVisibility(View.GONE);</span>
+<span class="nc" id="L382">        serviceModeTTView().setVisibility(View.GONE);</span>
+<span class="nc" id="L383">        serviceModeHbIFAViewsHolder().setVisibility(View.GONE);</span>
+<span class="nc" id="L384">        serviceModeDeliveryPlanViewsHolder().setVisibility(View.GONE);</span>
+<span class="nc" id="L385">    }</span>
+
+    public View layoutANCVisit2Alert() {
+<span class="nc" id="L388">        return layoutANCVisit2Alert;</span>
+    }
+
+    public TextView txtANCVisit2DueType() {
+<span class="nc" id="L392">        return txtANCVisit2DueType;</span>
+    }
+
+    public TextView txtANCVisit2DueOn() {
+<span class="nc" id="L396">        return txtANCVisit2DueOn;</span>
+    }
+
+    public TextView txtANCVisit2DoneDate() {
+<span class="nc" id="L400">        return txtANCVisit2DoneDate;</span>
+    }
+
+    public TextView lblANCVisit2Bp() {
+<span class="nc" id="L404">        return lblANCVisit2Bp;</span>
+    }
+
+    public TextView lblANCVisit2Weight() {
+<span class="nc" id="L408">        return lblANCVisit2Weight;</span>
+    }
+
+    public TextView txtANCVisit2BpValue() {
+<span class="nc" id="L412">        return txtANCVisit2BpValue;</span>
+    }
+
+    public TextView txtANCVisit2WeightValue() {
+<span class="nc" id="L416">        return txtANCVisit2WeightValue;</span>
+    }
+
+    public View layoutANCVisit3Alert() {
+<span class="nc" id="L420">        return layoutANCVisit3Alert;</span>
+    }
+
+    public TextView txtANCVisit3DueType() {
+<span class="nc" id="L424">        return txtANCVisit3DueType;</span>
+    }
+
+    public TextView txtANCVisit3DueOn() {
+<span class="nc" id="L428">        return txtANCVisit3DueOn;</span>
+    }
+
+    public TextView txtANCVisit3DoneDate() {
+<span class="nc" id="L432">        return txtANCVisit3DoneDate;</span>
+    }
+
+    public TextView lblANCVisit3Bp() {
+<span class="nc" id="L436">        return lblANCVisit3Bp;</span>
+    }
+
+    public TextView lblANCVisit3Weight() {
+<span class="nc" id="L440">        return lblANCVisit3Weight;</span>
+    }
+
+    public TextView txtANCVisit3BpValue() {
+<span class="nc" id="L444">        return txtANCVisit3BpValue;</span>
+    }
+
+    public TextView txtANCVisit3WeightValue() {
+<span class="nc" id="L448">        return txtANCVisit3WeightValue;</span>
+    }
+
+    public TextView btnOtherANCVisit() {
+<span class="nc" id="L452">        return btnOtherANCVisit;</span>
+    }
+
+    public View layoutANCVisit4Alert() {
+<span class="nc" id="L456">        return layoutANCVisit4Alert;</span>
+    }
+
+    public TextView txtANCVisit4DueType() {
+<span class="nc" id="L460">        return txtANCVisit4DueType;</span>
+    }
+
+    public TextView txtANCVisit4DueOn() {
+<span class="nc" id="L464">        return txtANCVisit4DueOn;</span>
+    }
+
+    public TextView txtANCVisit4DoneDate() {
+<span class="nc" id="L468">        return txtANCVisit4DoneDate;</span>
+    }
+
+    public TextView lblANCVisit4Bp() {
+<span class="nc" id="L472">        return lblANCVisit4Bp;</span>
+    }
+
+    public TextView lblANCVisit4Weight() {
+<span class="nc" id="L476">        return lblANCVisit4Weight;</span>
+    }
+
+    public TextView txtANCVisit4BpValue() {
+<span class="nc" id="L480">        return txtANCVisit4BpValue;</span>
+    }
+
+    public TextView txtANCVisit4WeightValue() {
+<span class="nc" id="L484">        return txtANCVisit4WeightValue;</span>
+    }
+
+    public void hideViewsInANCVisit1Layout() {
+<span class="nc" id="L488">        layoutANCVisit1Alert().setVisibility(View.GONE);</span>
+<span class="nc" id="L489">        layoutANCVisit1ServiceProvided().setVisibility(View.GONE);</span>
+<span class="nc" id="L490">        txtANCVisit1DueType().setVisibility(View.GONE);</span>
+<span class="nc" id="L491">        txtANCVisit1DueOn().setVisibility(View.GONE);</span>
+<span class="nc" id="L492">        txtANCVisit1DoneDate().setVisibility(View.GONE);</span>
+<span class="nc" id="L493">        lblANCVisit1Bp().setVisibility(View.GONE);</span>
+<span class="nc" id="L494">        lblANCVisit1Weight().setVisibility(View.GONE);</span>
+<span class="nc" id="L495">        txtANCVisit1BpValue().setVisibility(View.GONE);</span>
+<span class="nc" id="L496">        txtANCVisit1WeightValue().setVisibility(View.GONE);</span>
+<span class="nc" id="L497">    }</span>
+
+    public void hideViewsInANCVisit2Layout() {
+<span class="nc" id="L500">        layoutANCVisit2Alert().setVisibility(View.GONE);</span>
+<span class="nc" id="L501">        layoutANCVisit2ServiceProvided().setVisibility(View.GONE);</span>
+<span class="nc" id="L502">        txtANCVisit2DueType().setVisibility(View.GONE);</span>
+<span class="nc" id="L503">        txtANCVisit2DueOn().setVisibility(View.GONE);</span>
+<span class="nc" id="L504">        txtANCVisit2DoneDate().setVisibility(View.GONE);</span>
+<span class="nc" id="L505">        lblANCVisit2Bp().setVisibility(View.GONE);</span>
+<span class="nc" id="L506">        lblANCVisit2Weight().setVisibility(View.GONE);</span>
+<span class="nc" id="L507">        txtANCVisit2BpValue().setVisibility(View.GONE);</span>
+<span class="nc" id="L508">        txtANCVisit2WeightValue().setVisibility(View.GONE);</span>
+<span class="nc" id="L509">    }</span>
+
+    public void hideViewsInANCVisit3Layout() {
+<span class="nc" id="L512">        layoutANCVisit3Alert().setVisibility(View.GONE);</span>
+<span class="nc" id="L513">        layoutANCVisit3ServiceProvided().setVisibility(View.GONE);</span>
+<span class="nc" id="L514">        txtANCVisit3DueType().setVisibility(View.GONE);</span>
+<span class="nc" id="L515">        txtANCVisit3DueOn().setVisibility(View.GONE);</span>
+<span class="nc" id="L516">        txtANCVisit3DoneDate().setVisibility(View.GONE);</span>
+<span class="nc" id="L517">        lblANCVisit3Bp().setVisibility(View.GONE);</span>
+<span class="nc" id="L518">        lblANCVisit3Weight().setVisibility(View.GONE);</span>
+<span class="nc" id="L519">        txtANCVisit3BpValue().setVisibility(View.GONE);</span>
+<span class="nc" id="L520">        txtANCVisit3WeightValue().setVisibility(View.GONE);</span>
+<span class="nc" id="L521">    }</span>
+
+    public void hideViewsInANCVisit4Layout() {
+<span class="nc" id="L524">        layoutANCVisit4Alert().setVisibility(View.GONE);</span>
+<span class="nc" id="L525">        layoutANCVisit4ServiceProvided().setVisibility(View.GONE);</span>
+<span class="nc" id="L526">        txtANCVisit4DueType().setVisibility(View.GONE);</span>
+<span class="nc" id="L527">        txtANCVisit4DueOn().setVisibility(View.GONE);</span>
+<span class="nc" id="L528">        txtANCVisit4DoneDate().setVisibility(View.GONE);</span>
+<span class="nc" id="L529">        lblANCVisit4Bp().setVisibility(View.GONE);</span>
+<span class="nc" id="L530">        lblANCVisit4Weight().setVisibility(View.GONE);</span>
+<span class="nc" id="L531">        txtANCVisit4BpValue().setVisibility(View.GONE);</span>
+<span class="nc" id="L532">        txtANCVisit4WeightValue().setVisibility(View.GONE);</span>
+<span class="nc" id="L533">    }</span>
+
+
+    public View layoutANCVisit1ServiceProvided() {
+<span class="nc" id="L537">        return layoutANCVisit1ServiceProvided;</span>
+    }
+
+    public View layoutANCVisit2ServiceProvided() {
+<span class="nc" id="L541">        return layoutANCVisit2ServiceProvided;</span>
+    }
+
+    public View layoutANCVisit3ServiceProvided() {
+<span class="nc" id="L545">        return layoutANCVisit3ServiceProvided;</span>
+    }
+
+    public View layoutANCVisit4ServiceProvided() {
+<span class="nc" id="L549">        return layoutANCVisit4ServiceProvided;</span>
+    }
+
+    public ViewGroup serviceModeTTView() {
+<span class="nc" id="L553">        return serviceModeTTView;</span>
+    }
+
+    public View layoutTT1Alert() {
+<span class="nc" id="L557">        return layoutTT1Alert;</span>
+    }
+
+    public TextView txtTT1DoneTick() {
+<span class="nc" id="L561">        return txtTT1DoneTick;</span>
+    }
+
+    public TextView txtTT1Type() {
+<span class="nc" id="L565">        return txtTT1Type;</span>
+    }
+
+    public TextView txtTT1Date() {
+<span class="nc" id="L569">        return txtTT1Date;</span>
+    }
+
+    public void hideViewsInTT1Layout() {
+<span class="nc" id="L573">        layoutTT1Alert().setVisibility(View.GONE);</span>
+<span class="nc" id="L574">        txtTT1DoneTick().setVisibility(View.GONE);</span>
+<span class="nc" id="L575">        txtTT1Type().setVisibility(View.GONE);</span>
+<span class="nc" id="L576">        txtTT1Date().setVisibility(View.GONE);</span>
+<span class="nc" id="L577">    }</span>
+
+    public View layoutTT2Alert() {
+<span class="nc" id="L580">        return layoutTT2Alert;</span>
+    }
+
+    public TextView txtTT2DoneTick() {
+<span class="nc" id="L584">        return txtTT2DoneTick;</span>
+    }
+
+    public TextView txtTT2Type() {
+<span class="nc" id="L588">        return txtTT2Type;</span>
+    }
+
+    public TextView txtTT2Date() {
+<span class="nc" id="L592">        return txtTT2Date;</span>
+    }
+
+    public void hideViewsInTT2Layout() {
+<span class="nc" id="L596">        layoutTT2Alert().setVisibility(View.GONE);</span>
+<span class="nc" id="L597">        txtTT2DoneTick().setVisibility(View.GONE);</span>
+<span class="nc" id="L598">        txtTT2Type().setVisibility(View.GONE);</span>
+<span class="nc" id="L599">        txtTT2Date().setVisibility(View.GONE);</span>
+<span class="nc" id="L600">    }</span>
+
+    public View layoutTTBoosterAlert() {
+<span class="nc" id="L603">        return layoutTTBoosterAlert;</span>
+    }
+
+    public TextView txtTTBoosterDoneTick() {
+<span class="nc" id="L607">        return txtTTBoosterDoneTick;</span>
+    }
+
+    public TextView txtTTBoosterType() {
+<span class="nc" id="L611">        return txtTTBoosterType;</span>
+    }
+
+    public TextView txtTTBoosterDate() {
+<span class="nc" id="L615">        return txtTTBoosterDate;</span>
+    }
+
+    public void hideViewsInTTBoosterLayout() {
+<span class="nc" id="L619">        layoutTTBoosterAlert().setVisibility(View.GONE);</span>
+<span class="nc" id="L620">        txtTTBoosterDoneTick().setVisibility(View.GONE);</span>
+<span class="nc" id="L621">        txtTTBoosterType().setVisibility(View.GONE);</span>
+<span class="nc" id="L622">        txtTTBoosterDate().setVisibility(View.GONE);</span>
+<span class="nc" id="L623">    }</span>
+
+    public LinearLayout layoutHbDetailsViewHolder() {
+<span class="nc" id="L626">        return layoutHbDetailsViewHolder;</span>
+    }
+
+    public ViewGroup serviceModeHbIFAViewsHolder() {
+<span class="nc" id="L630">        return serviceModeHbIFAViewsHolder;</span>
+    }
+
+    public View layoutHbAlert() {
+<span class="nc" id="L634">        return layoutHbAlert;</span>
+    }
+
+    public TextView txtHbDueType() {
+<span class="nc" id="L638">        return txtHbDueType;</span>
+    }
+
+    public TextView txtHbDueOn() {
+<span class="nc" id="L642">        return txtHbDueOn;</span>
+    }
+
+    public TextView btnHbView() {
+<span class="nc" id="L646">        return btnHbView;</span>
+    }
+
+    public LinearLayout layoutIFADetailsViewHolder() {
+<span class="nc" id="L650">        return layoutIFADetailsViewHolder;</span>
+    }
+
+    public View layoutIFAAlertInHbIFAServiceMode() {
+<span class="nc" id="L654">        return layoutIFAAlertInHbIFAServiceMode;</span>
+    }
+
+    public TextView txtIFADoneTick() {
+<span class="nc" id="L658">        return txtIFADoneTick;</span>
+    }
+
+    public TextView txtIFAType() {
+<span class="nc" id="L662">        return txtIFAType;</span>
+    }
+
+    public TextView txtIFADate() {
+<span class="nc" id="L666">        return txtIFADate;</span>
+    }
+
+    public void hideViewsInIFAAlertLayout() {
+<span class="nc" id="L670">        layoutIFAAlertInHbIFAServiceMode().setVisibility(View.GONE);</span>
+<span class="nc" id="L671">        txtIFADoneTick().setVisibility(View.GONE);</span>
+<span class="nc" id="L672">        txtIFAType().setVisibility(View.GONE);</span>
+<span class="nc" id="L673">        txtIFADate().setVisibility(View.GONE);</span>
+<span class="nc" id="L674">    }</span>
+
+    public ViewGroup serviceModeDeliveryPlanViewsHolder() {
+<span class="nc" id="L677">        return serviceModeDeliveryPlanViewsHolder;</span>
+    }
+
+    public View layoutDeliveryPlanAlert() {
+<span class="nc" id="L681">        return layoutDeliveryPlanAlert;</span>
+    }
+
+    public TextView txtDeliveryPlanDueType() {
+<span class="nc" id="L685">        return txtDeliveryPlanDueType;</span>
+    }
+
+    public TextView txtDeliveryPlanDueOn() {
+<span class="nc" id="L689">        return txtDeliveryPlanDueOn;</span>
+    }
+
+    public View layoutDeliveryPlanServiceProvided() {
+<span class="nc" id="L693">        return layoutDeliveryPlanServiceProvided;</span>
+    }
+
+    public TextView lblDeliveryPlace() {
+<span class="nc" id="L697">        return lblDeliveryPlace;</span>
+    }
+
+    public TextView txtDeliveryPlace() {
+<span class="nc" id="L701">        return txtDeliveryPlace;</span>
+    }
+
+    public void hideViewsInDeliveryPlanViews() {
+<span class="nc" id="L705">        layoutDeliveryPlanAlert().setVisibility(View.GONE);</span>
+<span class="nc" id="L706">        txtDeliveryPlanDueType().setVisibility(View.GONE);</span>
+<span class="nc" id="L707">        txtDeliveryPlanDueOn().setVisibility(View.GONE);</span>
+<span class="nc" id="L708">        layoutDeliveryPlanServiceProvided().setVisibility(View.GONE);</span>
+<span class="nc" id="L709">        lblDeliveryPlace().setVisibility(View.GONE);</span>
+<span class="nc" id="L710">        txtDeliveryPlace().setVisibility(View.GONE);</span>
+<span class="nc" id="L711">        txtTransport().setVisibility(View.GONE);</span>
+<span class="nc" id="L712">        lblTransport().setVisibility(View.GONE);</span>
+<span class="nc" id="L713">        lblHasCompanion().setVisibility(View.GONE);</span>
+<span class="nc" id="L714">        txtHasCompanion().setVisibility(View.GONE);</span>
+<span class="nc" id="L715">        lblAshaPhoneNumber().setVisibility(View.GONE);</span>
+<span class="nc" id="L716">        txtAshaPhoneNumber().setVisibility(View.GONE);</span>
+<span class="nc" id="L717">        lblContactPhoneNumber().setVisibility(View.GONE);</span>
+<span class="nc" id="L718">        txtContactPhoneNumber().setVisibility(View.GONE);</span>
+<span class="nc" id="L719">        txtRisksReviewed().setVisibility(View.GONE);</span>
+<span class="nc" id="L720">        lblRisksReviewed().setVisibility(View.GONE);</span>
+<span class="nc" id="L721">        imgDeliveryPlaceStatus().setVisibility(View.GONE);</span>
+<span class="nc" id="L722">        imgAshaPhoneNumberStatus().setVisibility(View.GONE);</span>
+<span class="nc" id="L723">        imgContactPhoneNumberStatus().setVisibility(View.GONE);</span>
+<span class="nc" id="L724">        imgHasCompanionStatus().setVisibility(View.GONE);</span>
+<span class="nc" id="L725">        imgRisksReviewedStatus().setVisibility(View.GONE);</span>
+<span class="nc" id="L726">        imgTransportStatus().setVisibility(View.GONE);</span>
+<span class="nc" id="L727">    }</span>
+
+    public TextView txtTransport() {
+<span class="nc" id="L730">        return txtTransport;</span>
+    }
+
+    public TextView lblTransport() {
+<span class="nc" id="L734">        return lblTransport;</span>
+    }
+
+    public TextView lblHasCompanion() {
+<span class="nc" id="L738">        return lblHasCompanion;</span>
+    }
+
+    public TextView txtHasCompanion() {
+<span class="nc" id="L742">        return txtHasCompanion;</span>
+    }
+
+    public TextView lblAshaPhoneNumber() {
+<span class="nc" id="L746">        return lblAshaPhoneNumber;</span>
+    }
+
+    public TextView txtAshaPhoneNumber() {
+<span class="nc" id="L750">        return txtAshaPhoneNumber;</span>
+    }
+
+    public TextView lblContactPhoneNumber() {
+<span class="nc" id="L754">        return lblContactPhoneNumber;</span>
+    }
+
+    public TextView txtContactPhoneNumber() {
+<span class="nc" id="L758">        return txtContactPhoneNumber;</span>
+    }
+
+    public TextView txtRisksReviewed() {
+<span class="nc" id="L762">        return txtRisksReviewed;</span>
+    }
+
+    public TextView lblRisksReviewed() {
+<span class="nc" id="L766">        return lblRisksReviewed;</span>
+    }
+
+    public ImageView imgDeliveryPlaceStatus() {
+<span class="nc" id="L770">        return imgDeliveryPlaceStatus;</span>
+    }
+
+    public ImageView imgTransportStatus() {
+<span class="nc" id="L774">        return imgTransportStatus;</span>
+    }
+
+    public ImageView imgHasCompanionStatus() {
+<span class="nc" id="L778">        return imgHasCompanionStatus;</span>
+    }
+
+    public ImageView imgAshaPhoneNumberStatus() {
+<span class="nc" id="L782">        return imgAshaPhoneNumberStatus;</span>
+    }
+
+    public ImageView imgContactPhoneNumberStatus() {
+<span class="nc" id="L786">        return imgContactPhoneNumberStatus;</span>
+    }
+
+    public ImageView imgRisksReviewedStatus() {
+<span class="nc" id="L790">        return imgRisksReviewedStatus;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.1.201405082137</span></div></body></html>

@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>PocDrugBaseAdapter.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">org.ei.telemedicine.doctor</a> &gt; <span class="el_source">PocDrugBaseAdapter.java</span></div><h1>PocDrugBaseAdapter.java</h1><pre class="source lang-java linenums">package org.ei.telemedicine.doctor;
+
+import android.content.Context;
+import android.graphics.Color;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.BaseAdapter;
+import android.widget.ImageButton;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+
+
+import org.ei.telemedicine.R;
+
+import java.util.ArrayList;
+
+/**
+ * Created by naveen on 6/1/15.
+ */
+public class PocDrugBaseAdapter extends BaseAdapter {
+    ArrayList&lt;PocDrugData&gt; pocDrugDataList;
+    Context context;
+
+<span class="nc" id="L26">    public PocDrugBaseAdapter(Context context, ArrayList&lt;PocDrugData&gt; pocDrugDataList) {</span>
+<span class="nc" id="L27">        this.context = context;</span>
+<span class="nc" id="L28">        this.pocDrugDataList = pocDrugDataList;</span>
+<span class="nc" id="L29">    }</span>
+
+    @Override
+    public int getCount() {
+<span class="nc" id="L33">        return pocDrugDataList.size();</span>
+    }
+
+    @Override
+    public Object getItem(int position) {
+<span class="nc" id="L38">        return pocDrugDataList.get(position);</span>
+    }
+
+    @Override
+    public long getItemId(int position) {
+<span class="nc" id="L43">        return position;</span>
+    }
+
+<span class="nc" id="L46">    private class ViewHolder {</span>
+        TextView tv_name, tv_dosage, tv_frequency, tv_direction, tv_no_of_days, tv_qty;
+        ImageButton ib_close;
+        LinearLayout ll_item, ll_item_drug;
+    }
+
+    @Override
+    public View getView(final int position, View convertView, ViewGroup parent) {
+<span class="nc" id="L54">        ViewHolder viewHolder = null;</span>
+<span class="nc" id="L55">        LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);</span>
+<span class="nc" id="L56">        convertView = inflater.inflate(R.layout.poc_drugs_list_item, null);</span>
+
+<span class="nc" id="L58">        viewHolder = new ViewHolder();</span>
+<span class="nc" id="L59">        viewHolder.ll_item_drug = (LinearLayout) convertView.findViewById(R.id.ll_item);</span>
+<span class="nc" id="L60">        viewHolder.tv_name = (TextView) convertView.findViewById(R.id.tv_name);</span>
+//        viewHolder.tv_dosage = (TextView) convertView.findViewById(R.id.tv_dosage);
+//        viewHolder.tv_direction = (TextView) convertView.findViewById(R.id.tv_direction);
+//        viewHolder.tv_frequency = (TextView) convertView.findViewById(R.id.tv_frequnecy);
+//        viewHolder.tv_no_of_days = (TextView) convertView.findViewById(R.id.tv_no_of_days);
+//        viewHolder.tv_qty = (TextView) convertView.findViewById(R.id.tv_qty);
+//
+
+<span class="nc" id="L68">        viewHolder.ib_close = (ImageButton) convertView.findViewById(R.id.ib_remove);</span>
+<span class="nc" id="L69">        viewHolder.ll_item = (LinearLayout) convertView.findViewById(R.id.ll_item);</span>
+<span class="nc bnc" id="L70" title="All 2 branches missed.">        if (pocDrugDataList.get(position).isDrugDuplicate())</span>
+<span class="nc" id="L71">            viewHolder.ll_item_drug.setBackgroundColor(Color.parseColor(&quot;#177bbd&quot;));</span>
+
+<span class="nc" id="L73">        viewHolder.tv_name.setText(pocDrugDataList.get(position).getDrugName() + &quot;--&quot; + pocDrugDataList.get(position).getDrugQty() + &quot;--&quot; + pocDrugDataList.get(position).getDosage() + &quot;--&quot; + pocDrugDataList.get(position).getDirection() + &quot;--&quot; + pocDrugDataList.get(position).getFrequncy() + &quot;--&quot; + pocDrugDataList.get(position).getDrugNoofDays());</span>
+//        viewHolder.tv_qty.setText(pocDrugDataList.get(position).getDrugQty());
+//        viewHolder.tv_dosage.setText(pocDrugDataList.get(position).getDosage());
+//        viewHolder.tv_direction.setText(pocDrugDataList.get(position).getDirection());
+//        viewHolder.tv_frequency.setText(pocDrugDataList.get(position).getFrequncy());
+//        viewHolder.tv_no_of_days.setText(pocDrugDataList.get(position).getDrugNoofDays());
+
+
+//        viewHolder.tv_name.setText(pocDrugDataList.get(position).getDrugName() + &quot; - &quot; + pocDrugDataList.get(position).getDosage() + &quot; - &quot; + pocDrugDataList.get(position).getDirection() + &quot; - &quot; + pocDrugDataList.get(position).getFrequncy());
+<span class="nc" id="L82">        viewHolder.ib_close.setOnClickListener(new View.OnClickListener() {</span>
+            @Override
+            public void onClick(View v) {
+<span class="nc" id="L85">                pocDrugDataList.remove(position);</span>
+<span class="nc" id="L86">                DoctorPlanofCareActivity.pocDrugBaseAdapter.notifyDataSetChanged();</span>
+<span class="nc" id="L87">            }</span>
+        });
+
+<span class="nc" id="L90">        return convertView;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.1.201405082137</span></div></body></html>

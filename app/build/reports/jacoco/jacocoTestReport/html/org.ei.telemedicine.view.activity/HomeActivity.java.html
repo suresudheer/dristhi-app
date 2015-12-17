@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>HomeActivity.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">org.ei.telemedicine.view.activity</a> &gt; <span class="el_source">HomeActivity.java</span></div><h1>HomeActivity.java</h1><pre class="source lang-java linenums">package org.ei.telemedicine.view.activity;
+
+import static org.ei.telemedicine.event.Event.ACTION_HANDLED;
+import static org.ei.telemedicine.event.Event.FORM_SUBMITTED;
+import static org.ei.telemedicine.event.Event.NETWORK_AVAILABLE;
+import static org.ei.telemedicine.event.Event.SYNC_COMPLETED;
+import static org.ei.telemedicine.event.Event.SYNC_STARTED;
+
+import org.ei.telemedicine.R;
+import org.ei.telemedicine.event.Listener;
+import org.ei.telemedicine.service.PendingFormSubmissionService;
+import org.ei.telemedicine.view.controller.HomeController;
+
+import android.view.Menu;
+import android.view.MenuItem;
+
+<span class="nc" id="L17">public class HomeActivity extends SecuredWebActivity {</span>
+    private MenuItem updateMenuItem;
+    private MenuItem remainingFormsToSyncMenuItem;
+    private PendingFormSubmissionService pendingFormSubmissionService;
+
+<span class="nc" id="L22">    private Listener&lt;Boolean&gt; onSyncStartListener = new Listener&lt;Boolean&gt;() {</span>
+        @Override
+        public void onEvent(Boolean data) {
+<span class="nc" id="L25">            updateMenuItem.setActionView(R.layout.progress);</span>
+<span class="nc" id="L26">        }</span>
+    };
+
+
+
+<span class="nc" id="L31">    private Listener&lt;Boolean&gt; onSyncCompleteListener = new Listener&lt;Boolean&gt;() {</span>
+        @Override
+        public void onEvent(Boolean data) {
+            //#TODO: RemainingFormsToSyncCount cannot be updated from a back ground thread!!
+<span class="nc" id="L35">            updateRemainingFormsToSyncCount();</span>
+<span class="nc" id="L36">            updateMenuItem.setActionView(null);</span>
+<span class="nc" id="L37">        }</span>
+    };
+
+<span class="nc" id="L40">    private Listener&lt;String&gt; onFormSubmittedListener = new Listener&lt;String&gt;() {</span>
+        @Override
+        public void onEvent(String instanceId) {
+<span class="nc" id="L43">            updateController.updateANMDetails();</span>
+<span class="nc" id="L44">        }</span>
+    };
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+<span class="nc" id="L49">        return super.onOptionsItemSelected(item);</span>
+    }
+
+<span class="nc" id="L52">    private Listener&lt;String&gt; updateANMDetailsListener = new Listener&lt;String&gt;() {</span>
+        @Override
+        public void onEvent(String data) {
+<span class="nc" id="L55">            updateController.updateANMDetails();</span>
+<span class="nc" id="L56">        }</span>
+    };
+
+    @Override
+    protected void onInitialization() {
+<span class="nc" id="L61">        pendingFormSubmissionService = context.pendingFormSubmissionService();</span>
+<span class="nc" id="L62">        SYNC_STARTED.addListener(onSyncStartListener);</span>
+<span class="nc" id="L63">        SYNC_COMPLETED.addListener(onSyncCompleteListener);</span>
+<span class="nc" id="L64">        FORM_SUBMITTED.addListener(onFormSubmittedListener);</span>
+<span class="nc" id="L65">        ACTION_HANDLED.addListener(updateANMDetailsListener);</span>
+
+
+<span class="nc" id="L68">        webView.loadUrl(&quot;file:///android_asset/www/home.html&quot;);</span>
+<span class="nc" id="L69">        webView.addJavascriptInterface(new HomeController(updateController), &quot;context&quot;);</span>
+<span class="nc" id="L70">    }</span>
+
+    @Override
+    public void onResumption() {
+<span class="nc" id="L74">        updateSyncIndicator();</span>
+<span class="nc" id="L75">        updateRemainingFormsToSyncCount();</span>
+<span class="nc" id="L76">    }</span>
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+<span class="nc" id="L80">        super.onPrepareOptionsMenu(menu);</span>
+<span class="nc" id="L81">        updateMenuItem = menu.findItem(R.id.updateMenuItem);</span>
+<span class="nc" id="L82">        remainingFormsToSyncMenuItem = menu.findItem(R.id.remainingFormsToSyncMenuItem);</span>
+
+<span class="nc" id="L84">        updateSyncIndicator();</span>
+<span class="nc" id="L85">        updateRemainingFormsToSyncCount();</span>
+<span class="nc" id="L86">        return true;</span>
+    }
+
+    @Override
+    protected void onDestroy() {
+<span class="nc" id="L91">        super.onDestroy();</span>
+
+<span class="nc" id="L93">        SYNC_STARTED.removeListener(onSyncStartListener);</span>
+<span class="nc" id="L94">        SYNC_COMPLETED.removeListener(onSyncCompleteListener);</span>
+<span class="nc" id="L95">        FORM_SUBMITTED.removeListener(onFormSubmittedListener);</span>
+<span class="nc" id="L96">        ACTION_HANDLED.removeListener(updateANMDetailsListener);</span>
+<span class="nc" id="L97">    }</span>
+
+    private void updateSyncIndicator() {
+<span class="nc bnc" id="L100" title="All 2 branches missed.">        if (updateMenuItem != null) {</span>
+<span class="nc bnc" id="L101" title="All 2 branches missed.">            if (context.allSharedPreferences().fetchIsSyncInProgress()) {</span>
+<span class="nc" id="L102">                updateMenuItem.setActionView(R.layout.progress);</span>
+            } else
+<span class="nc" id="L104">                updateMenuItem.setActionView(null);</span>
+        }
+<span class="nc" id="L106">    }</span>
+
+    private void updateRemainingFormsToSyncCount() {
+<span class="nc bnc" id="L109" title="All 2 branches missed.">        if (remainingFormsToSyncMenuItem == null) {</span>
+<span class="nc" id="L110">            return;</span>
+        }
+
+<span class="nc" id="L113">        long size = pendingFormSubmissionService.pendingFormSubmissionCount();</span>
+<span class="nc bnc" id="L114" title="All 2 branches missed.">        if (size &gt; 0) {</span>
+<span class="nc" id="L115">            remainingFormsToSyncMenuItem.setTitle(String.valueOf(size) + &quot; &quot; + getString(R.string.unsynced_forms_count_message));</span>
+<span class="nc" id="L116">            remainingFormsToSyncMenuItem.setVisible(true);</span>
+        } else {
+<span class="nc" id="L118">            remainingFormsToSyncMenuItem.setVisible(false);</span>
+        }
+<span class="nc" id="L120">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.1.201405082137</span></div></body></html>

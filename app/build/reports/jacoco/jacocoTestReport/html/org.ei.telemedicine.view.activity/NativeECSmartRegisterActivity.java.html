@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>NativeECSmartRegisterActivity.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">org.ei.telemedicine.view.activity</a> &gt; <span class="el_source">NativeECSmartRegisterActivity.java</span></div><h1>NativeECSmartRegisterActivity.java</h1><pre class="source lang-java linenums">package org.ei.telemedicine.view.activity;
+
+import static com.google.common.collect.Iterables.concat;
+import static com.google.common.collect.Iterables.toArray;
+import static org.ei.telemedicine.AllConstants.FormNames.ANC_REGISTRATION;
+import static org.ei.telemedicine.AllConstants.FormNames.CHILD_REGISTRATION_EC;
+import static org.ei.telemedicine.AllConstants.FormNames.EC_CLOSE;
+import static org.ei.telemedicine.AllConstants.FormNames.EC_EDIT;
+import static org.ei.telemedicine.AllConstants.FormNames.EC_REGISTRATION;
+import static org.ei.telemedicine.AllConstants.FormNames.FP_CHANGE;
+import static org.ei.telemedicine.AllConstants.FormNames.VIEW_ANC_REGISTRATION_EC;
+import static org.ei.telemedicine.AllConstants.FormNames.VIEW_EC_REGISTRATION;
+
+import org.codehaus.jackson.node.POJONode;
+import org.ei.telemedicine.AllConstants;
+import org.ei.telemedicine.R;
+import org.ei.telemedicine.adapter.SmartRegisterPaginatedAdapter;
+import org.ei.telemedicine.domain.form.FieldOverrides;
+import org.ei.telemedicine.event.Event;
+import org.ei.telemedicine.event.Listener;
+import org.ei.telemedicine.provider.ECSmartRegisterClientsProvider;
+import org.ei.telemedicine.provider.SmartRegisterClientsProvider;
+import org.ei.telemedicine.view.contract.ECClient;
+import org.ei.telemedicine.view.contract.SmartRegisterClient;
+import org.ei.telemedicine.view.controller.ECSmartRegisterController;
+import org.ei.telemedicine.view.controller.VillageController;
+import org.ei.telemedicine.view.dialog.AllClientsFilter;
+import org.ei.telemedicine.view.dialog.AllEligibleCoupleServiceMode;
+import org.ei.telemedicine.view.dialog.DialogOption;
+import org.ei.telemedicine.view.dialog.DialogOptionMapper;
+import org.ei.telemedicine.view.dialog.DialogOptionModel;
+import org.ei.telemedicine.view.dialog.ECNumberSort;
+import org.ei.telemedicine.view.dialog.EditOption;
+import org.ei.telemedicine.view.dialog.FilterOption;
+import org.ei.telemedicine.view.dialog.HighPrioritySort;
+import org.ei.telemedicine.view.dialog.NameSort;
+import org.ei.telemedicine.view.dialog.OpenFormOption;
+import org.ei.telemedicine.view.dialog.ServiceModeOption;
+import org.ei.telemedicine.view.dialog.SortOption;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import android.app.ProgressDialog;
+import android.view.View;
+import android.widget.Toast;
+
+<span class="nc" id="L48">public class NativeECSmartRegisterActivity extends SecuredNativeSmartRegisterActivity {</span>
+
+<span class="nc" id="L50">    private SmartRegisterClientsProvider clientProvider = null;</span>
+    private ECSmartRegisterController controller;
+    private VillageController villageController;
+    private DialogOptionMapper dialogOptionMapper;
+
+<span class="nc" id="L55">    private final ClientActionHandler clientActionHandler = new ClientActionHandler();</span>
+
+    @Override
+    protected SmartRegisterPaginatedAdapter adapter() {
+<span class="nc" id="L59">        return new SmartRegisterPaginatedAdapter(clientsProvider());</span>
+    }
+
+    @Override
+    protected DefaultOptionsProvider getDefaultOptionsProvider() {
+<span class="nc" id="L64">        return new DefaultOptionsProvider() {</span>
+
+            @Override
+            public ServiceModeOption serviceMode() {
+<span class="nc" id="L68">                return new AllEligibleCoupleServiceMode(clientsProvider());</span>
+            }
+
+            @Override
+            public FilterOption villageFilter() {
+<span class="nc" id="L73">                return new AllClientsFilter();</span>
+            }
+
+            @Override
+            public SortOption sortOption() {
+<span class="nc" id="L78">                return new NameSort();</span>
+            }
+
+            @Override
+            public String nameInShortFormForTitle() {
+<span class="nc" id="L83">                return getResources().getString(R.string.ec_register_title_in_short);</span>
+            }
+        };
+    }
+
+    @Override
+    protected NavBarOptionsProvider getNavBarOptionsProvider() {
+<span class="nc" id="L90">        return new NavBarOptionsProvider() {</span>
+
+            @Override
+            public DialogOption[] filterOptions() {
+<span class="nc" id="L94">                Iterable&lt;? extends DialogOption&gt; villageFilterOptions =</span>
+                        dialogOptionMapper.mapToVillageFilterOptions(villageController.getVillages());
+<span class="nc" id="L96">                return toArray(concat(DEFAULT_FILTER_OPTIONS, villageFilterOptions), DialogOption.class);</span>
+            }
+
+            @Override
+            public DialogOption[] serviceModeOptions() {
+<span class="nc" id="L101">                return new DialogOption[]{};</span>
+            }
+
+            @Override
+            public DialogOption[] sortingOptions() {
+<span class="nc" id="L106">                return new DialogOption[]{new NameSort(), new ECNumberSort(),</span>
+                        new HighPrioritySort()};
+            }
+
+            @Override
+            public String searchHint() {
+<span class="nc" id="L112">                return getString(R.string.str_ec_search_hint);</span>
+            }
+        };
+    }
+
+    @Override
+    protected SmartRegisterClientsProvider clientsProvider() {
+<span class="nc bnc" id="L119" title="All 2 branches missed.">        if (clientProvider == null) {</span>
+<span class="nc" id="L120">            clientProvider = new ECSmartRegisterClientsProvider(</span>
+                    this, clientActionHandler, controller);
+        }
+<span class="nc" id="L123">        return clientProvider;</span>
+    }
+
+    private DialogOption[] getEditOptions() {
+<span class="nc" id="L127">        return new DialogOption[]{</span>
+                new OpenFormOption(getString(R.string.str_register_anc_form), ANC_REGISTRATION, formController, this),
+                new OpenFormOption(getString(R.string.str_register_fp_form), FP_CHANGE, formController),
+                new OpenFormOption(getString(R.string.str_register_child_form), CHILD_REGISTRATION_EC, formController),
+                new OpenFormOption(getString(R.string.str_edit_ec_form), EC_EDIT, formController),
+                new OpenFormOption(getString(R.string.view_ec_form), VIEW_EC_REGISTRATION, formController, true),
+                new OpenFormOption(getString(R.string.str_close_ec_form), EC_CLOSE, formController),
+
+        };
+    }
+
+    @Override
+    protected void onInitialization() {
+<span class="nc" id="L140">        controller = new ECSmartRegisterController(context.allEligibleCouples(),</span>
+                context.allBeneficiaries(), context.listCache(),
+                context.ecClientsCache());
+<span class="nc" id="L143">        villageController = new VillageController(context.allEligibleCouples(),</span>
+                context.listCache(), context.villagesCache());
+<span class="nc" id="L145">        dialogOptionMapper = new DialogOptionMapper();</span>
+<span class="nc" id="L146">    }</span>
+
+    @Override
+    public void setupViews() {
+<span class="nc" id="L150">        super.setupViews();</span>
+<span class="nc" id="L151">        setServiceModeViewDrawableRight(null);</span>
+<span class="nc" id="L152">    }</span>
+
+    @Override
+    protected void startRegistration(String village) throws JSONException {
+<span class="nc" id="L156">        String locationJSON = context.anmLocationController().getFormInfoJSON();</span>
+<span class="nc" id="L157">        JSONObject formData = new JSONObject(locationJSON);</span>
+<span class="nc" id="L158">        formData.put(&quot;village&quot;, village.trim().replace(&quot; &quot;, &quot;%20&quot;));</span>
+<span class="nc" id="L159">        String customFields = context.allSettings().fetchFieldLabels(&quot;ECRegistration&quot;);</span>
+<span class="nc bnc" id="L160" title="All 4 branches missed.">        if (customFields != null &amp;&amp; !customFields.equals(&quot;&quot;)) {</span>
+<span class="nc" id="L161">            JSONArray customFieldsArray = new JSONArray(customFields);</span>
+<span class="nc bnc" id="L162" title="All 2 branches missed.">            for (int i = 0; i &lt; customFieldsArray.length(); i++) {</span>
+<span class="nc" id="L163">                formData.put(&quot;field&quot; + (i + 1), customFieldsArray.getString(i).trim().replace(&quot; &quot;, &quot;%20&quot;));</span>
+            }
+        }
+//        formData.put(&quot;ecNumber&quot;, context.allSharedPreferences().fetchRegisteredANM() + &quot;-&quot; + System.currentTimeMillis());
+<span class="nc" id="L167">        FieldOverrides fieldOverrides = new FieldOverrides(formData.toString());</span>
+<span class="nc" id="L168">        startFormActivity(EC_REGISTRATION, null, fieldOverrides.getJSONString());</span>
+<span class="nc" id="L169">    }</span>
+
+<span class="nc" id="L171">    private class ClientActionHandler implements View.OnClickListener {</span>
+        @Override
+        public void onClick(View view) {
+<span class="nc bnc" id="L174" title="All 3 branches missed.">            switch (view.getId()) {</span>
+                case R.id.profile_info_layout:
+<span class="nc" id="L176">                    showProfileView((ECClient) view.getTag());</span>
+<span class="nc" id="L177">                    break;</span>
+                case R.id.btn_edit:
+<span class="nc" id="L179">                    showFragmentDialog(new EditDialogOptionModel(), view.getTag());</span>
+                    break;
+            }
+<span class="nc" id="L182">        }</span>
+
+        private void showProfileView(ECClient client) {
+
+<span class="nc" id="L186">            navigationController.startEC(client.entityId());</span>
+<span class="nc" id="L187">        }</span>
+    }
+
+<span class="nc" id="L190">    private class EditDialogOptionModel implements DialogOptionModel {</span>
+        @Override
+        public DialogOption[] getDialogOptions() {
+<span class="nc" id="L193">            return getEditOptions();</span>
+        }
+
+        @Override
+        public void onDialogOptionSelection(DialogOption option, Object tag) {
+<span class="nc" id="L198">            onEditSelection((EditOption) option, (SmartRegisterClient) tag);</span>
+<span class="nc" id="L199">        }</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.1.201405082137</span></div></body></html>

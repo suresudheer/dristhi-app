@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>ANM.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">org.ei.telemedicine.domain</a> &gt; <span class="el_source">ANM.java</span></div><h1>ANM.java</h1><pre class="source lang-java linenums">package org.ei.telemedicine.domain;
+
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+
+public class ANM {
+    private final String name;
+    private final long fpCount;
+    private final long eligibleCoupleCount;
+    private final long ancCount;
+    private final long pncCount;
+    private final long childCount;
+
+<span class="nc" id="L15">    public ANM(String name, long eligibleCoupleCount, long fpCount, long ancCount, long pncCount, long childCount) {</span>
+<span class="nc" id="L16">        this.name = name;</span>
+<span class="nc" id="L17">        this.eligibleCoupleCount = eligibleCoupleCount;</span>
+<span class="nc" id="L18">        this.fpCount = fpCount;</span>
+<span class="nc" id="L19">        this.ancCount = ancCount;</span>
+<span class="nc" id="L20">        this.pncCount = pncCount;</span>
+<span class="nc" id="L21">        this.childCount = childCount;</span>
+<span class="nc" id="L22">    }</span>
+
+    public String name() {
+<span class="nc" id="L25">        return name;</span>
+    }
+
+    public long ancCount() {
+<span class="nc" id="L29">        return ancCount;</span>
+    }
+
+    public long pncCount() {
+<span class="nc" id="L33">        return pncCount;</span>
+    }
+
+    public long childCount() {
+<span class="nc" id="L37">        return childCount;</span>
+    }
+
+    public long ecCount() {
+<span class="nc" id="L41">        return eligibleCoupleCount;</span>
+    }
+
+    public long fpCount() {
+<span class="nc" id="L45">        return fpCount;</span>
+    }
+
+    @Override
+    public boolean equals(Object o) {
+<span class="nc" id="L50">        return EqualsBuilder.reflectionEquals(this, o);</span>
+    }
+
+    @Override
+    public int hashCode() {
+<span class="nc" id="L55">        return HashCodeBuilder.reflectionHashCode(this);</span>
+    }
+
+    @Override
+    public String toString() {
+<span class="nc" id="L60">        return ToStringBuilder.reflectionToString(this);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.1.201405082137</span></div></body></html>

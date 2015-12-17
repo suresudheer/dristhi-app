@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>EntityDetailDTO.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">org.ei.telemedicine.dto.register</a> &gt; <span class="el_source">EntityDetailDTO.java</span></div><h1>EntityDetailDTO.java</h1><pre class="source lang-java linenums">package org.ei.telemedicine.dto.register;
+
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.codehaus.jackson.annotate.JsonProperty;
+
+<span class="nc" id="L8">public class EntityDetailDTO</span>
+{
+  @JsonProperty
+  private String anmIdentifier;
+  @JsonProperty
+  private String ecNumber;
+  @JsonProperty
+  private String entityId;
+  @JsonProperty
+  private String entityType;
+  @JsonProperty
+  private String thayiCardNumber;
+  
+  public String anmIdentifier()
+  {
+<span class="nc" id="L23">    return this.anmIdentifier;</span>
+  }
+  
+  public String ecNumber()
+  {
+<span class="nc" id="L28">    return this.ecNumber;</span>
+  }
+  
+  public String entityID()
+  {
+<span class="nc" id="L33">    return this.entityId;</span>
+  }
+  
+  public String entityType()
+  {
+<span class="nc" id="L38">    return this.entityType;</span>
+  }
+  
+  public boolean equals(Object paramObject)
+  {
+<span class="nc" id="L43">    return EqualsBuilder.reflectionEquals(this, paramObject, new String[0]);</span>
+  }
+  
+  public int hashCode()
+  {
+<span class="nc" id="L48">    return HashCodeBuilder.reflectionHashCode(this, new String[0]);</span>
+  }
+  
+  public String thayiCardNumber()
+  {
+<span class="nc" id="L53">    return this.thayiCardNumber;</span>
+  }
+  
+  public String toString()
+  {
+<span class="nc" id="L58">    return ToStringBuilder.reflectionToString(this);</span>
+  }
+  
+  public EntityDetailDTO withANMIdentifier(String paramString)
+  {
+<span class="nc" id="L63">    this.anmIdentifier = paramString;</span>
+<span class="nc" id="L64">    return this;</span>
+  }
+  
+  public EntityDetailDTO withECNumber(String paramString)
+  {
+<span class="nc" id="L69">    this.ecNumber = paramString;</span>
+<span class="nc" id="L70">    return this;</span>
+  }
+  
+  public EntityDetailDTO withEntityID(String paramString)
+  {
+<span class="nc" id="L75">    this.entityId = paramString;</span>
+<span class="nc" id="L76">    return this;</span>
+  }
+  
+  public EntityDetailDTO withEntityType(String paramString)
+  {
+<span class="nc" id="L81">    this.entityType = paramString;</span>
+<span class="nc" id="L82">    return this;</span>
+  }
+  
+  public EntityDetailDTO withThayiCardNumber(String paramString)
+  {
+<span class="nc" id="L87">    this.thayiCardNumber = paramString;</span>
+<span class="nc" id="L88">    return this;</span>
+  }
+}
+
+
+
+/* Location:           C:\Users\appaji.r\Downloads\classes-dex2.jar
+
+ * Qualified Name:     org.ei.drishti.dto.register.EntityDetailDTO
+
+ * JD-Core Version:    0.7.0.1
+
+ */
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.1.201405082137</span></div></body></html>

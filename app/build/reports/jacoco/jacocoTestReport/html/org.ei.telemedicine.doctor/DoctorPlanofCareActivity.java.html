@@ -1,0 +1,625 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>DoctorPlanofCareActivity.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">org.ei.telemedicine.doctor</a> &gt; <span class="el_source">DoctorPlanofCareActivity.java</span></div><h1>DoctorPlanofCareActivity.java</h1><pre class="source lang-java linenums">package org.ei.telemedicine.doctor;
+
+import android.app.Activity;
+import android.app.DatePickerDialog;
+import android.app.Dialog;
+import android.content.ComponentName;
+import android.content.Intent;
+import android.net.Uri;
+import android.os.AsyncTask;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
+import android.widget.Button;
+import android.widget.CompoundButton;
+import android.widget.DatePicker;
+import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.ListView;
+import android.widget.Spinner;
+import android.widget.Switch;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import org.apache.http.NameValuePair;
+import org.apache.http.client.utils.URLEncodedUtils;
+import org.apache.http.message.BasicNameValuePair;
+import org.ei.telemedicine.AllConstants;
+import org.ei.telemedicine.Context;
+import org.ei.telemedicine.R;
+import org.ei.telemedicine.event.Listener;
+import org.ei.telemedicine.view.customControls.CustomFontTextView;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+
+/**
+ * Created by naveen on 6/1/15.
+ */
+<span class="nc" id="L48">public class DoctorPlanofCareActivity extends Activity {</span>
+<span class="nc" id="L49">    String url=&quot;&quot;;</span>
+    AutoCompleteTextView act_icd10Diagnosis, act_tests;
+    ListView lv_selected_icd10, lv_selected_tests, lv_selected_drugs;
+    Switch swich_poc_pending;
+    Spinner sp_services, sp_drug_name, sp_drug_frequency, sp_drug_direction, sp_drug_dosage;
+    EditText et_drug_qty, et_drug_no_of_days, et_reason, et_advice;
+
+    Button bt_save_plan_of_care;
+    ImageButton ib_stop_by, ib_add_drug, ib_anm_logo;
+    CustomFontTextView tv_stop_date, tv_health_worker_name, tv_health_worker_village, tv_doc_name, tv_doc_type, tv_mother_name, tv_age, tv_visit_type, tv_village;
+
+    Dialog popup_dialog;
+    Object obj;
+
+    static PocBaseAdapter pocDiagnosisBaseAdapter, pocTestBaseAdapter;
+    static PocDrugBaseAdapter pocDrugBaseAdapter;
+
+<span class="nc" id="L66">    final ArrayList&lt;String&gt; servicesArrayList = new ArrayList&lt;String&gt;();</span>
+<span class="nc" id="L67">    ArrayList&lt;String&gt; selectICD10Diagnosis = new ArrayList&lt;String&gt;();</span>
+<span class="nc" id="L68">    ArrayList&lt;String&gt; selectTests = new ArrayList&lt;String&gt;();</span>
+<span class="nc" id="L69">    ArrayList&lt;PocDrugData&gt; selectDrugs = new ArrayList&lt;PocDrugData&gt;();</span>
+
+<span class="nc" id="L71">    ArrayList&lt;String&gt; pocDrugNamesList = new ArrayList&lt;String&gt;();</span>
+<span class="nc" id="L72">    ArrayList&lt;String&gt; pocDrugFrequenciesList = new ArrayList&lt;String&gt;();</span>
+<span class="nc" id="L73">    ArrayList&lt;String&gt; pocDrugDirectionsList = new ArrayList&lt;String&gt;();</span>
+<span class="nc" id="L74">    ArrayList&lt;String&gt; pocDrugDosagesList = new ArrayList&lt;String&gt;();</span>
+<span class="nc" id="L75">    ArrayList&lt;PocDrugData&gt; pocDrugDatas = new ArrayList&lt;PocDrugData&gt;();</span>
+
+<span class="nc" id="L77">    ArrayList&lt;String&gt; pocTestsList = new ArrayList&lt;String&gt;();</span>
+<span class="nc" id="L78">    ArrayList&lt;String&gt; pocServicesList = new ArrayList&lt;String&gt;();</span>
+<span class="nc" id="L79">    ArrayList&lt;PocDiagnosis&gt; pocDiagnosises = new ArrayList&lt;PocDiagnosis&gt;();</span>
+<span class="nc" id="L80">    ArrayList&lt;PocInvestigation&gt; pocInvestigations = new ArrayList&lt;PocInvestigation&gt;();</span>
+    SimpleDateFormat dateFormatter;
+    Context context;
+<span class="nc" id="L83">    private String TAG = &quot;DoctorPlanOfCareActivity&quot;;</span>
+    String visitType, visitNumber;
+    String documentId, formData, phoneNumber;
+<span class="nc" id="L86">    public String CALLER_URL= AllConstants.CALLING_URL;</span>
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+<span class="nc" id="L90">        super.onCreate(savedInstanceState);</span>
+<span class="nc" id="L91">        Bundle bundle = getIntent().getExtras();</span>
+<span class="nc bnc" id="L92" title="All 8 branches missed.">        if (bundle != null &amp;&amp; bundle.getString(AllConstants.DRUG_INFO_RESULT) != null &amp;&amp; bundle.getString(DoctorFormDataConstants.documentId) != null &amp;&amp; bundle.getString(&quot;formData&quot;) != null) {</span>
+<span class="nc" id="L93">            String resultData = bundle.getString(AllConstants.DRUG_INFO_RESULT);</span>
+<span class="nc" id="L94">            documentId = bundle.getString(DoctorFormDataConstants.documentId);</span>
+<span class="nc" id="L95">            phoneNumber = bundle.getString(DoctorFormDataConstants.phoneNumber);</span>
+<span class="nc" id="L96">            formData = bundle.getString(&quot;formData&quot;);</span>
+            try {
+<span class="nc" id="L98">                setContentView(R.layout.doc_plan_of_care);</span>
+<span class="nc" id="L99">                context = Context.getInstance();</span>
+<span class="nc" id="L100">                act_icd10Diagnosis = (AutoCompleteTextView) findViewById(R.id.mact_icd10_diagnosis);</span>
+<span class="nc" id="L101">                act_tests = (AutoCompleteTextView) findViewById(R.id.act_tests);</span>
+<span class="nc" id="L102">                lv_selected_icd10 = (ListView) findViewById(R.id.lv_selected_icd10);</span>
+<span class="nc" id="L103">                lv_selected_tests = (ListView) findViewById(R.id.lv_selected_tests);</span>
+<span class="nc" id="L104">                lv_selected_drugs = (ListView) findViewById(R.id.lv_selected_drugs);</span>
+<span class="nc" id="L105">                sp_services = (Spinner) findViewById(R.id.sp_services);</span>
+<span class="nc" id="L106">                ib_add_drug = (ImageButton) findViewById(R.id.ib_add_drug);</span>
+
+<span class="nc" id="L108">                bt_save_plan_of_care = (Button) findViewById(R.id.bt_save_plan_of_care);</span>
+<span class="nc" id="L109">                ib_anm_logo = (ImageButton) findViewById(R.id.iv_anm_logo);</span>
+<span class="nc" id="L110">                tv_health_worker_name = (CustomFontTextView) findViewById(R.id.tv_health_worker_name);</span>
+
+<span class="nc" id="L112">                tv_health_worker_village = (CustomFontTextView) findViewById(R.id.tv_health_worker_village_name);</span>
+<span class="nc" id="L113">                tv_doc_name = (CustomFontTextView) findViewById(R.id.tv_doc_name);</span>
+<span class="nc" id="L114">                tv_doc_type = (CustomFontTextView) findViewById(R.id.tv_doc_type);</span>
+<span class="nc" id="L115">                tv_mother_name = (CustomFontTextView) findViewById(R.id.tv_mother_name);</span>
+<span class="nc" id="L116">                tv_age = (CustomFontTextView) findViewById(R.id.tv_age);</span>
+<span class="nc" id="L117">                tv_visit_type = (CustomFontTextView) findViewById(R.id.tv_visit_type);</span>
+<span class="nc" id="L118">                tv_village = (CustomFontTextView) findViewById(R.id.tv_village);</span>
+
+
+<span class="nc" id="L121">                ib_stop_by = (ImageButton) findViewById(R.id.ib_stop_by_date);</span>
+<span class="nc" id="L122">                tv_stop_date = (CustomFontTextView) findViewById(R.id.tv_stop_by_date);</span>
+<span class="nc" id="L123">                sp_drug_name = (Spinner) findViewById(R.id.sp_drug_name);</span>
+<span class="nc" id="L124">                swich_poc_pending = (Switch) findViewById(R.id.switch_poc_pending);</span>
+<span class="nc" id="L125">                sp_drug_direction = (Spinner) findViewById(R.id.sp_drug_direction);</span>
+<span class="nc" id="L126">                sp_drug_dosage = (Spinner) findViewById(R.id.sp_drug_dosage);</span>
+<span class="nc" id="L127">                sp_drug_frequency = (Spinner) findViewById(R.id.sp_drug_frequency);</span>
+<span class="nc" id="L128">                et_drug_no_of_days = (EditText) findViewById(R.id.et_drug_no_of_days);</span>
+<span class="nc" id="L129">                et_drug_qty = (EditText) findViewById(R.id.et_drug_qty);</span>
+<span class="nc" id="L130">                et_reason = (EditText) findViewById(R.id.et_reason);</span>
+<span class="nc" id="L131">                et_advice = (EditText) findViewById(R.id.et_advice);</span>
+
+<span class="nc" id="L133">                dateFormatter = new SimpleDateFormat(&quot;dd-MM-yyyy&quot;);</span>
+
+//                progressDialog = new ProgressDialog(DoctorPlanofCareActivity.this);
+//                progressDialog.setCancelable(false);
+//                progressDialog.setMessage(getString(R.string.loggin_in_dialog_message));
+
+<span class="nc" id="L139">                pocServicesList.add(&quot;&quot;);</span>
+<span class="nc" id="L140">                pocDrugNamesList.add(getString(R.string.please_select_drug));</span>
+<span class="nc" id="L141">                pocDrugFrequenciesList.add(getString(R.string.please_select_frequency));</span>
+<span class="nc" id="L142">                pocDrugDirectionsList.add(getString(R.string.please_select_direction));</span>
+<span class="nc" id="L143">                pocDrugDosagesList.add(getString(R.string.please_select_dosage));</span>
+
+<span class="nc" id="L145">                String existPocInfo = context.allDoctorRepository().getPocInfoCaseId(documentId);</span>
+<span class="nc bnc" id="L146" title="All 4 branches missed.">                if (existPocInfo != null &amp;&amp; !existPocInfo.equals(&quot;&quot;)) {</span>
+<span class="nc" id="L147">                    JSONObject pocInfo = new JSONObject(existPocInfo);</span>
+<span class="nc bnc" id="L148" title="All 2 branches missed.">                    JSONArray diagnosisArray = pocInfo.has(&quot;diagnosis&quot;) ? pocInfo.getJSONArray(&quot;diagnosis&quot;) : new JSONArray();</span>
+<span class="nc bnc" id="L149" title="All 2 branches missed.">                    JSONArray investigationsArray = pocInfo.has(&quot;investigations&quot;) ? pocInfo.getJSONArray(&quot;investigations&quot;) : new JSONArray();</span>
+<span class="nc bnc" id="L150" title="All 2 branches missed.">                    JSONArray drugsArray = pocInfo.has(&quot;drugs&quot;) ? pocInfo.getJSONArray(&quot;drugs&quot;) : new JSONArray();</span>
+<span class="nc" id="L151">                    Log.e(TAG, &quot;PocInfoCaseId &quot; + diagnosisArray.length() + &quot;--&quot; + drugsArray.length() + &quot;---&quot; + investigationsArray.length() + &quot;----&quot; + existPocInfo);</span>
+<span class="nc bnc" id="L152" title="All 2 branches missed.">                    for (int i = 0; i &lt; diagnosisArray.length(); i++) {</span>
+<span class="nc" id="L153">                        lv_selected_icd10.setVisibility(View.VISIBLE);</span>
+<span class="nc" id="L154">                        selectICD10Diagnosis.add(diagnosisArray.get(i).toString());</span>
+                    }
+<span class="nc bnc" id="L156" title="All 2 branches missed.">                    for (int i = 0; i &lt; investigationsArray.length(); i++) {</span>
+<span class="nc" id="L157">                        lv_selected_tests.setVisibility(View.VISIBLE);</span>
+<span class="nc" id="L158">                        selectTests.add(investigationsArray.get(i).toString());</span>
+                    }
+<span class="nc bnc" id="L160" title="All 2 branches missed.">                    for (int i = 0; i &lt; drugsArray.length(); i++) {</span>
+<span class="nc" id="L161">                        lv_selected_drugs.setVisibility(View.VISIBLE);</span>
+<span class="nc" id="L162">                        JSONObject drugData = drugsArray.getJSONObject(i);</span>
+<span class="nc" id="L163">                        PocDrugData pocDrugData = new PocDrugData();</span>
+<span class="nc" id="L164">                        pocDrugData.setDrugName(getData(drugData, &quot;drugName&quot;));</span>
+<span class="nc" id="L165">                        pocDrugData.setDosage(getData(drugData, &quot;dosage&quot;));</span>
+<span class="nc" id="L166">                        pocDrugData.setFrequncy(getData(drugData, &quot;frequency&quot;));</span>
+<span class="nc" id="L167">                        pocDrugData.setDrugNoofDays(getData(drugData, &quot;drugNoOfDays&quot;));</span>
+<span class="nc" id="L168">                        pocDrugData.setDrugQty(getData(drugData, &quot;drugQty&quot;));</span>
+<span class="nc" id="L169">                        pocDrugData.setDirection(getData(drugData, &quot;direction&quot;));</span>
+<span class="nc" id="L170">                        pocDrugData.setDrugStopByDate(getData(drugData, &quot;drugStopDate&quot;));</span>
+<span class="nc" id="L171">                        selectDrugs.add(pocDrugData);</span>
+                    }
+<span class="nc" id="L173">                    et_advice.setText(getData(pocInfo, &quot;advice&quot;));</span>
+                }
+<span class="nc" id="L175">                final JSONObject pocData = new JSONObject(resultData);</span>
+<span class="nc" id="L176">                final JSONObject formDataJson = new JSONObject(formData);</span>
+<span class="nc bnc" id="L177" title="All 2 branches missed.">                JSONArray diagnosisJsonArray = pocData.has(AllConstants.POC_DIAGNOSIS) ? pocData.getJSONArray(AllConstants.POC_DIAGNOSIS) : new JSONArray();</span>
+<span class="nc" id="L178">                Log.e(TAG, &quot;Diagnosis Size&quot; + diagnosisJsonArray.length());</span>
+<span class="nc bnc" id="L179" title="All 2 branches missed.">                for (int i = 0; i &lt; diagnosisJsonArray.length(); i++) {</span>
+<span class="nc" id="L180">                    JSONObject diagnosisDataJson = diagnosisJsonArray.getJSONObject(i);</span>
+<span class="nc" id="L181">                    PocDiagnosis pocDiagnosis = new PocDiagnosis();</span>
+<span class="nc" id="L182">                    pocDiagnosis.setIcd10_name(diagnosisDataJson.getString(&quot;ICD10_Name&quot;) + &quot;&quot;);</span>
+<span class="nc" id="L183">                    pocDiagnosis.setIcd10_chapter(diagnosisDataJson.getString(&quot;ICD10_Chapter&quot;) + &quot;&quot;);</span>
+<span class="nc" id="L184">                    pocDiagnosis.setIcd10_code(diagnosisDataJson.getString(&quot;ICD10_Code&quot;) + &quot;&quot;);</span>
+<span class="nc" id="L185">                    pocDiagnosises.add(pocDiagnosis);</span>
+                }
+
+<span class="nc bnc" id="L188" title="All 2 branches missed.">                JSONArray investigationJsonArray = pocData.has(AllConstants.POC_INVESTIGATIONS) ? pocData.getJSONArray(AllConstants.POC_INVESTIGATIONS) : new JSONArray();</span>
+<span class="nc bnc" id="L189" title="All 2 branches missed.">                for (int i = 0; i &lt; investigationJsonArray.length(); i++) {</span>
+<span class="nc" id="L190">                    JSONObject investigationDataJson = investigationJsonArray.getJSONObject(i);</span>
+<span class="nc" id="L191">                    PocInvestigation pocInvestigation = new PocInvestigation();</span>
+<span class="nc" id="L192">                    pocInvestigation.setInvestigation_name(investigationDataJson.getString(&quot;investigation_name&quot;) + &quot;&quot;);</span>
+<span class="nc" id="L193">                    pocInvestigation.setService_group_name(investigationDataJson.getString(&quot;service_group_name&quot;) + &quot;&quot;);</span>
+<span class="nc bnc" id="L194" title="All 2 branches missed.">                    if (!pocServicesList.contains(investigationDataJson.getString(&quot;service_group_name&quot;)))</span>
+<span class="nc" id="L195">                        pocServicesList.add(investigationDataJson.getString(&quot;service_group_name&quot;));</span>
+<span class="nc" id="L196">                    pocInvestigations.add(pocInvestigation);</span>
+                }
+
+<span class="nc bnc" id="L199" title="All 2 branches missed.">                final JSONArray drugsJsonArray = pocData.has(AllConstants.POC_DRUGS) ? pocData.getJSONArray(AllConstants.POC_DRUGS) : new JSONArray();</span>
+<span class="nc bnc" id="L200" title="All 2 branches missed.">                for (int i = 0; i &lt; drugsJsonArray.length(); i++) {</span>
+<span class="nc" id="L201">                    JSONObject drugJsonObject = drugsJsonArray.getJSONObject(i);</span>
+<span class="nc" id="L202">                    PocDrugData pocDrugData = new PocDrugData();</span>
+<span class="nc" id="L203">                    pocDrugData.setDrugName(drugJsonObject.getString(&quot;name&quot;));</span>
+<span class="nc" id="L204">                    pocDrugData.setDirection(drugJsonObject.getString(&quot;direction&quot;));</span>
+<span class="nc" id="L205">                    pocDrugData.setDosage(drugJsonObject.getString(&quot;dosage&quot;));</span>
+<span class="nc" id="L206">                    pocDrugData.setFrequncy(drugJsonObject.getString(&quot;frequency&quot;));</span>
+<span class="nc" id="L207">                    pocDrugDatas.add(pocDrugData);</span>
+
+<span class="nc" id="L209">                    pocDrugNamesList.add(drugJsonObject.getString(&quot;name&quot;));</span>
+<span class="nc bnc" id="L210" title="All 2 branches missed.">                    if (!pocDrugDirectionsList.contains(drugJsonObject.getString(&quot;direction&quot;)))</span>
+<span class="nc" id="L211">                        pocDrugDirectionsList.add(drugJsonObject.getString(&quot;direction&quot;).trim());</span>
+<span class="nc bnc" id="L212" title="All 2 branches missed.">                    if (!pocDrugDosagesList.contains(drugJsonObject.getString(&quot;dosage&quot;)))</span>
+<span class="nc" id="L213">                        pocDrugDosagesList.add(drugJsonObject.getString(&quot;dosage&quot;));</span>
+<span class="nc bnc" id="L214" title="All 2 branches missed.">                    if (!pocDrugFrequenciesList.contains(drugJsonObject.getString(&quot;frequency&quot;)))</span>
+<span class="nc" id="L215">                        pocDrugFrequenciesList.add(drugJsonObject.getString(&quot;frequency&quot;));</span>
+
+                }
+<span class="nc" id="L218">                final String doc_name = Context.getInstance().allSharedPreferences().fetchRegisteredANM();</span>
+<span class="nc" id="L219">                final String nus_name = getData(formDataJson, DoctorFormDataConstants.anmId);</span>
+<span class="nc" id="L220">                tv_doc_name.setText(doc_name);</span>
+<span class="nc" id="L221">                tv_mother_name.setText(getData(formDataJson, DoctorFormDataConstants.wife_name));</span>
+<span class="nc" id="L222">                tv_age.setText(getData(formDataJson, DoctorFormDataConstants.age));</span>
+<span class="nc" id="L223">                visitType = getData(formDataJson, DoctorFormDataConstants.visit_type);</span>
+<span class="nc" id="L224">                visitNumber = getData(formDataJson, DoctorFormDataConstants.anc_visit_number);</span>
+
+<span class="nc" id="L226">                tv_visit_type.setText(visitType);</span>
+<span class="nc" id="L227">                tv_village.setText(getData(formDataJson, DoctorFormDataConstants.village_name));</span>
+<span class="nc" id="L228">                tv_health_worker_name.setText(nus_name);</span>
+<span class="nc" id="L229">                tv_health_worker_village.setText(getData(formDataJson, DoctorFormDataConstants.village_name));</span>
+
+<span class="nc" id="L231">                Log.e(TAG, selectICD10Diagnosis.size() + &quot;--&quot; + selectDrugs.size() + &quot;--&quot; + selectTests.size());</span>
+
+<span class="nc" id="L233">                pocDiagnosisBaseAdapter = new PocBaseAdapter(DoctorPlanofCareActivity.this, selectICD10Diagnosis);</span>
+<span class="nc" id="L234">                lv_selected_icd10.setAdapter(pocDiagnosisBaseAdapter);</span>
+
+<span class="nc" id="L236">                pocTestBaseAdapter = new PocBaseAdapter(DoctorPlanofCareActivity.this, selectTests);</span>
+<span class="nc" id="L237">                lv_selected_tests.setAdapter(pocTestBaseAdapter);</span>
+
+<span class="nc" id="L239">                pocDrugBaseAdapter = new PocDrugBaseAdapter(DoctorPlanofCareActivity.this, selectDrugs);</span>
+<span class="nc" id="L240">                lv_selected_drugs.setAdapter(pocDrugBaseAdapter);</span>
+
+//                ArrayAdapter adapter = ArrayAdapter.createFromResource(this, pocServicesList, R.layout.spinner_item);
+//                adapter.setDropDownViewResource(R.layout.spinner_dropdown_item);
+
+<span class="nc" id="L245">                sp_services.setAdapter(new ArrayAdapter(DoctorPlanofCareActivity.this, R.layout.spinner_item, pocServicesList));</span>
+<span class="nc" id="L246">                act_icd10Diagnosis.setAdapter(new DiagnosisArrayAdapter(DoctorPlanofCareActivity.this, R.layout.diagnosis_list_item, pocDiagnosises));</span>
+
+<span class="nc" id="L248">                sp_drug_name.setAdapter(new ArrayAdapter(DoctorPlanofCareActivity.this, R.layout.spinner_item, pocDrugNamesList));</span>
+<span class="nc" id="L249">                sp_drug_dosage.setAdapter(new ArrayAdapter(DoctorPlanofCareActivity.this, R.layout.spinner_item, pocDrugDosagesList));</span>
+<span class="nc" id="L250">                sp_drug_frequency.setAdapter(new ArrayAdapter(DoctorPlanofCareActivity.this, R.layout.spinner_item, pocDrugFrequenciesList));</span>
+<span class="nc" id="L251">                sp_drug_direction.setAdapter(new ArrayAdapter(DoctorPlanofCareActivity.this, R.layout.spinner_item, pocDrugDirectionsList));</span>
+
+<span class="nc" id="L253">                ib_anm_logo.setOnClickListener(new View.OnClickListener() {</span>
+                    @Override
+                    public void onClick(View v) {
+<span class="nc" id="L256">                        String caller_url = String.format(CALLER_URL,doc_name,nus_name);</span>
+<span class="nc" id="L257">                        Uri url = Uri.parse(caller_url);</span>
+<span class="nc" id="L258">                        Intent _broswer = new Intent(Intent.ACTION_VIEW,url);</span>
+<span class="nc" id="L259">                        startActivity(_broswer);</span>
+<span class="nc" id="L260">                    }</span>
+                });
+
+
+<span class="nc" id="L264">                sp_services.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener()</span>
+
+<span class="nc" id="L266">                                                      {</span>
+                                                          @Override
+                                                          public void onItemSelected(AdapterView&lt;?&gt; parent, View view,
+                                                                                     int position, long id) {
+<span class="nc" id="L270">                                                              TextView tc = (TextView) view;</span>
+<span class="nc bnc" id="L271" title="All 2 branches missed.">                                                              if (!tc.getText().toString().equals(&quot;&quot;)) {</span>
+<span class="nc" id="L272">                                                                  String serviceGroupName = pocServicesList.get(position);</span>
+<span class="nc bnc" id="L273" title="All 2 branches missed.">                                                                  for (int i = 0; i &lt; pocInvestigations.size(); i++) {</span>
+<span class="nc" id="L274">                                                                      PocInvestigation pocInvestigation = pocInvestigations.get(i);</span>
+<span class="nc bnc" id="L275" title="All 4 branches missed.">                                                                      if (pocInvestigation.getService_group_name().equals(serviceGroupName) &amp;&amp; !pocTestsList.contains(pocInvestigation.getInvestigation_name())) {</span>
+<span class="nc" id="L276">                                                                          pocTestsList.add(pocInvestigation.getInvestigation_name());</span>
+                                                                      }
+                                                                  }
+<span class="nc bnc" id="L279" title="All 2 branches missed.">                                                                  for (int i = 0; i &lt; pocTestsList.size(); i++) {</span>
+<span class="nc" id="L280">                                                                      Log.e(TAG, pocTestsList.get(i));</span>
+                                                                  }
+<span class="nc" id="L282">                                                                  act_tests.setAdapter(new ArrayAdapter(DoctorPlanofCareActivity.this, android.R.layout.simple_list_item_1, pocTestsList));</span>
+                                                              }
+<span class="nc" id="L284">                                                          }</span>
+
+                                                          @Override
+                                                          public void onNothingSelected(AdapterView&lt;?&gt; parent) {
+
+<span class="nc" id="L289">                                                          }</span>
+                                                      }
+
+                );
+<span class="nc" id="L293">                sp_drug_name.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener()</span>
+
+<span class="nc" id="L295">                                                       {</span>
+                                                           @Override
+                                                           public void onItemSelected(AdapterView&lt;?&gt; parent, View view,
+                                                                                      int position, long id) {
+<span class="nc" id="L299">                                                               TextView tv_drugName = (TextView) view;</span>
+<span class="nc" id="L300">                                                               String drugName = tv_drugName.getText().toString();</span>
+<span class="nc bnc" id="L301" title="All 2 branches missed.">                                                               for (int i = 0; i &lt; pocDrugDatas.size(); i++) {</span>
+<span class="nc" id="L302">                                                                   PocDrugData pocDrugData = pocDrugDatas.get(i);</span>
+<span class="nc bnc" id="L303" title="All 2 branches missed.">                                                                   if (pocDrugData.getDrugName().equals(drugName)) {</span>
+<span class="nc" id="L304">                                                                       sp_drug_direction.setSelection(pocDrugDirectionsList.indexOf(pocDrugData.getDirection()), true);</span>
+<span class="nc" id="L305">                                                                       sp_drug_frequency.setSelection(pocDrugFrequenciesList.indexOf(pocDrugData.getFrequncy()), true);</span>
+<span class="nc" id="L306">                                                                       sp_drug_dosage.setSelection(pocDrugDosagesList.indexOf(pocDrugData.getDosage()), true);</span>
+                                                                   }
+                                                               }
+<span class="nc" id="L309">                                                           }</span>
+
+                                                           @Override
+                                                           public void onNothingSelected(AdapterView&lt;?&gt; parent) {
+
+<span class="nc" id="L314">                                                           }</span>
+                                                       }
+
+                );
+
+<span class="nc" id="L319">                act_icd10Diagnosis.setOnItemClickListener(new AdapterView.OnItemClickListener()</span>
+
+<span class="nc" id="L321">                                                          {</span>
+                                                              @Override
+                                                              public void onItemClick(AdapterView parent, View view, int position,
+                                                                                      long id) {
+<span class="nc" id="L325">                                                                  act_icd10Diagnosis.setText(&quot;&quot;);</span>
+<span class="nc" id="L326">                                                                  lv_selected_icd10.setVisibility(View.VISIBLE);</span>
+<span class="nc" id="L327">                                                                  String diagnoseCode = pocDiagnosises.get(position).getIcd10_code().toString();</span>
+<span class="nc" id="L328">                                                                  String diagnoseName = pocDiagnosises.get(position).getIcd10_name().toString();</span>
+<span class="nc bnc" id="L329" title="All 2 branches missed.">                                                                  if (!selectICD10Diagnosis.contains(diagnoseCode + &quot; - &quot; + diagnoseName)) {</span>
+<span class="nc" id="L330">                                                                      selectICD10Diagnosis.add(diagnoseCode + &quot; - &quot; + diagnoseName);</span>
+<span class="nc" id="L331">                                                                      pocDiagnosisBaseAdapter.notifyDataSetChanged();</span>
+                                                                  }
+
+<span class="nc" id="L334">                                                              }</span>
+                                                          }
+
+                );
+<span class="nc" id="L338">                act_tests.setOnItemClickListener(new AdapterView.OnItemClickListener()</span>
+
+<span class="nc" id="L340">                                                 {</span>
+                                                     @Override
+                                                     public void onItemClick(AdapterView parent, View view, int position,
+                                                                             long id) {
+<span class="nc" id="L344">                                                         act_tests.setText(&quot;&quot;);</span>
+<span class="nc" id="L345">                                                         lv_selected_tests.setVisibility(View.VISIBLE);</span>
+<span class="nc" id="L346">                                                         TextView tv = (TextView) view;</span>
+<span class="nc" id="L347">                                                         String testName = sp_services.getSelectedItem().toString() + &quot;-&quot; + tv.getText().toString();</span>
+<span class="nc bnc" id="L348" title="All 2 branches missed.">                                                         if (!selectTests.contains(testName)) {</span>
+<span class="nc" id="L349">                                                             selectTests.add(testName);</span>
+<span class="nc" id="L350">                                                             pocTestBaseAdapter.notifyDataSetChanged();</span>
+                                                         }
+<span class="nc bnc" id="L352" title="All 2 branches missed.">                                                         for (int i = 0; i &lt; selectTests.size(); i++) {</span>
+<span class="nc" id="L353">                                                             Log.e(TAG, selectTests.get(i));</span>
+                                                         }
+
+<span class="nc" id="L356">                                                     }</span>
+                                                 }
+
+                );
+<span class="nc" id="L360">                ib_add_drug.setOnClickListener(new View.OnClickListener()</span>
+
+<span class="nc" id="L362">                                               {</span>
+                                                   @Override
+                                                   public void onClick(View v) {
+<span class="nc" id="L365">                                                       lv_selected_drugs.setVisibility(View.VISIBLE);</span>
+<span class="nc" id="L366">                                                       boolean isDrugExist = false;</span>
+<span class="nc" id="L367">                                                       String drugName = sp_drug_name.getSelectedItem().toString();</span>
+<span class="nc" id="L368">                                                       String drugFrequency = sp_drug_frequency.getSelectedItem().toString();</span>
+<span class="nc" id="L369">                                                       String drugDosage = sp_drug_dosage.getSelectedItem().toString();</span>
+<span class="nc" id="L370">                                                       String drugDirection = sp_drug_direction.getSelectedItem().toString();</span>
+<span class="nc" id="L371">                                                       String drugNoOfDays = et_drug_no_of_days.getText().toString();</span>
+<span class="nc" id="L372">                                                       String drugQty = et_drug_qty.getText().toString();</span>
+<span class="nc" id="L373">                                                       String drugStopDate = tv_stop_date.getText().toString();</span>
+
+<span class="nc" id="L375">                                                       PocDrugData pocDrugData = new PocDrugData();</span>
+<span class="nc" id="L376">                                                       pocDrugData.setDrugName(drugName);</span>
+<span class="nc" id="L377">                                                       pocDrugData.setDosage(drugDosage);</span>
+<span class="nc" id="L378">                                                       pocDrugData.setFrequncy(drugFrequency);</span>
+<span class="nc" id="L379">                                                       pocDrugData.setDirection(drugDirection);</span>
+<span class="nc" id="L380">                                                       pocDrugData.setDrugNoofDays(drugNoOfDays);</span>
+<span class="nc" id="L381">                                                       pocDrugData.setDrugQty(drugQty);</span>
+
+<span class="nc bnc" id="L383" title="All 2 branches missed.">                                                       for (int i = 0; i &lt; selectDrugs.size(); i++) {</span>
+<span class="nc" id="L384">                                                           PocDrugData pocDrugData1 = selectDrugs.get(i);</span>
+<span class="nc bnc" id="L385" title="All 2 branches missed.">                                                           if (pocDrugData1.getDrugName().equals(drugName)) {</span>
+<span class="nc" id="L386">                                                               tv_stop_date.setVisibility(View.VISIBLE);</span>
+<span class="nc" id="L387">                                                               ib_stop_by.setVisibility(View.VISIBLE);</span>
+<span class="nc" id="L388">                                                               isDrugExist = true;</span>
+<span class="nc" id="L389">                                                               pocDrugData.setIsDrugDuplicate(true);</span>
+<span class="nc" id="L390">                                                               pocDrugData.setDrugStopByDate(drugStopDate);</span>
+                                                           }
+
+                                                       }
+<span class="nc bnc" id="L394" title="All 12 branches missed.">                                                       if (!drugName.equals(getString(R.string.please_select_drug)) &amp;&amp; !drugDirection.equals(getString(R.string.please_select_direction)) &amp;&amp; !drugFrequency.equals(getString(R.string.please_select_frequency)) &amp;&amp; !drugDosage.equals(getString(R.string.please_select_dosage)) &amp;&amp; !drugNoOfDays.equals(&quot;&quot;) &amp;&amp; !drugQty.equals(&quot;&quot;)) {</span>
+<span class="nc bnc" id="L395" title="All 2 branches missed.">                                                           if (isDrugExist) {</span>
+<span class="nc" id="L396">                                                               Log.e(TAG, &quot;length &quot; + drugQty.length() + &quot;&quot; + drugNoOfDays.length() + &quot;&quot; + drugStopDate.length() + drugStopDate);</span>
+<span class="nc bnc" id="L397" title="All 6 branches missed.">                                                               if (drugQty.length() != 0 &amp;&amp; drugNoOfDays.length() != 0 &amp;&amp; !drugStopDate.equals(&quot;Stop By&quot;)) {</span>
+<span class="nc" id="L398">                                                                   selectDrugs.add(pocDrugData);</span>
+<span class="nc" id="L399">                                                                   pocDrugBaseAdapter.notifyDataSetChanged();</span>
+                                                               } else {
+<span class="nc" id="L401">                                                                   Toast.makeText(DoctorPlanofCareActivity.this, &quot;Stop Date Need&quot;, Toast.LENGTH_SHORT).show();</span>
+                                                               }
+                                                           } else {
+<span class="nc" id="L404">                                                               selectDrugs.add(pocDrugData);</span>
+<span class="nc" id="L405">                                                               pocDrugBaseAdapter.notifyDataSetChanged();</span>
+                                                           }
+                                                       } else
+<span class="nc" id="L408">                                                           Toast.makeText(DoctorPlanofCareActivity.this, &quot;All Fields are mandatory&quot;, Toast.LENGTH_SHORT).show();</span>
+<span class="nc" id="L409">                                                       tv_stop_date.setText(&quot;&quot;);</span>
+<span class="nc" id="L410">                                                       et_drug_no_of_days.setText(&quot;&quot;);</span>
+<span class="nc" id="L411">                                                       et_drug_qty.setText(&quot;&quot;);</span>
+<span class="nc" id="L412">                                                   }</span>
+                                               }
+
+                );
+<span class="nc" id="L416">                bt_save_plan_of_care.setOnClickListener(new View.OnClickListener()</span>
+
+<span class="nc" id="L418">                                                        {</span>
+                                                            @Override
+                                                            public void onClick(View v) {
+//                                                                if (!swich_poc_pending.isChecked() &amp;&amp; et_reason.getText().length()@) {
+
+                                                                try {
+<span class="nc" id="L424">                                                                    JSONObject resultJson = new JSONObject();</span>
+<span class="nc" id="L425">                                                                    JSONArray drugsArray = new JSONArray();</span>
+<span class="nc" id="L426">                                                                    JSONArray diagnosisArray = new JSONArray();</span>
+<span class="nc" id="L427">                                                                    JSONArray testsArray = new JSONArray();</span>
+
+<span class="nc bnc" id="L429" title="All 2 branches missed.">                                                                    for (int i = 0; i &lt; selectICD10Diagnosis.size(); i++) {</span>
+<span class="nc" id="L430">                                                                        diagnosisArray.put(selectICD10Diagnosis.get(i).toString());</span>
+                                                                    }
+<span class="nc" id="L432">                                                                    Log.e(TAG, &quot;Drugs Size &quot; + selectDrugs.size() + &quot;&quot;);</span>
+<span class="nc bnc" id="L433" title="All 2 branches missed.">                                                                    for (int i = 0; i &lt; selectDrugs.size(); i++) {</span>
+<span class="nc" id="L434">                                                                        JSONObject drugsJson = new JSONObject();</span>
+<span class="nc" id="L435">                                                                        PocDrugData pocDrugData = selectDrugs.get(i);</span>
+<span class="nc" id="L436">                                                                        drugsJson.put(&quot;direction&quot;, pocDrugData.getDirection());</span>
+<span class="nc" id="L437">                                                                        drugsJson.put(&quot;dosage&quot;, pocDrugData.getDosage());</span>
+<span class="nc" id="L438">                                                                        drugsJson.put(&quot;drugName&quot;, pocDrugData.getDrugName());</span>
+<span class="nc" id="L439">                                                                        drugsJson.put(&quot;drugNoOfDays&quot;, pocDrugData.getDrugNoofDays());</span>
+<span class="nc" id="L440">                                                                        drugsJson.put(&quot;drugQty&quot;, pocDrugData.getDrugQty());</span>
+<span class="nc" id="L441">                                                                        drugsJson.put(&quot;drugStopDate&quot;, pocDrugData.getDrugStopByDate());</span>
+<span class="nc" id="L442">                                                                        drugsJson.put(&quot;frequency&quot;, pocDrugData.getFrequncy());</span>
+<span class="nc" id="L443">                                                                        drugsArray.put(drugsJson);</span>
+                                                                    }
+
+<span class="nc bnc" id="L446" title="All 2 branches missed.">                                                                    for (int i = 0; i &lt; selectTests.size(); i++) {</span>
+<span class="nc" id="L447">                                                                        testsArray.put(selectTests.get(i).toString());</span>
+                                                                    }
+<span class="nc" id="L449">                                                                    resultJson.put(&quot;visitType&quot;, visitType);</span>
+<span class="nc" id="L450">                                                                    resultJson.put(&quot;visitNumber&quot;, visitNumber);</span>
+<span class="nc" id="L451">                                                                    resultJson.put(&quot;doctorName&quot;, Context.getInstance().allSharedPreferences().fetchRegisteredANM());</span>
+<span class="nc" id="L452">                                                                    resultJson.put(&quot;planofCareDate&quot;, dateFormatter.format(new Date()));</span>
+<span class="nc" id="L453">                                                                    resultJson.put(&quot;diagnosis&quot;, diagnosisArray);</span>
+<span class="nc" id="L454">                                                                    resultJson.put(&quot;drugs&quot;, drugsArray);</span>
+<span class="nc" id="L455">                                                                    resultJson.put(&quot;investigations&quot;, testsArray);</span>
+<span class="nc" id="L456">                                                                    resultJson.put(&quot;advice&quot;, et_advice.getText().toString());</span>
+                                                                    //                            resultJson.put(&quot;reason&quot;, et_reason.getText().toString());
+<span class="nc" id="L458">                                                                    Log.e(TAG, &quot;Reason&quot; + et_reason.getText().toString() + &quot;---&quot; + swich_poc_pending.isChecked() + &quot;&quot;);</span>
+<span class="nc" id="L459">                                                                    Log.e(TAG, &quot;selected Json&quot; + resultJson.toString());</span>
+<span class="nc bnc" id="L460" title="All 4 branches missed.">                                                                    if (swich_poc_pending.isChecked() &amp;&amp; et_reason.getText().toString().trim().length() != 0) {</span>
+<span class="nc" id="L461">                                                                        saveDatainLocal(documentId, resultJson.toString(), et_reason.getText().toString());</span>
+<span class="nc" id="L462">                                                                        saveData(documentId, resultJson.toString(), formDataJson, et_reason.getText().toString(), phoneNumber);</span>
+<span class="nc bnc" id="L463" title="All 10 branches missed.">                                                                    } else if (!swich_poc_pending.isChecked() &amp;&amp; (diagnosisArray.length() != 0 || drugsArray.length() != 0 || testsArray.length() != 0 || resultJson.getString(&quot;advice&quot;).length() != 0)) {</span>
+<span class="nc" id="L464">                                                                        saveData(documentId, resultJson.toString(), formDataJson, et_reason.getText().toString(), phoneNumber);</span>
+                                                                    } else {
+<span class="nc" id="L466">                                                                        Toast.makeText(DoctorPlanofCareActivity.this, &quot;Plan of care / Reason for Pending must be given&quot;, Toast.LENGTH_SHORT).show();</span>
+                                                                    }
+
+<span class="nc" id="L469">                                                                } catch (JSONException e) {</span>
+<span class="nc" id="L470">                                                                    e.printStackTrace();</span>
+<span class="nc" id="L471">                                                                } catch (Exception e) {</span>
+<span class="nc" id="L472">                                                                    e.printStackTrace();</span>
+<span class="nc" id="L473">                                                                }</span>
+//                                                                } else
+//                                                                    Toast.makeText(DoctorPlanofCareActivity.this, &quot;Reason mandatory&quot;, Toast.LENGTH_SHORT).show();
+<span class="nc" id="L476">                                                            }</span>
+                                                        }
+
+                );
+<span class="nc" id="L480">                swich_poc_pending.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener()</span>
+
+<span class="nc" id="L482">                                                             {</span>
+                                                                 @Override
+                                                                 public void onCheckedChanged(CompoundButton buttonView,
+                                                                                              boolean isChecked) {
+<span class="nc bnc" id="L486" title="All 2 branches missed.">                                                                     if (isChecked) {</span>
+<span class="nc" id="L487">                                                                         et_reason.setVisibility(View.VISIBLE);</span>
+                                                                     } else {
+<span class="nc" id="L489">                                                                         et_reason.setVisibility(View.GONE);</span>
+                                                                     }
+<span class="nc" id="L491">                                                                 }</span>
+                                                             }
+
+                );
+<span class="nc" id="L495">                ib_stop_by.setOnClickListener(new View.OnClickListener()</span>
+
+<span class="nc" id="L497">                                              {</span>
+                                                  @Override
+                                                  public void onClick(View v) {
+<span class="nc" id="L500">                                                      Calendar calendar = Calendar.getInstance();</span>
+<span class="nc" id="L501">                                                      new DatePickerDialog(DoctorPlanofCareActivity.this, new DatePickerDialog.OnDateSetListener() {</span>
+                                                          public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+<span class="nc" id="L503">                                                              Calendar newDate = Calendar.getInstance();</span>
+<span class="nc" id="L504">                                                              newDate.set(year, monthOfYear, dayOfMonth);</span>
+<span class="nc" id="L505">                                                              tv_stop_date.setVisibility(View.VISIBLE);</span>
+<span class="nc" id="L506">                                                              tv_stop_date.setText(dateFormatter.format(newDate.getTime()));</span>
+<span class="nc" id="L507">                                                          }</span>
+
+                                                      }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH)).show();
+<span class="nc" id="L510">                                                  }</span>
+                                              }
+
+                );
+
+<span class="nc" id="L515">            } catch (</span>
+                    Exception e
+                    )
+
+            {
+<span class="nc" id="L520">                e.printStackTrace();</span>
+<span class="nc" id="L521">                Toast.makeText(DoctorPlanofCareActivity.this, &quot;Json Failure&quot; + e.toString(), Toast.LENGTH_SHORT).show();</span>
+<span class="nc" id="L522">            }</span>
+<span class="nc" id="L523">        } else</span>
+
+        {
+<span class="nc" id="L526">            Log.e(TAG, &quot;No Data&quot;);</span>
+        }
+<span class="nc" id="L528">    }</span>
+
+    private String getData(JSONObject jsonData, String key) {
+<span class="nc" id="L531">        Log.e(TAG, key);</span>
+<span class="nc bnc" id="L532" title="All 2 branches missed.">        if (jsonData != null) try {</span>
+//            JSONObject jsonData = new JSONObject(formData);
+<span class="nc" id="L534">            Log.e(TAG, jsonData.get(key) + key);</span>
+<span class="nc bnc" id="L535" title="All 4 branches missed.">            return (jsonData != null &amp;&amp; jsonData.has(key)) ? jsonData.getString(key) : null;</span>
+<span class="nc" id="L536">        } catch (JSONException e) {</span>
+<span class="nc" id="L537">            e.printStackTrace();</span>
+        }
+
+<span class="nc" id="L540">        return null;</span>
+    }
+
+    public void saveDatainLocal(String documentId, String pocJsonInfo, String
+            pocPendingInfo) {
+<span class="nc" id="L545">        context.allDoctorRepository().updatePocInLocal(documentId, pocJsonInfo, pocPendingInfo);</span>
+<span class="nc bnc" id="L546" title="All 2 branches missed.">        if (!pocPendingInfo.equals(&quot;&quot;))</span>
+<span class="nc" id="L547">            gotoHome();</span>
+<span class="nc" id="L548">    }</span>
+
+    private void saveData(final String documentID, String pocJsonData, JSONObject formDataJson, final String pocPendingReason, final String phoneNumber) {
+<span class="nc" id="L551">        savePocData(documentID, pocJsonData, formDataJson, pocPendingReason, phoneNumber, new Listener&lt;String&gt;() {</span>
+                    //        getDataFromServer(new Listener&lt;String&gt;() {
+                    public void onEvent(String resultData) {
+<span class="nc bnc" id="L554" title="All 2 branches missed.">                        if (resultData != null) {</span>
+<span class="nc bnc" id="L555" title="All 2 branches missed.">                            if (pocPendingReason.length() == 0) {</span>
+<span class="nc" id="L556">                                context.allDoctorRepository().deleteUseCaseId(documentID);</span>
+                            }
+<span class="nc" id="L558">                            Toast.makeText(DoctorPlanofCareActivity.this, &quot;Plan of care is submitted&quot;, Toast.LENGTH_SHORT).show();</span>
+<span class="nc" id="L559">                            gotoHome();</span>
+                        } else {
+<span class="nc" id="L561">                            Toast.makeText(DoctorPlanofCareActivity.this, &quot;Data is not saved!&quot;, Toast.LENGTH_SHORT).show();</span>
+                        }
+<span class="nc" id="L563">                    }</span>
+
+                }
+        );
+<span class="nc" id="L567">    }</span>
+
+    private void gotoHome() {
+<span class="nc" id="L570">        startActivity(new Intent(DoctorPlanofCareActivity.this, NativeDoctorActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));</span>
+<span class="nc" id="L571">    }</span>
+
+    public void savePocData(final String docId, final String pocJsonData,
+                            final JSONObject formDataJson, final String pendingReason, final String phoneNumber, final Listener&lt;String&gt; afterResult) {
+<span class="nc" id="L575">        new AsyncTask&lt;Void, Void, String&gt;() {</span>
+            @Override
+            protected String doInBackground(Void... params) {
+
+<span class="nc" id="L579">                String result = null;</span>
+                try {
+<span class="nc" id="L581">                    List&lt;NameValuePair&gt; _params = new ArrayList&lt;NameValuePair&gt;();</span>
+<span class="nc" id="L582">                    _params.add(new BasicNameValuePair(&quot;docid&quot;, docId));</span>
+<span class="nc" id="L583">                    _params.add(new BasicNameValuePair(&quot;doctorid&quot;, context.allSharedPreferences().fetchRegisteredANM()));</span>
+<span class="nc" id="L584">                    _params.add(new BasicNameValuePair(&quot;pocinfo&quot;, pocJsonData));</span>
+<span class="nc" id="L585">                    _params.add(new BasicNameValuePair(&quot;pending&quot;, pendingReason));</span>
+<span class="nc" id="L586">                    _params.add(new BasicNameValuePair(&quot;entityid&quot;, formDataJson.getString(DoctorFormDataConstants.entityId)));</span>
+<span class="nc" id="L587">                    _params.add(new BasicNameValuePair(&quot;patientph&quot;, phoneNumber));</span>
+
+<span class="nc bnc" id="L589" title="All 14 branches missed.">                    switch (formDataJson.getString(DoctorFormDataConstants.visit_type)) {</span>
+                        case DoctorFormDataConstants.ancvisit:
+<span class="nc" id="L591">                            _params.add(new BasicNameValuePair(&quot;visitid&quot;, formDataJson.getString(DoctorFormDataConstants.anc_entityId)));</span>
+<span class="nc" id="L592">                            break;</span>
+                        case DoctorFormDataConstants.pncVisit:
+<span class="nc" id="L594">                            _params.add(new BasicNameValuePair(&quot;visitid&quot;, formDataJson.getString(DoctorFormDataConstants.pnc_entityId)));</span>
+<span class="nc" id="L595">                            break;</span>
+                        case DoctorFormDataConstants.childVisit:
+<span class="nc" id="L597">                            _params.add(new BasicNameValuePair(&quot;visitid&quot;, formDataJson.getString(DoctorFormDataConstants.child_entityId)));</span>
+                            break;
+                    }
+
+<span class="nc" id="L601">                    String encodedParams = URLEncodedUtils.format(_params, &quot;utf-8&quot;);</span>
+<span class="nc" id="L602">                    String url = context.configuration().dristhiDjangoBaseURL() + AllConstants.POC_DATA_SAVE_URL_PATH + encodedParams;</span>
+<span class="nc" id="L603">                    Log.e(&quot;Url&quot;, url);</span>
+<span class="nc" id="L604">                    result = context.userService().gettingFromRemoteURL(url);</span>
+<span class="nc" id="L605">                    Log.e(TAG, &quot;Save POC Info &quot; + result);</span>
+
+
+<span class="nc" id="L608">                } catch (JSONException e) {</span>
+<span class="nc" id="L609">                    e.printStackTrace();</span>
+<span class="nc" id="L610">                }</span>
+
+<span class="nc" id="L612">                return result;</span>
+            }
+
+            @Override
+            protected void onPostExecute(String resultData) {
+<span class="nc" id="L617">                super.onPostExecute(resultData);</span>
+<span class="nc" id="L618">                afterResult.onEvent(resultData);</span>
+<span class="nc" id="L619">            }</span>
+        }.execute();
+
+<span class="nc" id="L622">    }</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.1.201405082137</span></div></body></html>

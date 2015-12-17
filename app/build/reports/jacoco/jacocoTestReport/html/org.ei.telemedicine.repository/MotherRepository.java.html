@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>MotherRepository.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">org.ei.telemedicine.repository</a> &gt; <span class="el_source">MotherRepository.java</span></div><h1>MotherRepository.java</h1><pre class="source lang-java linenums">package org.ei.telemedicine.repository;
+
+import android.content.ContentValues;
+import android.database.Cursor;
+
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
+import net.sqlcipher.database.SQLiteDatabase;
+
+import org.apache.commons.lang3.tuple.Pair;
+import org.ei.telemedicine.domain.EligibleCouple;
+import org.ei.telemedicine.domain.Mother;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import static java.lang.Boolean.TRUE;
+import static net.sqlcipher.DatabaseUtils.longForQuery;
+import static org.apache.commons.lang3.StringUtils.join;
+import static org.apache.commons.lang3.StringUtils.repeat;
+import static org.ei.telemedicine.repository.EligibleCoupleRepository.*;
+
+<span class="nc" id="L25">public class MotherRepository extends DrishtiRepository {</span>
+    private static final String MOTHER_SQL = &quot;CREATE TABLE mother(id VARCHAR PRIMARY KEY, ecCaseId VARCHAR, thayiCardNumber VARCHAR, type VARCHAR, referenceDate VARCHAR, details VARCHAR, isClosed VARCHAR)&quot;;
+    private static final String MOTHER_TYPE_INDEX_SQL = &quot;CREATE INDEX mother_type_index ON mother(type);&quot;;
+    private static final String MOTHER_REFERENCE_DATE_INDEX_SQL = &quot;CREATE INDEX mother_referenceDate_index ON mother(referenceDate);&quot;;
+    public static final String MOTHER_TABLE_NAME = &quot;mother&quot;;
+    public static final String ID_COLUMN = &quot;id&quot;;
+    public static final String EC_CASEID_COLUMN = &quot;ecCaseId&quot;;
+    public static final String THAYI_CARD_NUMBER_COLUMN = &quot;thayiCardNumber&quot;;
+    private static final String TYPE_COLUMN = &quot;type&quot;;
+    public static final String REF_DATE_COLUMN = &quot;referenceDate&quot;;
+    public static final String DETAILS_COLUMN = &quot;details&quot;;
+    private static final String IS_CLOSED_COLUMN = &quot;isClosed&quot;;
+<span class="fc" id="L37">    public static final String[] MOTHER_TABLE_COLUMNS = {ID_COLUMN, EC_CASEID_COLUMN, THAYI_CARD_NUMBER_COLUMN, TYPE_COLUMN, REF_DATE_COLUMN, DETAILS_COLUMN, IS_CLOSED_COLUMN};</span>
+
+    public static final String TYPE_ANC = &quot;ANC&quot;;
+    public static final String TYPE_PNC = &quot;PNC&quot;;
+    private static final String NOT_CLOSED = &quot;false&quot;;
+
+    @Override
+    protected void onCreate(SQLiteDatabase database) {
+<span class="nc" id="L45">        database.execSQL(MOTHER_SQL);</span>
+<span class="nc" id="L46">        database.execSQL(MOTHER_TYPE_INDEX_SQL);</span>
+<span class="nc" id="L47">        database.execSQL(MOTHER_REFERENCE_DATE_INDEX_SQL);</span>
+<span class="nc" id="L48">    }</span>
+
+    public void updateDetails(String caseId, Map&lt;String, String&gt; details) {
+<span class="nc" id="L51">        SQLiteDatabase database = masterRepository.getWritableDatabase();</span>
+
+<span class="nc" id="L53">        Mother mother = findMotherWithOpenStatusByECId(caseId);</span>
+<span class="nc bnc" id="L54" title="All 2 branches missed.">        if (mother == null) {</span>
+<span class="nc" id="L55">            return;</span>
+        }
+
+<span class="nc" id="L58">        ContentValues valuesToUpdate = new ContentValues();</span>
+<span class="nc" id="L59">        valuesToUpdate.put(DETAILS_COLUMN, new Gson().toJson(details));</span>
+<span class="nc" id="L60">        database.update(MOTHER_TABLE_NAME, valuesToUpdate, ID_COLUMN + &quot; = ?&quot;, new String[]{caseId});</span>
+<span class="nc" id="L61">    }</span>
+
+    public void add(Mother mother) {
+<span class="nc" id="L64">        SQLiteDatabase database = masterRepository.getWritableDatabase();</span>
+<span class="nc" id="L65">        database.insert(MOTHER_TABLE_NAME, null, createValuesFor(mother, TYPE_ANC));</span>
+<span class="nc" id="L66">    }</span>
+
+    public void switchToPNC(String caseId) {
+<span class="nc" id="L69">        SQLiteDatabase database = masterRepository.getWritableDatabase();</span>
+
+<span class="nc" id="L71">        ContentValues motherValuesToBeUpdated = new ContentValues();</span>
+<span class="nc" id="L72">        motherValuesToBeUpdated.put(TYPE_COLUMN, TYPE_PNC);</span>
+
+<span class="nc" id="L74">        database.update(MOTHER_TABLE_NAME, motherValuesToBeUpdated, ID_COLUMN + &quot; = ?&quot;, new String[]{caseId});</span>
+<span class="nc" id="L75">    }</span>
+
+    public List&lt;Mother&gt; allANCs() {
+<span class="nc" id="L78">        SQLiteDatabase database = masterRepository.getReadableDatabase();</span>
+<span class="nc" id="L79">        Cursor cursor = database.query(MOTHER_TABLE_NAME, MOTHER_TABLE_COLUMNS, TYPE_COLUMN + &quot; = ? AND &quot; + IS_CLOSED_COLUMN + &quot; = ?&quot;, new String[]{TYPE_ANC, NOT_CLOSED}, null, null, null, null);</span>
+<span class="nc" id="L80">        return readAll(cursor);</span>
+    }
+
+    public Mother findById(String entityId) {
+<span class="nc" id="L84">        SQLiteDatabase database = masterRepository.getReadableDatabase();</span>
+<span class="nc" id="L85">        Cursor cursor = database.query(MOTHER_TABLE_NAME, MOTHER_TABLE_COLUMNS, ID_COLUMN + &quot; = ?&quot;, new String[]{entityId}, null, null, null, null);</span>
+<span class="nc" id="L86">        return readAll(cursor).get(0);</span>
+    }
+
+    public List&lt;Mother&gt; allPNCs() {
+<span class="nc" id="L90">        SQLiteDatabase database = masterRepository.getReadableDatabase();</span>
+<span class="nc" id="L91">        Cursor cursor = database.query(MOTHER_TABLE_NAME, MOTHER_TABLE_COLUMNS, TYPE_COLUMN + &quot; = ? AND &quot; + IS_CLOSED_COLUMN + &quot; = ?&quot;, new String[]{TYPE_PNC, NOT_CLOSED}, null, null, null, null);</span>
+<span class="nc" id="L92">        return readAll(cursor);</span>
+    }
+
+    public long ancCount() {
+<span class="nc" id="L96">        return longForQuery(masterRepository.getReadableDatabase(), &quot;SELECT COUNT(1) FROM &quot; + MOTHER_TABLE_NAME + &quot; WHERE &quot; + TYPE_COLUMN + &quot; = ? AND &quot; + IS_CLOSED_COLUMN + &quot; = ?&quot;, new String[]{TYPE_ANC, NOT_CLOSED});</span>
+    }
+
+    public long pncCount() {
+<span class="nc" id="L100">        return longForQuery(masterRepository.getReadableDatabase(), &quot;SELECT COUNT(1) FROM &quot; + MOTHER_TABLE_NAME + &quot; WHERE &quot; + TYPE_COLUMN + &quot; = ? AND &quot; + IS_CLOSED_COLUMN + &quot; = ?&quot;, new String[]{TYPE_PNC, NOT_CLOSED});</span>
+    }
+
+    public Mother findOpenCaseByCaseID(String caseId) {
+<span class="nc" id="L104">        SQLiteDatabase database = masterRepository.getReadableDatabase();</span>
+<span class="nc" id="L105">        Cursor cursor = database.query(MOTHER_TABLE_NAME, MOTHER_TABLE_COLUMNS, ID_COLUMN + &quot; = ? AND &quot; + IS_CLOSED_COLUMN + &quot; = ?&quot;, new String[]{caseId, NOT_CLOSED}, null, null, null, null);</span>
+<span class="nc" id="L106">        List&lt;Mother&gt; mothers = readAll(cursor);</span>
+
+<span class="nc bnc" id="L108" title="All 2 branches missed.">        if (mothers.isEmpty()) {</span>
+<span class="nc" id="L109">            return null;</span>
+        }
+<span class="nc" id="L111">        return mothers.get(0);</span>
+    }
+
+    public List&lt;Mother&gt; findAllCasesForEC(String ecCaseId) {
+<span class="nc" id="L115">        SQLiteDatabase database = masterRepository.getReadableDatabase();</span>
+<span class="nc" id="L116">        Cursor cursor = database.query(MOTHER_TABLE_NAME, MOTHER_TABLE_COLUMNS, EC_CASEID_COLUMN + &quot; = ?&quot;, new String[]{ecCaseId}, null, null, null, null);</span>
+<span class="nc" id="L117">        return readAll(cursor);</span>
+    }
+
+    public List&lt;Mother&gt; findByCaseIds(String... caseIds) {
+<span class="nc" id="L121">        SQLiteDatabase database = masterRepository.getReadableDatabase();</span>
+<span class="nc" id="L122">        Cursor cursor = database.rawQuery(String.format(&quot;SELECT * FROM %s WHERE %s IN (%s)&quot;, MOTHER_TABLE_NAME, ID_COLUMN, insertPlaceholdersForInClause(caseIds.length)), caseIds);</span>
+<span class="nc" id="L123">        return readAll(cursor);</span>
+    }
+
+    public List&lt;Pair&lt;Mother, EligibleCouple&gt;&gt; allMothersOfATypeWithEC(String type) {
+<span class="nc" id="L127">        SQLiteDatabase database = masterRepository.getReadableDatabase();</span>
+<span class="nc" id="L128">        Cursor cursor = database.rawQuery(&quot;SELECT &quot; + tableColumnsForQuery(MOTHER_TABLE_NAME, MOTHER_TABLE_COLUMNS) + &quot;, &quot; + tableColumnsForQuery(EC_TABLE_NAME, EC_TABLE_COLUMNS) +</span>
+                &quot; FROM &quot; + MOTHER_TABLE_NAME + &quot;, &quot; + EC_TABLE_NAME +
+                &quot; WHERE &quot; + TYPE_COLUMN + &quot;='&quot; + type +
+                &quot;' AND &quot; + MOTHER_TABLE_NAME + &quot;.&quot; + IS_CLOSED_COLUMN + &quot;= '&quot; + NOT_CLOSED + &quot;' AND &quot; +
+                MOTHER_TABLE_NAME + &quot;.&quot; + EC_CASEID_COLUMN + &quot; = &quot; + EC_TABLE_NAME + &quot;.&quot; + EligibleCoupleRepository.ID_COLUMN, null);
+<span class="nc" id="L133">        return readAllMothersWithEC(cursor);</span>
+    }
+
+    public void closeAllCasesForEC(String ecCaseId) {
+<span class="nc" id="L137">        List&lt;Mother&gt; mothers = findAllCasesForEC(ecCaseId);</span>
+<span class="nc bnc" id="L138" title="All 2 branches missed.">        for (Mother mother : mothers) {</span>
+<span class="nc" id="L139">            close(mother.caseId());</span>
+<span class="nc" id="L140">        }</span>
+<span class="nc" id="L141">    }</span>
+
+    public void close(String caseId) {
+<span class="nc" id="L144">        ContentValues values = new ContentValues();</span>
+<span class="nc" id="L145">        values.put(IS_CLOSED_COLUMN, TRUE.toString());</span>
+<span class="nc" id="L146">        masterRepository.getWritableDatabase().update(MOTHER_TABLE_NAME, values, ID_COLUMN + &quot; = ?&quot;, new String[]{caseId});</span>
+<span class="nc" id="L147">    }</span>
+
+    private ContentValues createValuesFor(Mother mother, String type) {
+<span class="nc" id="L150">        ContentValues values = new ContentValues();</span>
+<span class="nc" id="L151">        values.put(ID_COLUMN, mother.caseId());</span>
+<span class="nc" id="L152">        values.put(EC_CASEID_COLUMN, mother.ecCaseId());</span>
+<span class="nc" id="L153">        values.put(THAYI_CARD_NUMBER_COLUMN, mother.thayiCardNumber());</span>
+<span class="nc" id="L154">        values.put(TYPE_COLUMN, type);</span>
+<span class="nc" id="L155">        values.put(REF_DATE_COLUMN, mother.referenceDate());</span>
+<span class="nc" id="L156">        values.put(DETAILS_COLUMN, new Gson().toJson(mother.details()));</span>
+<span class="nc" id="L157">        values.put(IS_CLOSED_COLUMN, Boolean.toString(mother.isClosed()));</span>
+<span class="nc" id="L158">        return values;</span>
+    }
+
+    private List&lt;Mother&gt; readAll(Cursor cursor) {
+<span class="nc" id="L162">        cursor.moveToFirst();</span>
+<span class="nc" id="L163">        List&lt;Mother&gt; mothers = new ArrayList&lt;Mother&gt;();</span>
+<span class="nc bnc" id="L164" title="All 2 branches missed.">        while (!cursor.isAfterLast()) {</span>
+<span class="nc" id="L165">            Map&lt;String, String&gt; details = new Gson().fromJson(cursor.getString(5), new TypeToken&lt;Map&lt;String, String&gt;&gt;() {</span>
+            }.getType());
+
+<span class="nc" id="L168">            mothers.add(new Mother(cursor.getString(0), cursor.getString(1), cursor.getString(2), cursor.getString(4))</span>
+                    .withDetails(details)
+                    .setIsClosed(Boolean.valueOf(cursor.getString(6)))
+                    .withType(cursor.getString(cursor.getColumnIndex(TYPE_COLUMN))));
+<span class="nc" id="L172">            cursor.moveToNext();</span>
+<span class="nc" id="L173">        }</span>
+<span class="nc" id="L174">        cursor.close();</span>
+<span class="nc" id="L175">        return mothers;</span>
+    }
+
+    private List&lt;Pair&lt;Mother, EligibleCouple&gt;&gt; readAllMothersWithEC(Cursor cursor) {
+<span class="nc" id="L179">        cursor.moveToFirst();</span>
+<span class="nc" id="L180">        List&lt;Pair&lt;Mother, EligibleCouple&gt;&gt; ancsWithEC = new ArrayList&lt;Pair&lt;Mother, EligibleCouple&gt;&gt;();</span>
+<span class="nc bnc" id="L181" title="All 2 branches missed.">        while (!cursor.isAfterLast()) {</span>
+<span class="nc" id="L182">            Mother mother = new Mother(cursor.getString(0), cursor.getString(1), cursor.getString(2), cursor.getString(4))</span>
+                    .withType(cursor.getString(cursor.getColumnIndex(TYPE_COLUMN)))
+<span class="nc" id="L184">                    .withDetails(new Gson().&lt;Map&lt;String, String&gt;&gt;fromJson(cursor.getString(5), new TypeToken&lt;Map&lt;String, String&gt;&gt;() {</span>
+                    }.getType()));
+<span class="nc" id="L186">            EligibleCouple eligibleCouple = new EligibleCouple(cursor.getString(7), cursor.getString(8), cursor.getString(9), cursor.getString(10), cursor.getString(11), cursor.getString(12),</span>
+<span class="nc" id="L187">                    new Gson().&lt;Map&lt;String, String&gt;&gt;fromJson(cursor.getString(14), new TypeToken&lt;Map&lt;String, String&gt;&gt;() {</span>
+                    }.getType())).withPhotoPath(cursor.getString(cursor.getColumnIndex(EligibleCoupleRepository.PHOTO_PATH_COLUMN)));
+<span class="nc bnc" id="L189" title="All 2 branches missed.">            if (Boolean.valueOf(cursor.getString(cursor.getColumnIndex(IS_OUT_OF_AREA_COLUMN)))) {</span>
+<span class="nc" id="L190">                eligibleCouple.asOutOfArea();</span>
+            }
+
+<span class="nc" id="L193">            ancsWithEC.add(Pair.of(mother, eligibleCouple));</span>
+<span class="nc" id="L194">            cursor.moveToNext();</span>
+<span class="nc" id="L195">        }</span>
+<span class="nc" id="L196">        cursor.close();</span>
+<span class="nc" id="L197">        return ancsWithEC;</span>
+    }
+
+    private String tableColumnsForQuery(String tableName, String[] tableColumns) {
+<span class="nc" id="L201">        return join(prepend(tableColumns, tableName + &quot;.&quot;), &quot;, &quot;);</span>
+    }
+
+    private String[] prepend(String[] input, String textToPrepend) {
+<span class="nc" id="L205">        int length = input.length;</span>
+<span class="nc" id="L206">        String[] output = new String[length];</span>
+<span class="nc bnc" id="L207" title="All 2 branches missed.">        for (int index = 0; index &lt; length; index++) {</span>
+<span class="nc" id="L208">            output[index] = textToPrepend + input[index];</span>
+        }
+<span class="nc" id="L210">        return output;</span>
+    }
+
+    private String insertPlaceholdersForInClause(int length) {
+<span class="nc" id="L214">        return repeat(&quot;?&quot;, &quot;,&quot;, length);</span>
+    }
+
+    public Mother findMotherWithOpenStatusByECId(String ecId) {
+<span class="nc" id="L218">        SQLiteDatabase database = masterRepository.getReadableDatabase();</span>
+<span class="nc" id="L219">        Cursor cursor = database.query(MOTHER_TABLE_NAME, MOTHER_TABLE_COLUMNS, EC_CASEID_COLUMN + &quot; = ? AND &quot; + IS_CLOSED_COLUMN + &quot; = ?&quot;, new String[]{ecId, NOT_CLOSED}, null, null, null, null);</span>
+<span class="nc" id="L220">        List&lt;Mother&gt; mothers = readAll(cursor);</span>
+<span class="nc bnc" id="L221" title="All 2 branches missed.">        return mothers.isEmpty() ? null : mothers.get(0);</span>
+    }
+
+
+    public boolean isPregnant(String ecId) {
+<span class="nc bnc" id="L226" title="All 2 branches missed.">        return longForQuery(masterRepository.getReadableDatabase(), &quot;SELECT COUNT(1) FROM &quot; + MOTHER_TABLE_NAME</span>
+                        + &quot; WHERE &quot; + EC_CASEID_COLUMN + &quot; = ? AND &quot; + IS_CLOSED_COLUMN + &quot; = ? AND &quot; + TYPE_COLUMN + &quot; = ?&quot;,
+                new String[]{ecId, NOT_CLOSED, TYPE_ANC}) &gt; 0;
+    }
+
+    public void update(Mother mother) {
+<span class="nc" id="L232">        SQLiteDatabase database = masterRepository.getWritableDatabase();</span>
+<span class="nc" id="L233">        database.update(MOTHER_TABLE_NAME, createValuesFor(mother, TYPE_ANC), ID_COLUMN + &quot; = ?&quot;, new String[]{mother.caseId()});</span>
+<span class="nc" id="L234">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.1.201405082137</span></div></body></html>

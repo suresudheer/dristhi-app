@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>FPAlertType.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">org.ei.telemedicine.view.contract</a> &gt; <span class="el_source">FPAlertType.java</span></div><h1>FPAlertType.java</h1><pre class="source lang-java linenums">package org.ei.telemedicine.view.contract;
+
+import static org.ei.telemedicine.AllConstants.FormNames.FP_FOLLOWUP;
+import static org.ei.telemedicine.AllConstants.FormNames.FP_REFERRAL_FOLLOWUP;
+import static org.ei.telemedicine.AllConstants.FormNames.RENEW_FP_PRODUCT;
+
+<span class="nc" id="L7">public enum FPAlertType {</span>
+
+<span class="nc" id="L9">    FOLLOW_UP(&quot;follow-up&quot;) {</span>
+        @Override
+        public String getAlertType() {
+<span class="nc" id="L12">            return &quot;Follow Up&quot;;</span>
+        }
+
+        @Override
+        public String getFormName() {
+<span class="nc" id="L17">            return FP_FOLLOWUP;</span>
+        }
+    },
+<span class="nc" id="L20">    REFERRAL(&quot;referral&quot;) {</span>
+        @Override
+        public String getAlertType() {
+<span class="nc" id="L23">            return &quot;Referral Follow Up&quot;;</span>
+        }
+
+        @Override
+        public String getFormName() {
+<span class="nc" id="L28">            return FP_REFERRAL_FOLLOWUP;</span>
+        }
+    },
+<span class="nc" id="L31">    REFILL(&quot;refill&quot;) {</span>
+        @Override
+        public String getAlertType() {
+<span class="nc" id="L34">            return &quot;Refill&quot;;</span>
+        }
+
+        @Override
+        public String getFormName() {
+<span class="nc" id="L39">            return RENEW_FP_PRODUCT;</span>
+        }
+    };
+
+    private String alertType;
+
+<span class="nc" id="L45">    FPAlertType(String alertType) {</span>
+<span class="nc" id="L46">        this.alertType = alertType;</span>
+<span class="nc" id="L47">    }</span>
+
+    @Override
+    public String toString() {
+<span class="nc" id="L51">        return this.alertType;</span>
+    }
+
+    public abstract String getAlertType();
+
+    public abstract String getFormName();
+
+    public static FPAlertType from(String value) {
+<span class="nc bnc" id="L59" title="All 2 branches missed.">        if (value != null) {</span>
+<span class="nc bnc" id="L60" title="All 2 branches missed.">            for (FPAlertType type : FPAlertType.values()) {</span>
+<span class="nc bnc" id="L61" title="All 2 branches missed.">                if (value.equalsIgnoreCase(type.toString())) {</span>
+<span class="nc" id="L62">                    return type;</span>
+                }
+            }
+        }
+<span class="nc" id="L66">        return null;</span>
+
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.1.201405082137</span></div></body></html>

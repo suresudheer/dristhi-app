@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>ServiceProvidedDTO.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">org.ei.telemedicine.view.contract</a> &gt; <span class="el_source">ServiceProvidedDTO.java</span></div><h1>ServiceProvidedDTO.java</h1><pre class="source lang-java linenums">package org.ei.telemedicine.view.contract;
+
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.ei.telemedicine.domain.ANCServiceType;
+import org.ei.telemedicine.domain.ChildServiceType;
+import org.joda.time.LocalDate;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import static org.ei.telemedicine.util.DateUtil.formatDate;
+import static org.ei.telemedicine.util.DateUtil.getLocalDateFromISOString;
+
+public class ServiceProvidedDTO implements Comparable&lt;ServiceProvidedDTO&gt; {
+
+<span class="fc" id="L18">    public static ServiceProvidedDTO emptyService = new ServiceProvidedDTO(&quot;&quot;, &quot;&quot;, null);</span>
+
+    private String name;
+    private String date;
+    private int day;
+<span class="fc" id="L23">    private Map&lt;String, String&gt; data = new HashMap&lt;String, String&gt;();</span>
+
+<span class="fc" id="L25">    public ServiceProvidedDTO(String name, String date, Map&lt;String, String&gt; data) {</span>
+<span class="fc" id="L26">        this.name = name;</span>
+<span class="fc" id="L27">        this.date = date;</span>
+<span class="fc" id="L28">        this.data = data;</span>
+<span class="fc" id="L29">    }</span>
+
+<span class="fc" id="L31">    public ServiceProvidedDTO(String name, Integer visitDay, String date) {</span>
+<span class="fc" id="L32">        this.name = name;</span>
+<span class="fc" id="L33">        day = visitDay;</span>
+<span class="fc" id="L34">        this.date = date;</span>
+<span class="fc" id="L35">    }</span>
+
+    public ChildServiceType type() {
+<span class="nc" id="L38">        return ChildServiceType.tryParse(name, ChildServiceType.EMPTY);</span>
+    }
+
+    public ANCServiceType ancServiceType() {
+<span class="fc" id="L42">        return ANCServiceType.tryParse(name, ANCServiceType.EMPTY);</span>
+    }
+
+    public String name() {
+<span class="fc" id="L46">        return name;</span>
+    }
+
+    public String date() {
+<span class="fc" id="L50">        return formatDate(date);</span>
+    }
+
+    public String dateForDisplay() {
+<span class="nc" id="L54">        return formatDate(date, &quot;dd/MM&quot;);</span>
+    }
+
+    public int day() {
+<span class="fc" id="L58">        return day;</span>
+    }
+
+    public LocalDate localDate() {
+<span class="fc" id="L62">        return getLocalDateFromISOString(date);</span>
+    }
+
+    public String shortDate() {
+<span class="nc" id="L66">        return formatDate(date, &quot;dd/MM&quot;);</span>
+    }
+
+    public String servicedOn() {
+<span class="nc" id="L70">        return type().shortName() + &quot;: &quot; + shortDate();</span>
+    }
+
+
+    public String servicedOnWithServiceName() {
+<span class="nc" id="L75">        return ancServiceType().serviceDisplayName() + &quot;: &quot; + shortDate();</span>
+    }
+
+    public String ancServicedOn() {
+<span class="nc" id="L79">        return shortDate();</span>
+    }
+
+    public Map&lt;String, String&gt; data() {
+<span class="nc bnc" id="L83" title="All 2 branches missed.">        return data == null ? new HashMap&lt;String, String&gt;() : data;</span>
+    }
+
+    public ServiceProvidedDTO withDay(int day) {
+<span class="fc" id="L87">        this.day = day;</span>
+<span class="fc" id="L88">        return this;</span>
+    }
+
+    @Override
+    public boolean equals(Object o) {
+<span class="fc" id="L93">        return EqualsBuilder.reflectionEquals(this, o);</span>
+    }
+
+    @Override
+    public int hashCode() {
+<span class="fc" id="L98">        return HashCodeBuilder.reflectionHashCode(this);</span>
+    }
+
+    @Override
+    public String toString() {
+<span class="nc" id="L103">        return ToStringBuilder.reflectionToString(this);</span>
+    }
+
+    @Override
+    public int compareTo(ServiceProvidedDTO another) {
+<span class="nc bnc" id="L108" title="All 2 branches missed.">        return this.localDate().isAfter(another.localDate()) ? 1 : 0;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.1.201405082137</span></div></body></html>

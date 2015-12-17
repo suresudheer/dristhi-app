@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>FormInstance.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">org.ei.telemedicine.domain.form</a> &gt; <span class="el_source">FormInstance.java</span></div><h1>FormInstance.java</h1><pre class="source lang-java linenums">package org.ei.telemedicine.domain.form;
+
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+
+public class FormInstance {
+    private String form_data_definition_version;
+    private FormData form;
+
+<span class="fc" id="L11">    public FormInstance(FormData form, String formDataDefinitionVersion) {</span>
+<span class="fc" id="L12">        this.form = form;</span>
+<span class="fc" id="L13">        this.form_data_definition_version = formDataDefinitionVersion;</span>
+<span class="fc" id="L14">    }</span>
+
+    public FormData form() {
+<span class="nc" id="L17">        return form;</span>
+    }
+
+    public String getFieldValue(String name) {
+<span class="fc" id="L21">        return form.getFieldValue(name);</span>
+    }
+
+    public SubForm getSubFormByName(String name) {
+<span class="fc" id="L25">        return form.getSubFormByName(name);</span>
+    }
+
+    @Override
+    public boolean equals(Object o) {
+<span class="nc" id="L30">        return EqualsBuilder.reflectionEquals(this, o);</span>
+    }
+
+    @Override
+    public int hashCode() {
+<span class="nc" id="L35">        return HashCodeBuilder.reflectionHashCode(this);</span>
+    }
+
+    @Override
+    public String toString() {
+<span class="nc" id="L40">        return ToStringBuilder.reflectionToString(this);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.1.201405082137</span></div></body></html>

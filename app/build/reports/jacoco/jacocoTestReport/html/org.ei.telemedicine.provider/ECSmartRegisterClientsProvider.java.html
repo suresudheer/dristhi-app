@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>ECSmartRegisterClientsProvider.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">org.ei.telemedicine.provider</a> &gt; <span class="el_source">ECSmartRegisterClientsProvider.java</span></div><h1>ECSmartRegisterClientsProvider.java</h1><pre class="source lang-java linenums">package org.ei.telemedicine.provider;
+
+import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
+
+import org.ei.telemedicine.R;
+import org.ei.telemedicine.view.contract.ECSmartRegisterClient;
+import org.ei.telemedicine.view.contract.SmartRegisterClient;
+import org.ei.telemedicine.view.contract.SmartRegisterClients;
+import org.ei.telemedicine.view.controller.ECSmartRegisterController;
+import org.ei.telemedicine.view.dialog.FilterOption;
+import org.ei.telemedicine.view.dialog.ServiceModeOption;
+import org.ei.telemedicine.view.dialog.SortOption;
+import org.ei.telemedicine.view.viewHolder.ECProfilePhotoLoader;
+import org.ei.telemedicine.view.viewHolder.NativeECSmartRegisterViewHolder;
+import org.ei.telemedicine.view.viewHolder.OnClickFormLauncher;
+import org.ei.telemedicine.view.viewHolder.ProfilePhotoLoader;
+
+import android.content.Context;
+import android.graphics.drawable.Drawable;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AbsListView;
+
+public class ECSmartRegisterClientsProvider implements SmartRegisterClientsProvider {
+
+    private final LayoutInflater inflater;
+    private final Context context;
+    private final View.OnClickListener onClickListener;
+    private final ProfilePhotoLoader photoLoader;
+
+    private final String maleChildAgeFormatString;
+    private final String femaleChildAgeFormatString;
+    private final int txtColorBlack;
+    private final AbsListView.LayoutParams clientViewLayoutParams;
+
+    protected ECSmartRegisterController controller;
+
+    private Drawable iconPencilDrawable;
+
+    public ECSmartRegisterClientsProvider(Context context,
+                                          View.OnClickListener onClickListener,
+<span class="nc" id="L44">                                          ECSmartRegisterController controller) {</span>
+<span class="nc" id="L45">        this.onClickListener = onClickListener;</span>
+<span class="nc" id="L46">        this.controller = controller;</span>
+<span class="nc" id="L47">        this.context = context;</span>
+<span class="nc" id="L48">        this.inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);</span>
+
+<span class="nc" id="L50">        photoLoader = new ECProfilePhotoLoader(context.getResources(),</span>
+                context.getResources().getDrawable(R.drawable.woman_placeholder));
+
+<span class="nc" id="L53">        maleChildAgeFormatString = context.getResources().getString(R.string.ec_register_male_child);</span>
+<span class="nc" id="L54">        femaleChildAgeFormatString = context.getResources().getString(R.string.ec_register_female_child);</span>
+<span class="nc" id="L55">        clientViewLayoutParams = new AbsListView.LayoutParams(MATCH_PARENT,</span>
+                (int) context.getResources().getDimension(R.dimen.list_item_height));
+<span class="nc" id="L57">        txtColorBlack = context.getResources().getColor(R.color.text_black);</span>
+<span class="nc" id="L58">    }</span>
+
+    @Override
+    public View getView(SmartRegisterClient smartRegisterClient, View convertView, ViewGroup viewGroup) {
+        ViewGroup itemView;
+        NativeECSmartRegisterViewHolder viewHolder;
+<span class="nc bnc" id="L64" title="All 2 branches missed.">        if (convertView == null) {</span>
+<span class="nc" id="L65">            itemView = (ViewGroup) inflater().inflate(R.layout.smart_register_ec_client, null);</span>
+<span class="nc" id="L66">            viewHolder = new NativeECSmartRegisterViewHolder(itemView);</span>
+<span class="nc" id="L67">            itemView.setTag(viewHolder);</span>
+        } else {
+<span class="nc" id="L69">            itemView = (ViewGroup) convertView;</span>
+<span class="nc" id="L70">            viewHolder = (NativeECSmartRegisterViewHolder) itemView.getTag();</span>
+        }
+
+<span class="nc" id="L73">        ECSmartRegisterClient client = (ECSmartRegisterClient) smartRegisterClient;</span>
+<span class="nc" id="L74">        setupClientProfileView(client, viewHolder);</span>
+<span class="nc" id="L75">        setupEcNumberView(client, viewHolder);</span>
+<span class="nc" id="L76">        setupGPLSAView(client, viewHolder);</span>
+<span class="nc" id="L77">        setupFPMethodView(client, viewHolder);</span>
+<span class="nc" id="L78">        setupChildrenView(client, viewHolder);</span>
+<span class="nc" id="L79">        setupStatusView(client, viewHolder);</span>
+<span class="nc" id="L80">        setupEditView(client, viewHolder);</span>
+
+<span class="nc" id="L82">        itemView.setLayoutParams(clientViewLayoutParams);</span>
+<span class="nc" id="L83">        return itemView;</span>
+    }
+
+    private void setupClientProfileView(ECSmartRegisterClient client, NativeECSmartRegisterViewHolder viewHolder) {
+<span class="nc" id="L87">        viewHolder.profileInfoLayout().bindData(client, photoLoader);</span>
+<span class="nc" id="L88">        viewHolder.profileInfoLayout().setOnClickListener(onClickListener);</span>
+<span class="nc" id="L89">        viewHolder.profileInfoLayout().setTag(client);</span>
+<span class="nc" id="L90">    }</span>
+
+    private void setupEcNumberView(ECSmartRegisterClient client, NativeECSmartRegisterViewHolder viewHolder) {
+<span class="nc" id="L93">        viewHolder.txtECNumberView().setText(String.valueOf(client.ecNumber()));</span>
+<span class="nc" id="L94">    }</span>
+
+    private void setupGPLSAView(ECSmartRegisterClient client, NativeECSmartRegisterViewHolder viewHolder) {
+<span class="nc" id="L97">        viewHolder.gplsaLayout().bindData(client);</span>
+<span class="nc" id="L98">    }</span>
+
+    private void setupFPMethodView(ECSmartRegisterClient client, NativeECSmartRegisterViewHolder viewHolder) {
+<span class="nc" id="L101">        viewHolder.fpMethodView().bindData(client, txtColorBlack);</span>
+<span class="nc" id="L102">    }</span>
+
+    private void setupChildrenView(ECSmartRegisterClient client, NativeECSmartRegisterViewHolder viewHolder) {
+<span class="nc" id="L105">        viewHolder.childrenView().bindData(client, maleChildAgeFormatString, femaleChildAgeFormatString);</span>
+<span class="nc" id="L106">    }</span>
+
+    private void setupStatusView(ECSmartRegisterClient client, NativeECSmartRegisterViewHolder viewHolder) {
+<span class="nc" id="L109">        viewHolder.statusView().bindData(client);</span>
+<span class="nc" id="L110">    }</span>
+
+    private void setupEditView(ECSmartRegisterClient client, NativeECSmartRegisterViewHolder viewHolder) {
+<span class="nc bnc" id="L113" title="All 2 branches missed.">        if (iconPencilDrawable == null) {</span>
+<span class="nc" id="L114">            iconPencilDrawable = context.getResources().getDrawable(R.drawable.ic_pencil);</span>
+        }
+<span class="nc" id="L116">        viewHolder.editButton().setImageDrawable(iconPencilDrawable);</span>
+<span class="nc" id="L117">        viewHolder.editButton().setOnClickListener(onClickListener);</span>
+<span class="nc" id="L118">        viewHolder.editButton().setTag(client);</span>
+<span class="nc" id="L119">    }</span>
+
+    @Override
+    public SmartRegisterClients getClients() {
+<span class="nc" id="L123">        return controller.getClients();</span>
+    }
+
+    @Override
+    public SmartRegisterClients updateClients(FilterOption villageFilter, ServiceModeOption serviceModeOption,
+                                              FilterOption searchFilter, SortOption sortOption) {
+<span class="nc" id="L129">        return getClients().applyFilter(villageFilter, serviceModeOption, searchFilter, sortOption);</span>
+    }
+
+    @Override
+    public void onServiceModeSelected(ServiceModeOption serviceModeOption) {
+        // do nothing.
+<span class="nc" id="L135">    }</span>
+
+    @Override
+    public OnClickFormLauncher newFormLauncher(String formName, String entityId, String metaData) {
+<span class="nc" id="L139">        return null;</span>
+    }
+
+    public LayoutInflater inflater() {
+<span class="nc" id="L143">        return inflater;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.1.201405082137</span></div></body></html>

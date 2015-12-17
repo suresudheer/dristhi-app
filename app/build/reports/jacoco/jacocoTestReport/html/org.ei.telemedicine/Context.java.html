@@ -1,0 +1,784 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>Context.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">org.ei.telemedicine</a> &gt; <span class="el_source">Context.java</span></div><h1>Context.java</h1><pre class="source lang-java linenums">package org.ei.telemedicine;
+
+import android.content.SharedPreferences;
+import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
+
+import org.ei.telemedicine.repository.*;
+import org.ei.telemedicine.service.*;
+import org.ei.telemedicine.service.formSubmissionHandler.*;
+import org.ei.telemedicine.sync.SaveANMLocationTask;
+import org.ei.telemedicine.util.Cache;
+import org.ei.telemedicine.util.Session;
+import org.ei.telemedicine.view.contract.*;
+import org.ei.telemedicine.view.contract.pnc.PNCClients;
+import org.ei.telemedicine.view.controller.ANMController;
+import org.ei.telemedicine.view.controller.ANMLocationController;
+
+import static android.preference.PreferenceManager.getDefaultSharedPreferences;
+
+public class Context {
+    private android.content.Context applicationContext;
+<span class="fc" id="L22">    private static Context context = new Context();</span>
+
+    private Repository repository;
+    private EligibleCoupleRepository eligibleCoupleRepository;
+    private AlertRepository alertRepository;
+    private SettingsRepository settingsRepository;
+    private ChildRepository childRepository;
+    private MotherRepository motherRepository;
+    private TimelineEventRepository timelineEventRepository;
+    private ReportRepository reportRepository;
+    private FormDataRepository formDataRepository;
+    private ServiceProvidedRepository serviceProvidedRepository;
+    private ImageRepository imageRepository;
+
+    private AllSettings allSettings;
+    private AllSharedPreferences allSharedPreferences;
+    private AllAlerts allAlerts;
+    private AllEligibleCouples allEligibleCouples;
+    private AllBeneficiaries allBeneficiaries;
+    private AllTimelineEvents allTimelineEvents;
+    private AllReports allReports;
+    private AllServicesProvided allServicesProvided;
+
+    private DrishtiService drishtiService;
+    private ActionService actionService;
+    private FormSubmissionService formSubmissionService;
+    private FormSubmissionSyncService formSubmissionSyncService;
+    private ZiggyService ziggyService;
+    private UserService userService;
+    private AlertService alertService;
+    private EligibleCoupleService eligibleCoupleService;
+    private MotherService motherService;
+    private ChildService childService;
+    private ANMService anmService;
+    private BeneficiaryService beneficiaryService;
+    private ServiceProvidedService serviceProvidedService;
+    private PendingFormSubmissionService pendingFormSubmissionService;
+
+    private Session session;
+    private Cache&lt;String&gt; listCache;
+    private Cache&lt;SmartRegisterClients&gt; smartRegisterClientsCache;
+    private Cache&lt;HomeContext&gt; homeContextCache;
+    private Cache&lt;ECClients&gt; ecClientsCache;
+    private Cache&lt;FPClients&gt; fpClientsCache;
+    private Cache&lt;ANCClients&gt; ancClientsCache;
+    private Cache&lt;PNCClients&gt; pncClientsCache;
+    private Cache&lt;Villages&gt; villagesCache;
+    private Cache&lt;Typeface&gt; typefaceCache;
+
+    private HTTPAgent httpAgent;
+    private ZiggyFileLoader ziggyFileLoader;
+
+    private FormSubmissionRouter formSubmissionRouter;
+    private ECRegistrationHandler ecRegistrationHandler;
+    private FPComplicationsHandler fpComplicationsHandler;
+    private FPChangeHandler fpChangeHandler;
+    private RenewFPProductHandler renewFPProductHandler;
+    private ECCloseHandler ecCloseHandler;
+    private ANCRegistrationHandler ancRegistrationHandler;
+    private ANCRegistrationOAHandler ancRegistrationOAHandler;
+    private ANCVisitHandler ancVisitHandler;
+    private ANCCloseHandler ancCloseHandler;
+    private TTHandler ttHandler;
+    private IFAHandler ifaHandler;
+    private HBTestHandler hbTestHandler;
+    private DeliveryOutcomeHandler deliveryOutcomeHandler;
+    private DeliveryPlanHandler deliveryPlanHandler;
+    private PNCRegistrationOAHandler pncRegistrationOAHandler;
+    private PNCCloseHandler pncCloseHandler;
+    private PNCVisitHandler pncVisitHandler;
+    private ChildImmunizationsHandler childImmunizationsHandler;
+    private ChildRegistrationECHandler childRegistrationECHandler;
+    private ChildRegistrationOAHandler childRegistrationOAHandler;
+    private ChildCloseHandler childCloseHandler;
+    private ChildIllnessHandler childIllnessHandler;
+    private VitaminAHandler vitaminAHandler;
+    private ECEditHandler ecEditHandler;
+    private ANCInvestigationsHandler ancInvestigationsHandler;
+    private SaveANMLocationTask saveANMLocationTask;
+
+    private ANMController anmController;
+    private ANMLocationController anmLocationController;
+
+    private DristhiConfiguration configuration;
+
+    // New Content
+    private DoctorRepository doctorRepository;
+    private AllDoctorRepository allDoctorRepository;
+
+
+    private TestRepository testRepository;
+    private AllTestRepository allTestRepository;
+    private TestService testService;
+    private Cache&lt;TestClients&gt; testClientsCache;
+    private TestSubmissionHandler testSubmissionHandler;
+
+    // New Content
+
+
+<span class="fc" id="L121">    protected Context() {</span>
+<span class="fc" id="L122">    }</span>
+
+    public android.content.Context applicationContext() {
+<span class="nc" id="L125">        return applicationContext;</span>
+    }
+
+
+    public static Context getInstance() {
+<span class="fc" id="L130">        return context;</span>
+    }
+
+    public static Context setInstance(Context context) {
+<span class="fc" id="L134">        Context.context = context;</span>
+<span class="fc" id="L135">        return context;</span>
+    }
+
+    public BeneficiaryService beneficiaryService() {
+<span class="nc bnc" id="L139" title="All 2 branches missed.">        if (beneficiaryService == null) {</span>
+<span class="nc" id="L140">            beneficiaryService = new BeneficiaryService(allEligibleCouples(), allBeneficiaries());</span>
+        }
+<span class="nc" id="L142">        return beneficiaryService;</span>
+    }
+
+    public Context updateApplicationContext(android.content.Context applicationContext) {
+<span class="nc" id="L146">        this.applicationContext = applicationContext;</span>
+<span class="nc" id="L147">        return this;</span>
+    }
+
+    protected DrishtiService drishtiService() {
+<span class="nc bnc" id="L151" title="All 2 branches missed.">        if (drishtiService == null) {</span>
+<span class="nc" id="L152">            drishtiService = new DrishtiService(httpAgent(), configuration().dristhiBaseURL());</span>
+        }
+<span class="nc" id="L154">        return drishtiService;</span>
+    }
+
+    public ActionService actionService() {
+<span class="nc bnc" id="L158" title="All 2 branches missed.">        if (actionService == null) {</span>
+<span class="nc" id="L159">            actionService = new ActionService(drishtiService(), allSettings(), allSharedPreferences(), allReports());</span>
+        }
+<span class="nc" id="L161">        return actionService;</span>
+    }
+
+    public FormSubmissionService formSubmissionService() {
+<span class="nc" id="L165">        initRepository();</span>
+<span class="nc bnc" id="L166" title="All 2 branches missed.">        if (formSubmissionService == null) {</span>
+<span class="nc" id="L167">            formSubmissionService = new FormSubmissionService(ziggyService(), formDataRepository(), allSettings());</span>
+        }
+<span class="nc" id="L169">        return formSubmissionService;</span>
+    }
+
+    public FormSubmissionRouter formSubmissionRouter() {
+<span class="nc" id="L173">        initRepository();</span>
+<span class="nc bnc" id="L174" title="All 2 branches missed.">        if (formSubmissionRouter == null) {</span>
+<span class="nc" id="L175">            formSubmissionRouter = new FormSubmissionRouter(formDataRepository(), ecRegistrationHandler(),</span>
+                    fpComplicationsHandler(), fpChangeHandler(), renewFPProductHandler(), ecCloseHandler(),
+                    ancRegistrationHandler(), ancRegistrationOAHandler(), ancVisitHandler(), ancCloseHandler(),
+                    ttHandler(), ifaHandler(), hbTestHandler(), deliveryOutcomeHandler(), pncRegistrationOAHandler(),
+                    pncCloseHandler(), pncVisitHandler(), childImmunizationsHandler(), childRegistrationECHandler(),
+                    childRegistrationOAHandler(), childCloseHandler(), childIllnessHandler(), vitaminAHandler(),
+                    deliveryPlanHandler(), ecEditHandler(), ancInvestigationsHandler(), testSubmissionHandler());
+        }
+<span class="nc" id="L183">        return formSubmissionRouter;</span>
+    }
+
+    private ChildCloseHandler childCloseHandler() {
+<span class="nc bnc" id="L187" title="All 2 branches missed.">        if (childCloseHandler == null) {</span>
+<span class="nc" id="L188">            childCloseHandler = new ChildCloseHandler(childService());</span>
+        }
+<span class="nc" id="L190">        return childCloseHandler;</span>
+    }
+
+    private ECRegistrationHandler ecRegistrationHandler() {
+<span class="nc bnc" id="L194" title="All 2 branches missed.">        if (ecRegistrationHandler == null) {</span>
+<span class="nc" id="L195">            ecRegistrationHandler = new ECRegistrationHandler(eligibleCoupleService());</span>
+        }
+<span class="nc" id="L197">        return ecRegistrationHandler;</span>
+    }
+
+    private FPComplicationsHandler fpComplicationsHandler() {
+<span class="nc bnc" id="L201" title="All 2 branches missed.">        if (fpComplicationsHandler == null) {</span>
+<span class="nc" id="L202">            fpComplicationsHandler = new FPComplicationsHandler(eligibleCoupleService());</span>
+        }
+<span class="nc" id="L204">        return fpComplicationsHandler;</span>
+    }
+
+    private FPChangeHandler fpChangeHandler() {
+<span class="nc bnc" id="L208" title="All 2 branches missed.">        if (fpChangeHandler == null) {</span>
+<span class="nc" id="L209">            fpChangeHandler = new FPChangeHandler(eligibleCoupleService());</span>
+        }
+<span class="nc" id="L211">        return fpChangeHandler;</span>
+    }
+
+    private RenewFPProductHandler renewFPProductHandler() {
+<span class="nc bnc" id="L215" title="All 2 branches missed.">        if (renewFPProductHandler == null) {</span>
+<span class="nc" id="L216">            renewFPProductHandler = new RenewFPProductHandler(eligibleCoupleService());</span>
+        }
+<span class="nc" id="L218">        return renewFPProductHandler;</span>
+    }
+
+    private ECCloseHandler ecCloseHandler() {
+<span class="nc bnc" id="L222" title="All 2 branches missed.">        if (ecCloseHandler == null) {</span>
+<span class="nc" id="L223">            ecCloseHandler = new ECCloseHandler(eligibleCoupleService());</span>
+        }
+<span class="nc" id="L225">        return ecCloseHandler;</span>
+    }
+
+    private ANCRegistrationHandler ancRegistrationHandler() {
+<span class="nc bnc" id="L229" title="All 2 branches missed.">        if (ancRegistrationHandler == null) {</span>
+<span class="nc" id="L230">            ancRegistrationHandler = new ANCRegistrationHandler(motherService());</span>
+        }
+<span class="nc" id="L232">        return ancRegistrationHandler;</span>
+    }
+
+    private ANCRegistrationOAHandler ancRegistrationOAHandler() {
+<span class="nc bnc" id="L236" title="All 2 branches missed.">        if (ancRegistrationOAHandler == null) {</span>
+<span class="nc" id="L237">            ancRegistrationOAHandler = new ANCRegistrationOAHandler(motherService());</span>
+        }
+<span class="nc" id="L239">        return ancRegistrationOAHandler;</span>
+    }
+
+    private ANCVisitHandler ancVisitHandler() {
+<span class="nc bnc" id="L243" title="All 2 branches missed.">        if (ancVisitHandler == null) {</span>
+<span class="nc" id="L244">            ancVisitHandler = new ANCVisitHandler(motherService());</span>
+        }
+<span class="nc" id="L246">        return ancVisitHandler;</span>
+    }
+
+    private ANCCloseHandler ancCloseHandler() {
+<span class="nc bnc" id="L250" title="All 2 branches missed.">        if (ancCloseHandler == null) {</span>
+<span class="nc" id="L251">            ancCloseHandler = new ANCCloseHandler(motherService());</span>
+        }
+<span class="nc" id="L253">        return ancCloseHandler;</span>
+    }
+
+    private TTHandler ttHandler() {
+<span class="nc bnc" id="L257" title="All 2 branches missed.">        if (ttHandler == null) {</span>
+<span class="nc" id="L258">            ttHandler = new TTHandler(motherService());</span>
+        }
+<span class="nc" id="L260">        return ttHandler;</span>
+    }
+
+    private IFAHandler ifaHandler() {
+<span class="nc bnc" id="L264" title="All 2 branches missed.">        if (ifaHandler == null) {</span>
+<span class="nc" id="L265">            ifaHandler = new IFAHandler(motherService());</span>
+        }
+<span class="nc" id="L267">        return ifaHandler;</span>
+    }
+
+    private HBTestHandler hbTestHandler() {
+<span class="nc bnc" id="L271" title="All 2 branches missed.">        if (hbTestHandler == null) {</span>
+<span class="nc" id="L272">            hbTestHandler = new HBTestHandler(motherService());</span>
+        }
+<span class="nc" id="L274">        return hbTestHandler;</span>
+    }
+
+    private DeliveryOutcomeHandler deliveryOutcomeHandler() {
+<span class="nc bnc" id="L278" title="All 2 branches missed.">        if (deliveryOutcomeHandler == null) {</span>
+<span class="nc" id="L279">            deliveryOutcomeHandler = new DeliveryOutcomeHandler(motherService(), childService());</span>
+        }
+<span class="nc" id="L281">        return deliveryOutcomeHandler;</span>
+    }
+
+    private DeliveryPlanHandler deliveryPlanHandler() {
+<span class="nc bnc" id="L285" title="All 2 branches missed.">        if (deliveryPlanHandler == null) {</span>
+<span class="nc" id="L286">            deliveryPlanHandler = new DeliveryPlanHandler(motherService());</span>
+        }
+<span class="nc" id="L288">        return deliveryPlanHandler;</span>
+    }
+
+    private PNCRegistrationOAHandler pncRegistrationOAHandler() {
+<span class="nc bnc" id="L292" title="All 2 branches missed.">        if (pncRegistrationOAHandler == null) {</span>
+<span class="nc" id="L293">            pncRegistrationOAHandler = new PNCRegistrationOAHandler(childService());</span>
+        }
+<span class="nc" id="L295">        return pncRegistrationOAHandler;</span>
+    }
+
+    private PNCCloseHandler pncCloseHandler() {
+<span class="nc bnc" id="L299" title="All 2 branches missed.">        if (pncCloseHandler == null) {</span>
+<span class="nc" id="L300">            pncCloseHandler = new PNCCloseHandler(motherService());</span>
+        }
+<span class="nc" id="L302">        return pncCloseHandler;</span>
+    }
+
+    private PNCVisitHandler pncVisitHandler() {
+<span class="nc bnc" id="L306" title="All 2 branches missed.">        if (pncVisitHandler == null) {</span>
+<span class="nc" id="L307">            pncVisitHandler = new PNCVisitHandler(motherService(), childService());</span>
+        }
+<span class="nc" id="L309">        return pncVisitHandler;</span>
+    }
+
+    private ChildImmunizationsHandler childImmunizationsHandler() {
+<span class="nc bnc" id="L313" title="All 2 branches missed.">        if (childImmunizationsHandler == null) {</span>
+<span class="nc" id="L314">            childImmunizationsHandler = new ChildImmunizationsHandler(childService());</span>
+        }
+<span class="nc" id="L316">        return childImmunizationsHandler;</span>
+    }
+
+    private ChildIllnessHandler childIllnessHandler() {
+<span class="nc bnc" id="L320" title="All 2 branches missed.">        if (childIllnessHandler == null) {</span>
+<span class="nc" id="L321">            childIllnessHandler = new ChildIllnessHandler(childService());</span>
+        }
+<span class="nc" id="L323">        return childIllnessHandler;</span>
+    }
+
+    private VitaminAHandler vitaminAHandler() {
+<span class="nc bnc" id="L327" title="All 2 branches missed.">        if (vitaminAHandler == null) {</span>
+<span class="nc" id="L328">            vitaminAHandler = new VitaminAHandler(childService());</span>
+        }
+<span class="nc" id="L330">        return vitaminAHandler;</span>
+    }
+
+    private ChildRegistrationECHandler childRegistrationECHandler() {
+<span class="nc bnc" id="L334" title="All 2 branches missed.">        if (childRegistrationECHandler == null) {</span>
+<span class="nc" id="L335">            childRegistrationECHandler = new ChildRegistrationECHandler(childService());</span>
+        }
+<span class="nc" id="L337">        return childRegistrationECHandler;</span>
+    }
+
+    private ChildRegistrationOAHandler childRegistrationOAHandler() {
+<span class="nc bnc" id="L341" title="All 2 branches missed.">        if (childRegistrationOAHandler == null) {</span>
+<span class="nc" id="L342">            childRegistrationOAHandler = new ChildRegistrationOAHandler(childService());</span>
+        }
+<span class="nc" id="L344">        return childRegistrationOAHandler;</span>
+    }
+
+    private ECEditHandler ecEditHandler() {
+<span class="nc bnc" id="L348" title="All 2 branches missed.">        if (ecEditHandler == null) {</span>
+<span class="nc" id="L349">            ecEditHandler = new ECEditHandler();</span>
+        }
+<span class="nc" id="L351">        return ecEditHandler;</span>
+    }
+
+    private ANCInvestigationsHandler ancInvestigationsHandler() {
+<span class="nc bnc" id="L355" title="All 2 branches missed.">        if (ancInvestigationsHandler == null) {</span>
+<span class="nc" id="L356">            ancInvestigationsHandler = new ANCInvestigationsHandler();</span>
+        }
+<span class="nc" id="L358">        return ancInvestigationsHandler;</span>
+    }
+
+    private ZiggyService ziggyService() {
+<span class="nc" id="L362">        initRepository();</span>
+<span class="nc bnc" id="L363" title="All 2 branches missed.">        if (ziggyService == null) {</span>
+<span class="nc" id="L364">            ziggyService = new ZiggyService(ziggyFileLoader(), formDataRepository(), formSubmissionRouter());</span>
+        }
+<span class="nc" id="L366">        return ziggyService;</span>
+    }
+
+    public ZiggyFileLoader ziggyFileLoader() {
+<span class="nc bnc" id="L370" title="All 2 branches missed.">        if (ziggyFileLoader == null) {</span>
+<span class="nc" id="L371">            ziggyFileLoader = new ZiggyFileLoader(&quot;www/ziggy&quot;, &quot;www/form&quot;, applicationContext().getAssets());</span>
+        }
+<span class="nc" id="L373">        return ziggyFileLoader;</span>
+    }
+
+    public FormSubmissionSyncService formSubmissionSyncService() {
+<span class="nc bnc" id="L377" title="All 2 branches missed.">        if (formSubmissionSyncService == null) {</span>
+<span class="nc" id="L378">            formSubmissionSyncService = new FormSubmissionSyncService(formSubmissionService(), httpAgent(), formDataRepository(), allSettings(), allSharedPreferences(), configuration());</span>
+        }
+<span class="nc" id="L380">        return formSubmissionSyncService;</span>
+    }
+
+    private HTTPAgent httpAgent() {
+<span class="nc bnc" id="L384" title="All 2 branches missed.">        if (httpAgent == null) {</span>
+<span class="nc" id="L385">            httpAgent = new HTTPAgent(applicationContext, allSettings(), allSharedPreferences(), configuration());</span>
+        }
+<span class="nc" id="L387">        return httpAgent;</span>
+    }
+
+    private Repository initRepository() {
+<span class="nc bnc" id="L391" title="All 2 branches missed.">        if (repository == null) {</span>
+<span class="nc" id="L392">            repository = new Repository(this.applicationContext, session(), settingsRepository(), alertRepository(),</span>
+                    eligibleCoupleRepository(), childRepository(), timelineEventRepository(), motherRepository(),
+                    reportRepository(), formDataRepository(),
+                    serviceProvidedRepository(), doctorRepository(), imageRepository());
+        }
+<span class="nc" id="L397">        return repository;</span>
+    }
+
+    public AllEligibleCouples allEligibleCouples() {
+<span class="nc" id="L401">        initRepository();</span>
+<span class="nc bnc" id="L402" title="All 2 branches missed.">        if (allEligibleCouples == null) {</span>
+<span class="nc" id="L403">            allEligibleCouples = new AllEligibleCouples(eligibleCoupleRepository(), alertRepository(), timelineEventRepository());</span>
+        }
+<span class="nc" id="L405">        return allEligibleCouples;</span>
+    }
+
+    public AllAlerts allAlerts() {
+<span class="nc" id="L409">        initRepository();</span>
+<span class="nc bnc" id="L410" title="All 2 branches missed.">        if (allAlerts == null) {</span>
+<span class="nc" id="L411">            allAlerts = new AllAlerts(alertRepository());</span>
+        }
+<span class="nc" id="L413">        return allAlerts;</span>
+    }
+
+    public AllSettings allSettings() {
+<span class="nc" id="L417">        initRepository();</span>
+<span class="nc bnc" id="L418" title="All 2 branches missed.">        if (allSettings == null) {</span>
+<span class="nc" id="L419">            allSettings = new AllSettings(allSharedPreferences(), settingsRepository());</span>
+        }
+<span class="nc" id="L421">        return allSettings;</span>
+    }
+
+    public AllSharedPreferences allSharedPreferences() {
+<span class="nc bnc" id="L425" title="All 2 branches missed.">        if (allSharedPreferences == null) {</span>
+<span class="nc" id="L426">            allSharedPreferences = new AllSharedPreferences(getDefaultSharedPreferences(this.applicationContext));</span>
+        }
+<span class="nc" id="L428">        return allSharedPreferences;</span>
+    }
+
+    public AllBeneficiaries allBeneficiaries() {
+<span class="nc" id="L432">        initRepository();</span>
+<span class="nc bnc" id="L433" title="All 2 branches missed.">        if (allBeneficiaries == null) {</span>
+<span class="nc" id="L434">            allBeneficiaries = new AllBeneficiaries(motherRepository(), childRepository(), alertRepository(), timelineEventRepository(), testRepository(), doctorRepository());</span>
+        }
+<span class="nc" id="L436">        return allBeneficiaries;</span>
+    }
+
+    public AllTimelineEvents allTimelineEvents() {
+<span class="nc" id="L440">        initRepository();</span>
+<span class="nc bnc" id="L441" title="All 2 branches missed.">        if (allTimelineEvents == null) {</span>
+<span class="nc" id="L442">            allTimelineEvents = new AllTimelineEvents(timelineEventRepository());</span>
+        }
+<span class="nc" id="L444">        return allTimelineEvents;</span>
+    }
+
+    public AllReports allReports() {
+<span class="nc" id="L448">        initRepository();</span>
+<span class="nc bnc" id="L449" title="All 2 branches missed.">        if (allReports == null) {</span>
+<span class="nc" id="L450">            allReports = new AllReports(reportRepository());</span>
+        }
+<span class="nc" id="L452">        return allReports;</span>
+    }
+
+    public AllServicesProvided allServicesProvided() {
+<span class="nc" id="L456">        initRepository();</span>
+<span class="nc bnc" id="L457" title="All 2 branches missed.">        if (allServicesProvided == null) {</span>
+<span class="nc" id="L458">            allServicesProvided = new AllServicesProvided(serviceProvidedRepository());</span>
+        }
+<span class="nc" id="L460">        return allServicesProvided;</span>
+    }
+
+    private EligibleCoupleRepository eligibleCoupleRepository() {
+<span class="nc bnc" id="L464" title="All 2 branches missed.">        if (eligibleCoupleRepository == null) {</span>
+<span class="nc" id="L465">            eligibleCoupleRepository = new EligibleCoupleRepository();</span>
+        }
+<span class="nc" id="L467">        return eligibleCoupleRepository;</span>
+    }
+
+    private AlertRepository alertRepository() {
+<span class="nc bnc" id="L471" title="All 2 branches missed.">        if (alertRepository == null) {</span>
+<span class="nc" id="L472">            alertRepository = new AlertRepository();</span>
+        }
+<span class="nc" id="L474">        return alertRepository;</span>
+    }
+
+    private SettingsRepository settingsRepository() {
+<span class="nc bnc" id="L478" title="All 2 branches missed.">        if (settingsRepository == null) {</span>
+<span class="nc" id="L479">            settingsRepository = new SettingsRepository();</span>
+        }
+<span class="nc" id="L481">        return settingsRepository;</span>
+    }
+
+    private ChildRepository childRepository() {
+<span class="nc bnc" id="L485" title="All 2 branches missed.">        if (childRepository == null) {</span>
+<span class="nc" id="L486">            childRepository = new ChildRepository();</span>
+        }
+<span class="nc" id="L488">        return childRepository;</span>
+    }
+
+    private MotherRepository motherRepository() {
+<span class="nc bnc" id="L492" title="All 2 branches missed.">        if (motherRepository == null) {</span>
+<span class="nc" id="L493">            motherRepository = new MotherRepository();</span>
+        }
+<span class="nc" id="L495">        return motherRepository;</span>
+    }
+
+    private TimelineEventRepository timelineEventRepository() {
+<span class="nc bnc" id="L499" title="All 2 branches missed.">        if (timelineEventRepository == null) {</span>
+<span class="nc" id="L500">            timelineEventRepository = new TimelineEventRepository();</span>
+        }
+<span class="nc" id="L502">        return timelineEventRepository;</span>
+    }
+
+    private TestRepository testRepository() {
+<span class="nc bnc" id="L506" title="All 2 branches missed.">        if (testRepository == null) {</span>
+<span class="nc" id="L507">            testRepository = new TestRepository();</span>
+        }
+<span class="nc" id="L509">        return testRepository;</span>
+    }
+
+    private DoctorRepository doctorRepository() {
+<span class="nc bnc" id="L513" title="All 2 branches missed.">        if (doctorRepository == null) {</span>
+<span class="nc" id="L514">            doctorRepository = new DoctorRepository();</span>
+        }
+<span class="nc" id="L516">        return doctorRepository;</span>
+    }
+
+    public ImageRepository imageRepository() {
+<span class="nc bnc" id="L520" title="All 2 branches missed.">        if (imageRepository == null) {</span>
+<span class="nc" id="L521">            imageRepository = new ImageRepository();</span>
+        }
+<span class="nc" id="L523">        return imageRepository;</span>
+    }
+
+
+    private ReportRepository reportRepository() {
+<span class="nc bnc" id="L528" title="All 2 branches missed.">        if (reportRepository == null) {</span>
+<span class="nc" id="L529">            reportRepository = new ReportRepository();</span>
+        }
+<span class="nc" id="L531">        return reportRepository;</span>
+    }
+
+    public FormDataRepository formDataRepository() {
+<span class="nc bnc" id="L535" title="All 2 branches missed.">        if (formDataRepository == null) {</span>
+<span class="nc" id="L536">            formDataRepository = new FormDataRepository();</span>
+        }
+<span class="nc" id="L538">        return formDataRepository;</span>
+    }
+
+    private ServiceProvidedRepository serviceProvidedRepository() {
+<span class="nc bnc" id="L542" title="All 2 branches missed.">        if (serviceProvidedRepository == null) {</span>
+<span class="nc" id="L543">            serviceProvidedRepository = new ServiceProvidedRepository();</span>
+        }
+<span class="nc" id="L545">        return serviceProvidedRepository;</span>
+    }
+
+    public UserService userService() {
+<span class="nc bnc" id="L549" title="All 2 branches missed.">        if (userService == null) {</span>
+<span class="nc" id="L550">            Repository repo = initRepository();</span>
+<span class="nc" id="L551">            userService = new UserService(repo, allSettings(), allSharedPreferences(), httpAgent(), session(), configuration(), saveANMLocationTask());</span>
+        }
+<span class="nc" id="L553">        return userService;</span>
+    }
+
+    private SaveANMLocationTask saveANMLocationTask() {
+<span class="nc bnc" id="L557" title="All 2 branches missed.">        if (saveANMLocationTask == null) {</span>
+<span class="nc" id="L558">            saveANMLocationTask = new SaveANMLocationTask(allSettings());</span>
+        }
+<span class="nc" id="L560">        return saveANMLocationTask;</span>
+    }
+
+    public AlertService alertService() {
+<span class="nc bnc" id="L564" title="All 2 branches missed.">        if (alertService == null) {</span>
+<span class="nc" id="L565">            alertService = new AlertService(alertRepository());</span>
+        }
+<span class="nc" id="L567">        return alertService;</span>
+    }
+
+    public ServiceProvidedService serviceProvidedService() {
+<span class="nc bnc" id="L571" title="All 2 branches missed.">        if (serviceProvidedService == null) {</span>
+<span class="nc" id="L572">            serviceProvidedService = new ServiceProvidedService(allServicesProvided());</span>
+        }
+<span class="nc" id="L574">        return serviceProvidedService;</span>
+    }
+
+    public EligibleCoupleService eligibleCoupleService() {
+<span class="nc bnc" id="L578" title="All 2 branches missed.">        if (eligibleCoupleService == null) {</span>
+<span class="nc" id="L579">            eligibleCoupleService = new EligibleCoupleService(allEligibleCouples(), allTimelineEvents(), allBeneficiaries());</span>
+        }
+<span class="nc" id="L581">        return eligibleCoupleService;</span>
+    }
+
+    public MotherService motherService() {
+<span class="nc bnc" id="L585" title="All 2 branches missed.">        if (motherService == null) {</span>
+<span class="nc" id="L586">            motherService = new MotherService(allBeneficiaries(), allEligibleCouples(), allTimelineEvents(), serviceProvidedService());</span>
+        }
+<span class="nc" id="L588">        return motherService;</span>
+    }
+
+    public ChildService childService() {
+<span class="nc bnc" id="L592" title="All 2 branches missed.">        if (childService == null) {</span>
+<span class="nc" id="L593">            childService = new ChildService(allBeneficiaries(), motherRepository(), childRepository(), allTimelineEvents(), serviceProvidedService(), allAlerts());</span>
+        }
+<span class="nc" id="L595">        return childService;</span>
+    }
+
+    public Session session() {
+<span class="nc bnc" id="L599" title="All 2 branches missed.">        if (session == null) {</span>
+<span class="nc" id="L600">            session = new Session();</span>
+        }
+<span class="nc" id="L602">        return session;</span>
+    }
+
+    public ANMService anmService() {
+<span class="nc bnc" id="L606" title="All 2 branches missed.">        if (anmService == null) {</span>
+<span class="nc" id="L607">            anmService = new ANMService(allSharedPreferences(), allBeneficiaries(), allEligibleCouples());</span>
+        }
+<span class="nc" id="L609">        return anmService;</span>
+    }
+
+    public Cache&lt;String&gt; listCache() {
+<span class="nc bnc" id="L613" title="All 2 branches missed.">        if (listCache == null) {</span>
+<span class="nc" id="L614">            listCache = new Cache&lt;String&gt;();</span>
+        }
+<span class="nc" id="L616">        return listCache;</span>
+    }
+
+    public Cache&lt;SmartRegisterClients&gt; smartRegisterClientsCache() {
+<span class="nc bnc" id="L620" title="All 2 branches missed.">        if (smartRegisterClientsCache == null) {</span>
+<span class="nc" id="L621">            smartRegisterClientsCache = new Cache&lt;SmartRegisterClients&gt;();</span>
+        }
+<span class="nc" id="L623">        return smartRegisterClientsCache;</span>
+    }
+
+    public Cache&lt;HomeContext&gt; homeContextCache() {
+<span class="nc bnc" id="L627" title="All 2 branches missed.">        if (homeContextCache == null) {</span>
+<span class="nc" id="L628">            homeContextCache = new Cache&lt;HomeContext&gt;();</span>
+        }
+<span class="nc" id="L630">        return homeContextCache;</span>
+    }
+
+    public Boolean IsUserLoggedOut() {
+<span class="nc" id="L634">        return userService().hasSessionExpired();</span>
+    }
+
+    public DristhiConfiguration configuration() {
+<span class="nc bnc" id="L638" title="All 2 branches missed.">        if (configuration == null) {</span>
+<span class="nc" id="L639">            configuration = new DristhiConfiguration(getInstance().applicationContext().getAssets(), applicationContext);</span>
+        }
+<span class="nc" id="L641">        return configuration;</span>
+    }
+
+    public PendingFormSubmissionService pendingFormSubmissionService() {
+<span class="nc bnc" id="L645" title="All 2 branches missed.">        if (pendingFormSubmissionService == null) {</span>
+<span class="nc" id="L646">            pendingFormSubmissionService = new PendingFormSubmissionService(formDataRepository());</span>
+        }
+<span class="nc" id="L648">        return pendingFormSubmissionService;</span>
+    }
+
+    public ANMController anmController() {
+<span class="nc bnc" id="L652" title="All 2 branches missed.">        if (anmController == null) {</span>
+<span class="nc" id="L653">            anmController = new ANMController(anmService(), listCache(), homeContextCache());</span>
+        }
+<span class="nc" id="L655">        return anmController;</span>
+    }
+
+    public ANMLocationController anmLocationController() {
+<span class="nc bnc" id="L659" title="All 2 branches missed.">        if (anmLocationController == null) {</span>
+<span class="nc" id="L660">            anmLocationController = new ANMLocationController(allSettings(), listCache());</span>
+        }
+<span class="nc" id="L662">        return anmLocationController;</span>
+    }
+
+    public HTTPAgent getHttpAgent() {
+<span class="nc" id="L666">        return httpAgent;</span>
+    }
+
+
+    //#TODO: Refactor to use one cache object
+    public Cache&lt;ECClients&gt; ecClientsCache() {
+<span class="nc bnc" id="L672" title="All 2 branches missed.">        if (ecClientsCache == null) {</span>
+<span class="nc" id="L673">            ecClientsCache = new Cache&lt;ECClients&gt;();</span>
+        }
+<span class="nc" id="L675">        return ecClientsCache;</span>
+
+    }
+
+    //#TODO: Refactor to use one cache object
+    public Cache&lt;FPClients&gt; fpClientsCache() {
+<span class="nc bnc" id="L681" title="All 2 branches missed.">        if (fpClientsCache == null) {</span>
+<span class="nc" id="L682">            fpClientsCache = new Cache&lt;FPClients&gt;();</span>
+        }
+<span class="nc" id="L684">        return fpClientsCache;</span>
+
+    }
+
+    //#TODO: Refactor to use one cache object
+
+    public Cache&lt;ANCClients&gt; ancClientsCache() {
+<span class="nc bnc" id="L691" title="All 2 branches missed.">        if (ancClientsCache == null) {</span>
+<span class="nc" id="L692">            ancClientsCache = new Cache&lt;ANCClients&gt;();</span>
+        }
+<span class="nc" id="L694">        return ancClientsCache;</span>
+    }
+
+    public Cache&lt;PNCClients&gt; pncClientsCache() {
+<span class="nc bnc" id="L698" title="All 2 branches missed.">        if (pncClientsCache == null) {</span>
+<span class="nc" id="L699">            pncClientsCache = new Cache&lt;PNCClients&gt;();</span>
+        }
+<span class="nc" id="L701">        return pncClientsCache;</span>
+    }
+
+    public Cache&lt;Villages&gt; villagesCache() {
+<span class="nc bnc" id="L705" title="All 2 branches missed.">        if (villagesCache == null) {</span>
+<span class="nc" id="L706">            villagesCache = new Cache&lt;Villages&gt;();</span>
+        }
+<span class="nc" id="L708">        return villagesCache;</span>
+    }
+
+    public Cache&lt;Typeface&gt; typefaceCache() {
+<span class="nc bnc" id="L712" title="All 2 branches missed.">        if (typefaceCache == null) {</span>
+<span class="nc" id="L713">            typefaceCache = new Cache&lt;Typeface&gt;();</span>
+        }
+<span class="nc" id="L715">        return typefaceCache;</span>
+    }
+
+    public String getStringResource(int id) {
+<span class="nc" id="L719">        return applicationContext().getResources().getString(id);</span>
+    }
+
+    public int getColorResource(int id) {
+<span class="nc" id="L723">        return applicationContext().getResources().getColor(id);</span>
+    }
+
+    public Drawable getDrawable(int id) {
+<span class="nc" id="L727">        return applicationContext().getResources().getDrawable(id);</span>
+    }
+
+    public Drawable getDrawableResource(int id) {
+<span class="nc" id="L731">        return applicationContext().getResources().getDrawable(id);</span>
+    }
+
+    // New For testing
+    public AllDoctorRepository allDoctorRepository() {
+<span class="nc" id="L736">        initRepository();</span>
+<span class="nc bnc" id="L737" title="All 2 branches missed.">        if (allDoctorRepository == null) {</span>
+<span class="nc" id="L738">            allDoctorRepository = new AllDoctorRepository(doctorRepository());</span>
+        }
+<span class="nc" id="L740">        return allDoctorRepository;</span>
+    }
+
+
+    public AllTestRepository allTestRepository() {
+<span class="nc" id="L745">        initRepository();</span>
+<span class="nc bnc" id="L746" title="All 2 branches missed.">        if (allTestRepository == null) {</span>
+<span class="nc" id="L747">            allTestRepository = new AllTestRepository(testRepository(),</span>
+                    alertRepository(), timelineEventRepository());
+        }
+<span class="nc" id="L750">        return allTestRepository;</span>
+    }
+
+
+    public TestService TestService() {
+<span class="nc bnc" id="L755" title="All 2 branches missed.">        if (testService == null) {</span>
+<span class="nc" id="L756">            testService = new TestService(allTestRepository(),</span>
+                    allTimelineEvents(), allBeneficiaries());
+        }
+<span class="nc" id="L759">        return testService;</span>
+    }
+
+    public Cache&lt;TestClients&gt; testClientsCache() {
+<span class="nc bnc" id="L763" title="All 2 branches missed.">        if (testClientsCache == null) {</span>
+<span class="nc" id="L764">            testClientsCache = new Cache&lt;TestClients&gt;();</span>
+        }
+<span class="nc" id="L766">        return testClientsCache;</span>
+
+    }
+
+    private TestSubmissionHandler testSubmissionHandler() {
+<span class="nc bnc" id="L771" title="All 2 branches missed.">        if (testSubmissionHandler == null) {</span>
+<span class="nc" id="L772">            testSubmissionHandler = new TestSubmissionHandler(TestService());</span>
+        }
+<span class="nc" id="L774">        return testSubmissionHandler;</span>
+    }
+
+    public SharedPreferences getShared() {
+<span class="nc" id="L778">        return applicationContext().getSharedPreferences(&quot;Server&quot;, android.content.Context.MODE_PRIVATE);</span>
+    }
+    // End testing
+
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.1.201405082137</span></div></body></html>

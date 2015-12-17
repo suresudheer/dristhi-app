@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>DoctorANCScreenActivity.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">org.ei.telemedicine.doctor</a> &gt; <span class="el_source">DoctorANCScreenActivity.java</span></div><h1>DoctorANCScreenActivity.java</h1><pre class="source lang-java linenums">package org.ei.telemedicine.doctor;
+
+import android.app.ProgressDialog;
+import android.os.AsyncTask;
+import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+
+import org.ei.telemedicine.AllConstants;
+
+import org.ei.telemedicine.Context;
+import org.ei.telemedicine.R;
+import org.ei.telemedicine.view.customControls.CustomFontTextView;
+
+import static org.ei.telemedicine.doctor.DoctorFormDataConstants.anmPoc;
+
+<span class="nc" id="L21">public class DoctorANCScreenActivity extends DoctorPatientDetailSuperActivity {</span>
+    Button bt_poc, bt_doc_refer;
+    ProgressDialog progressDialog;
+    static String resultData;
+<span class="nc" id="L25">    private String TAG = &quot;DoctorANCSCreenActivity&quot;;</span>
+    TextView tv_stehoscope_title, tv_temp_format, tv_anm_poc;
+    ImageButton ib_bp_graph, ib_fetal_graph, ib_bgm_graph, ib_temp_graph;
+    EditText et_anc_num, et_woman_name, et_anc_visit_date, et_other_risks, et_bp_sys, et_bp_dia, et_temp, et_bloodGlucose, et_fetal, et_bp_pulse;
+    ImageButton ib_play_stehoscope, ib_pause_stehoscope;
+    LinearLayout ll_woman_risks;
+<span class="nc" id="L31">    String documentId = null, visitId = null, phoneNumber = null, entityId = null, wifeName = null, tempFormat = &quot;&quot;, tempVal = &quot;&quot;;</span>
+<span class="nc" id="L32">    String formData = null, pstechoscopeData = &quot;&quot;;</span>
+    org.ei.telemedicine.view.customControls.CustomFontTextView tv_risks;
+
+    @Override
+    protected String[] setDatatoViews(String formInfo) {
+<span class="nc" id="L37">        documentId = getDatafromJson(formInfo, DoctorFormDataConstants.documentId);</span>
+<span class="nc" id="L38">        phoneNumber = getDatafromJson(formInfo, DoctorFormDataConstants.phoneNumber);</span>
+<span class="nc" id="L39">        visitId = getDatafromJson(formInfo, DoctorFormDataConstants.anc_entityId);</span>
+<span class="nc" id="L40">        entityId = getDatafromJson(formInfo, DoctorFormDataConstants.entityId);</span>
+<span class="nc" id="L41">        wifeName = getDatafromJson(formInfo, DoctorFormDataConstants.wife_name);</span>
+<span class="nc" id="L42">        pstechoscopeData = getDatafromJson(formInfo, DoctorFormDataConstants.stethoscope_data);</span>
+<span class="nc" id="L43">        et_woman_name.setText(wifeName);</span>
+<span class="nc" id="L44">        et_anc_num.setText(&quot;Visit No &quot; + getDatafromJson(formInfo, DoctorFormDataConstants.anc_visit_number));</span>
+<span class="nc" id="L45">        et_anc_visit_date.setText(getDatafromJson(formInfo, DoctorFormDataConstants.anc_visit_date));</span>
+<span class="nc bnc" id="L46" title="All 2 branches missed.">        et_bp_sys.setText(getDatafromJson(formInfo, DoctorFormDataConstants.bp_sys).equals(&quot;&quot;) ? &quot;Not captured&quot; : getDatafromJson(formInfo, DoctorFormDataConstants.bp_sys));</span>
+<span class="nc bnc" id="L47" title="All 2 branches missed.">        et_bp_dia.setText(getDatafromJson(formInfo, DoctorFormDataConstants.bp_dia).equals(&quot;&quot;) ? &quot;Not captured&quot; : getDatafromJson(formInfo, DoctorFormDataConstants.bp_dia));</span>
+<span class="nc bnc" id="L48" title="All 2 branches missed.">        et_bp_pulse.setText(getDatafromJson(formInfo, DoctorFormDataConstants.bp_pulse).equals(&quot;&quot;) ? &quot;Not captured&quot; : getDatafromJson(formInfo, DoctorFormDataConstants.bp_pulse));</span>
+<span class="nc" id="L49">        String tempStr = getDatafromJson(formInfo, DoctorFormDataConstants.temp_data);</span>
+<span class="nc bnc" id="L50" title="All 4 branches missed.">        if (!tempStr.equals(&quot;&quot;) &amp;&amp; tempStr.contains(&quot;-&quot;)) {</span>
+<span class="nc" id="L51">            String[] temp = tempStr.split(&quot;-&quot;);</span>
+<span class="nc" id="L52">            tempFormat = temp[temp.length - 1];</span>
+<span class="nc" id="L53">            tempVal = temp[0];</span>
+<span class="nc" id="L54">        } else {</span>
+<span class="nc" id="L55">            tempVal = &quot;Not Captured&quot;;</span>
+        }
+<span class="nc" id="L57">        tv_temp_format.setText(tempFormat);</span>
+<span class="nc" id="L58">        et_temp.setText(tempVal);</span>
+<span class="nc bnc" id="L59" title="All 2 branches missed.">        et_bloodGlucose.setText(getDatafromJson(formInfo, DoctorFormDataConstants.blood_glucose).equals(&quot;&quot;) ? &quot;Not captured&quot; : getDatafromJson(formInfo, DoctorFormDataConstants.blood_glucose));</span>
+<span class="nc bnc" id="L60" title="All 2 branches missed.">        et_fetal.setText(getDatafromJson(formInfo, DoctorFormDataConstants.fetal_data).equals(&quot;&quot;) ? &quot;Not captured&quot; : getDatafromJson(formInfo, DoctorFormDataConstants.fetal_data));</span>
+
+<span class="nc bnc" id="L62" title="All 2 branches missed.">        ib_play_stehoscope.setVisibility(!pstechoscopeData.equals(&quot;&quot;) ? View.VISIBLE : View.GONE);</span>
+<span class="nc bnc" id="L63" title="All 2 branches missed.">        tv_stehoscope_title.setVisibility(!pstechoscopeData.equals(&quot;&quot;) ? View.VISIBLE : View.GONE);</span>
+
+<span class="nc" id="L65">        String risks = getDatafromJson(formInfo, DoctorFormDataConstants.risk_symptoms);</span>
+<span class="nc" id="L66">        tv_risks.setText(risks.replace(&quot; &quot;, &quot;, &quot;));</span>
+<span class="nc" id="L67">        tv_anm_poc.setText(getDatafromJsonArray(getDatafromJson(formInfo, anmPoc)));</span>
+<span class="nc" id="L68">        return new String[]{documentId, phoneNumber, visitId};</span>
+
+    }
+
+    @Override
+    protected void setupViews() {
+<span class="nc" id="L74">        setContentView(R.layout.doctor_anc_info);</span>
+<span class="nc" id="L75">        ib_bp_graph = (ImageButton) findViewById(R.id.ib_bp_graph);</span>
+<span class="nc" id="L76">        ib_temp_graph = (ImageButton) findViewById(R.id.ib_temp_graph);</span>
+<span class="nc" id="L77">        ib_bgm_graph = (ImageButton) findViewById(R.id.ib_bgm_graph);</span>
+<span class="nc" id="L78">        ib_fetal_graph = (ImageButton) findViewById(R.id.ib_fetal_graph);</span>
+
+<span class="nc" id="L80">        ib_play_stehoscope = (ImageButton) findViewById(R.id.ib_play_stehoscope);</span>
+<span class="nc" id="L81">        ib_pause_stehoscope = (ImageButton) findViewById(R.id.ib_pause_stehoscope);</span>
+
+<span class="nc" id="L83">        et_anc_num = (EditText) findViewById(R.id.et_anc_num);</span>
+<span class="nc" id="L84">        tv_anm_poc = (CustomFontTextView) findViewById(R.id.tv_anm_poc);</span>
+<span class="nc" id="L85">        et_woman_name = (EditText) findViewById(R.id.et_woman_name);</span>
+<span class="nc" id="L86">        et_anc_visit_date = (EditText) findViewById(R.id.et_anc_visit_date);</span>
+<span class="nc" id="L87">        et_other_risks = (EditText) findViewById(R.id.et_other_risk_symptoms);</span>
+<span class="nc" id="L88">        et_bp_sys = (EditText) findViewById(R.id.et_sysstolic);</span>
+<span class="nc" id="L89">        et_bp_dia = (EditText) findViewById(R.id.et_diastolic);</span>
+<span class="nc" id="L90">        et_bp_pulse = (EditText) findViewById(R.id.et_pulse);</span>
+<span class="nc" id="L91">        et_temp = (EditText) findViewById(R.id.et_temperature);</span>
+<span class="nc" id="L92">        et_bloodGlucose = (EditText) findViewById(R.id.et_blood_glucose);</span>
+<span class="nc" id="L93">        et_fetal = (EditText) findViewById(R.id.et_fetal_movement);</span>
+<span class="nc" id="L94">        tv_risks = (CustomFontTextView) findViewById(R.id.tv_risks);</span>
+<span class="nc" id="L95">        bt_poc = (Button) findViewById(R.id.bt_plan_of_care);</span>
+<span class="nc" id="L96">        ll_woman_risks = (LinearLayout) findViewById(R.id.ll_risks);</span>
+<span class="nc" id="L97">        bt_doc_refer = (Button) findViewById(R.id.bt_refer);</span>
+<span class="nc" id="L98">        tv_stehoscope_title = (TextView) findViewById(R.id.tv_stehoscope_title);</span>
+<span class="nc" id="L99">        tv_temp_format = (TextView) findViewById(R.id.tv_temp_format);</span>
+<span class="nc" id="L100">        bt_doc_refer.setOnClickListener(this);</span>
+<span class="nc" id="L101">        bt_poc.setOnClickListener(this);</span>
+
+<span class="nc" id="L103">        ib_play_stehoscope.setOnClickListener(this);</span>
+<span class="nc" id="L104">        ib_pause_stehoscope.setOnClickListener(this);</span>
+
+<span class="nc" id="L106">        ib_bp_graph.setOnClickListener(this);</span>
+<span class="nc" id="L107">        ib_bgm_graph.setOnClickListener(this);</span>
+<span class="nc" id="L108">        ib_temp_graph.setOnClickListener(this);</span>
+<span class="nc" id="L109">        ib_fetal_graph.setOnClickListener(this);</span>
+
+<span class="nc" id="L111">    }</span>
+//
+//    @Override
+//    protected void onStart() {
+//        super.onStart();
+//        if (ib_play_stehoscope != null &amp;&amp; ib_pause_stehoscope != null) {
+//            ib_play_stehoscope.setVisibility(View.VISIBLE);
+//            ib_pause_stehoscope.setVisibility(View.INVISIBLE);
+//        }
+//
+//    }
+
+    @Override
+    public void onClick(View v) {
+<span class="nc bnc" id="L125" title="All 9 branches missed.">        switch (v.getId()) {</span>
+            case R.id.ib_play_stehoscope:
+<span class="nc bnc" id="L127" title="All 2 branches missed.">                if (pstechoscopeData.trim().length() != 0) {</span>
+<span class="nc" id="L128">                    String audioUrl = Context.getInstance().configuration().drishtiAudioURL() + pstechoscopeData.replace(&quot;\&quot;&quot;, &quot;&quot;);</span>
+<span class="nc" id="L129">                    Log.e(&quot;Psteg&quot;, audioUrl);</span>
+<span class="nc" id="L130">                    playData(audioUrl, ib_play_stehoscope, ib_pause_stehoscope);</span>
+<span class="nc" id="L131">                    ib_pause_stehoscope.setVisibility(View.VISIBLE);</span>
+<span class="nc" id="L132">                    ib_play_stehoscope.setVisibility(View.INVISIBLE);</span>
+
+<span class="nc" id="L134">                }</span>
+                break;
+            case R.id.ib_pause_stehoscope:
+<span class="nc" id="L137">                ib_pause_stehoscope.setVisibility(View.INVISIBLE);</span>
+<span class="nc" id="L138">                ib_play_stehoscope.setVisibility(View.VISIBLE);</span>
+<span class="nc" id="L139">                pausePlay();</span>
+<span class="nc" id="L140">                break;</span>
+            case R.id.bt_plan_of_care:
+<span class="nc" id="L142">                getDrugData();</span>
+<span class="nc" id="L143">                break;</span>
+            case R.id.ib_bp_graph:
+<span class="nc" id="L145">                getVitalsData(AllConstants.GraphFields.BP, visitId);</span>
+<span class="nc" id="L146">                break;</span>
+            case R.id.ib_temp_graph:
+<span class="nc" id="L148">                getVitalsData(AllConstants.GraphFields.TEMPERATURE, visitId);</span>
+<span class="nc" id="L149">                break;</span>
+            case R.id.ib_bgm_graph:
+<span class="nc" id="L151">                getVitalsData(AllConstants.GraphFields.BLOODGLUCOSEDATA, visitId);</span>
+<span class="nc" id="L152">                break;</span>
+            case R.id.ib_fetal_graph:
+<span class="nc" id="L154">                getVitalsData(AllConstants.GraphFields.FETALDATA, visitId);</span>
+<span class="nc" id="L155">                break;</span>
+            case R.id.bt_refer:
+<span class="nc" id="L157">                referAnotherDoctor(Context.getInstance().allSharedPreferences().fetchRegisteredANM(), visitId, entityId, documentId, &quot;ANC&quot;, wifeName);</span>
+                break;
+        }
+<span class="nc" id="L160">    }</span>
+
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.1.201405082137</span></div></body></html>

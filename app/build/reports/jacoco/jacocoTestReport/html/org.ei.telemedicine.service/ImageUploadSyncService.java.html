@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>ImageUploadSyncService.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">org.ei.telemedicine.service</a> &gt; <span class="el_source">ImageUploadSyncService.java</span></div><h1>ImageUploadSyncService.java</h1><pre class="source lang-java linenums">package org.ei.telemedicine.service;
+
+import android.util.Log;
+
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
+import org.ei.telemedicine.Context;
+import org.ei.telemedicine.domain.ProfileImage;
+import org.ei.telemedicine.domain.Response;
+import org.ei.telemedicine.dto.form.FormSubmissionDTO;
+import org.ei.telemedicine.repository.ImageRepository;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+
+import static java.text.MessageFormat.format;
+import static org.ei.telemedicine.domain.FetchStatus.fetchedFailed;
+import static org.ei.telemedicine.util.Log.logError;
+
+/**
+ * Created by Dimas Ciputra on 3/22/15.
+ */
+public class ImageUploadSyncService {
+
+
+    private ImageRepository imageRepository;
+
+
+<span class="nc" id="L34">    public ImageUploadSyncService(ImageRepository imageRepository) {</span>
+<span class="nc" id="L35">        this.imageRepository = imageRepository;</span>
+<span class="nc" id="L36">        ImageSync((ArrayList&lt;ProfileImage&gt;) imageRepository.allProfileImages(), imageRepository);</span>
+<span class="nc" id="L37">        getImages();</span>
+<span class="nc" id="L38">    }</span>
+
+    private void getImages() {
+<span class="nc" id="L41">        String anmId = Context.getInstance().allSharedPreferences().fetchRegisteredANM();</span>
+
+<span class="nc" id="L43">        String imageGetURL = Context.getInstance().configuration().dristhiBaseURL() + &quot;/multimedia-file?anm-id=&quot; + anmId;</span>
+<span class="nc" id="L44">        Log.e(&quot;Image Getting url&quot;, imageGetURL);</span>
+<span class="nc" id="L45">        Response&lt;String&gt; response = Context.getInstance().getHttpAgent().fetch(imageGetURL);</span>
+<span class="nc bnc" id="L46" title="All 2 branches missed.">        if (response.isFailure()) {</span>
+<span class="nc" id="L47">            logError(format(&quot;Fetching images url failed.&quot;));</span>
+        } else {
+            try {
+<span class="nc" id="L50">                JSONArray imagesArray = new JSONArray(response.payload());</span>
+<span class="nc bnc" id="L51" title="All 2 branches missed.">                for (int i = 0; i &lt; imagesArray.length(); i++) {</span>
+<span class="nc" id="L52">                    JSONObject imageJson = imagesArray.getJSONObject(i);</span>
+<span class="nc" id="L53">                    Context.getInstance().allEligibleCouples().updatePhotoPath(getDataFromJson(imageJson.toString(), &quot;caseId&quot;), Context.getInstance().configuration().dristhiBaseURL() + &quot;/&quot; + getDataFromJson(imageJson.toString(), &quot;filePath&quot;));</span>
+                }
+<span class="nc" id="L55">            } catch (JSONException e) {</span>
+<span class="nc" id="L56">                e.printStackTrace();</span>
+<span class="nc" id="L57">            }</span>
+        }
+<span class="nc" id="L59">    }</span>
+
+    private String getDataFromJson(String jsonStr, String key) {
+<span class="nc bnc" id="L62" title="All 4 branches missed.">        if (jsonStr != null &amp;&amp; !jsonStr.equals(&quot;&quot;)) {</span>
+            try {
+<span class="nc" id="L64">                JSONObject jsonObject = new JSONObject(jsonStr);</span>
+<span class="nc bnc" id="L65" title="All 2 branches missed.">                return jsonObject.has(key) ? jsonObject.getString(key) : &quot;&quot;;</span>
+<span class="nc" id="L66">            } catch (JSONException e) {</span>
+<span class="nc" id="L67">                e.printStackTrace();</span>
+            }
+        }
+<span class="nc" id="L70">        return &quot;&quot;;</span>
+    }
+
+    public void ImageSync(ArrayList&lt;ProfileImage&gt; profileimages, ImageRepository imagerepository) {
+<span class="nc bnc" id="L74" title="All 2 branches missed.">        for (int i = 0; i &lt; profileimages.size(); i++) {</span>
+<span class="nc" id="L75">            String response = Context.getInstance().getHttpAgent().httpImagePost(Context.getInstance().configuration().dristhiBaseURL() + &quot;/multimedia-file&quot;, profileimages.get(i));</span>
+//            int RESPONSE_OK = 200;
+//            int RESPONSE_OK_ = 201;
+//
+//            if (response != RESPONSE_OK_ &amp;&amp; response != RESPONSE_OK) {
+//            } else {
+//                imagerepository.close(profileimages.get(i).getImageid());
+//            }
+<span class="nc bnc" id="L83" title="All 2 branches missed.">            if (response.trim().length() != 0)</span>
+<span class="nc" id="L84">                imagerepository.close(profileimages.get(i).getImageid());</span>
+        }
+<span class="nc" id="L86">    }</span>
+
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.1.201405082137</span></div></body></html>

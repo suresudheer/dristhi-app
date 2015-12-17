@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="org.ei.telemedicine.test.view.preProcessor.PNCClientPreProcessorTest" tests="7" skipped="0" failures="0" errors="0" timestamp="2015-12-17T05:22:16" hostname="DIPL-PC0206" time="0.069">
+  <properties/>
+  <testcase name="testShould_properly_calculate_the_expected_visits_day_date_values" classname="org.ei.telemedicine.test.view.preProcessor.PNCClientPreProcessorTest" time="0.02"/>
+  <testcase name="testShouldGenerateViewElementsWhenTodayIsTheDeliveryDate" classname="org.ei.telemedicine.test.view.preProcessor.PNCClientPreProcessorTest" time="0.004"/>
+  <testcase name="testShouldGenerateViewElements_whenTodayIs3DaysFromDeliveryDate_AndServiceIsProvidedOnDay2" classname="org.ei.telemedicine.test.view.preProcessor.PNCClientPreProcessorTest" time="0.007"/>
+  <testcase name="testShouldPopulateRecentlyProvidedServices" classname="org.ei.telemedicine.test.view.preProcessor.PNCClientPreProcessorTest" time="0.02"/>
+  <testcase name="test_8th_day_with_all_services_provided_on_time" classname="org.ei.telemedicine.test.view.preProcessor.PNCClientPreProcessorTest" time="0.007"/>
+  <testcase name="test_8th_day_with_no_services_provided" classname="org.ei.telemedicine.test.view.preProcessor.PNCClientPreProcessorTest" time="0.003"/>
+  <testcase name="testShouldGenerateViewElements_whenTodayIs2DaysFromDeliveryDate" classname="org.ei.telemedicine.test.view.preProcessor.PNCClientPreProcessorTest" time="0.003"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

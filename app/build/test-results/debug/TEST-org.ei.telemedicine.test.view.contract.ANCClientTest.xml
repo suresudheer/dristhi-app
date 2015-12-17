@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="org.ei.telemedicine.test.view.contract.ANCClientTest" tests="4" skipped="0" failures="0" errors="0" timestamp="2015-12-17T05:22:16" hostname="DIPL-PC0206" time="0.013">
+  <properties/>
+  <testcase name="testShouldReturnFalseIfCriteriaDoesNotSatisfyWithAnyClientThayiNumber" classname="org.ei.telemedicine.test.view.contract.ANCClientTest" time="0.01"/>
+  <testcase name="testShouldSatisfyCriteriaIfNameStartsWithDr" classname="org.ei.telemedicine.test.view.contract.ANCClientTest" time="0.001"/>
+  <testcase name="testShouldReturnFalseIfCriteriaDoesNotSatisfyWithAnyClientName" classname="org.ei.telemedicine.test.view.contract.ANCClientTest" time="0.001"/>
+  <testcase name="testShouldSatisfyCriteriaIfThayiStartsWith123" classname="org.ei.telemedicine.test.view.contract.ANCClientTest" time="0.001"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

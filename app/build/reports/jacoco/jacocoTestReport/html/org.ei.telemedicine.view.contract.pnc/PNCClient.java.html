@@ -1,0 +1,593 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>PNCClient.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">org.ei.telemedicine.view.contract.pnc</a> &gt; <span class="el_source">PNCClient.java</span></div><h1>PNCClient.java</h1><pre class="source lang-java linenums">package org.ei.telemedicine.view.contract.pnc;
+
+import com.google.gson.annotations.SerializedName;
+
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.ei.telemedicine.domain.ANCServiceType;
+import org.ei.telemedicine.domain.FPMethod;
+import org.ei.telemedicine.util.IntegerUtil;
+import org.ei.telemedicine.view.contract.*;
+import org.joda.time.LocalDate;
+import org.joda.time.LocalDateTime;
+import org.joda.time.format.ISODateTimeFormat;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.*;
+
+import static org.ei.telemedicine.AllConstants.ECRegistrationFields.*;
+import static org.ei.telemedicine.AllConstants.*;
+import static org.ei.telemedicine.domain.ANCServiceType.PNC;
+import static org.ei.telemedicine.util.DateUtil.*;
+import static org.ei.telemedicine.util.StringUtil.*;
+import static org.ei.telemedicine.view.contract.AlertDTO.emptyAlert;
+import static org.ei.telemedicine.view.contract.ServiceProvidedDTO.emptyService;
+
+public class PNCClient implements PNCSmartRegisterClient {
+    private static final String CATEGORY_PNC = &quot;pnc&quot;;
+<span class="fc" id="L32">    private static final String[] SERVICE_CATEGORIES = {CATEGORY_PNC};</span>
+<span class="fc" id="L33">    private static Map&lt;String, List&lt;ANCServiceType&gt;&gt; categoriesToServiceTypeMap = new HashMap&lt;String, List&lt;ANCServiceType&gt;&gt;();</span>
+
+    static {
+<span class="fc" id="L36">        categoriesToServiceTypeMap.put(CATEGORY_PNC, Arrays.asList(PNC));</span>
+<span class="fc" id="L37">    }</span>
+
+    private String entityId;
+    private String ec_number;
+    private String village;
+    private String name;
+    private String pncNumber;
+    private String thayi;
+    private String age;
+    private String womanDOB;
+    private String husbandName;
+    private String photo_path;
+    private Boolean isHighPriority;
+    private Boolean isHighRisk;
+    private String locationStatus;
+    private String economicStatus;
+    private String pocInfo;
+    private String caste;
+    private String fp_method;
+    private String iudPlace;
+    private String iudPerson;
+    private String family_planning_method_change_date;
+    private String numberOfCondomsSupplied;
+    private String numberOfOCPDelivered;
+    private String numberOfCentchromanPillsDelivered;
+    private String deliveryDate;
+    private String deliveryPlace;
+    private String deliveryType;
+    private String deliveryComplications;
+    private String pncComplications;
+    private String otherDeliveryComplications;
+    private List&lt;AlertDTO&gt; alerts;
+    private List&lt;ServiceProvidedDTO&gt; services_provided;
+    private List&lt;ChildClient&gt; children;
+    private String entityIdToSavePhoto;
+    private List&lt;ServiceProvidedDTO&gt; expectedVisits;
+    @SerializedName(&quot;first_7_days&quot;)
+    private PNCFirstSevenDaysVisits pncFirstSevenDaysVisits;
+    private List&lt;ServiceProvidedDTO&gt; recentlyProvidedServices;
+    private Map&lt;String, Visits&gt; serviceToVisitsMap;
+
+<span class="fc" id="L78">    public PNCClient(String entityId, String village, String name, String thayi, String deliveryDate) {</span>
+<span class="fc" id="L79">        this.entityId = entityId;</span>
+<span class="fc" id="L80">        this.village = village;</span>
+<span class="fc" id="L81">        this.name = name;</span>
+<span class="fc" id="L82">        this.thayi = thayi;</span>
+<span class="fc" id="L83">        this.deliveryDate = LocalDateTime.parse(deliveryDate).toString(ISODateTimeFormat.dateTime());</span>
+<span class="fc" id="L84">        this.serviceToVisitsMap = new HashMap&lt;String, Visits&gt;();</span>
+<span class="fc" id="L85">    }</span>
+
+    @Override
+    public String entityId() {
+<span class="nc" id="L89">        return entityId;</span>
+    }
+
+    @Override
+    public String name() {
+<span class="nc" id="L94">        return humanize(name);</span>
+    }
+
+    @Override
+    public String displayName() {
+<span class="nc" id="L99">        return name();</span>
+    }
+
+    @Override
+    public String village() {
+<span class="nc" id="L104">        return humanize(village);</span>
+    }
+
+    public String wifeName() {
+<span class="nc" id="L108">        return name;</span>
+    }
+
+    @Override
+    public String husbandName() {
+<span class="nc" id="L113">        return humanize(husbandName);</span>
+    }
+
+    @Override
+    public int age() {
+<span class="nc" id="L118">        return IntegerUtil.tryParse(age, 0);</span>
+    }
+
+    @Override
+    public int ageInDays() {
+<span class="nc" id="L123">        return IntegerUtil.tryParse(age, 0) * 365;</span>
+    }
+
+    @Override
+    public String ageInString() {
+<span class="nc" id="L128">        return &quot;(&quot; + age + &quot;)&quot;;</span>
+    }
+
+    @Override
+    public boolean isSC() {
+<span class="nc bnc" id="L133" title="All 4 branches missed.">        return caste != null &amp;&amp; caste.equalsIgnoreCase(SC_VALUE);</span>
+    }
+
+    @Override
+    public boolean isST() {
+<span class="nc bnc" id="L138" title="All 4 branches missed.">        return caste != null &amp;&amp; caste.equalsIgnoreCase(ST_VALUE);</span>
+    }
+
+    @Override
+    public boolean isHighRisk() {
+<span class="nc" id="L143">        return isHighRisk;</span>
+    }
+
+    @Override
+    public boolean isHighPriority() {
+<span class="nc" id="L148">        return isHighPriority;</span>
+    }
+
+    @Override
+    public boolean isBPL() {
+<span class="nc bnc" id="L153" title="All 4 branches missed.">        return economicStatus != null &amp;&amp; economicStatus.equalsIgnoreCase(BPL_VALUE);</span>
+    }
+
+    @Override
+    public boolean isPOC() {
+<span class="nc bnc" id="L158" title="All 4 branches missed.">        return pocInfo != null &amp;&amp; !pocInfo.equals(&quot;&quot;);</span>
+    }
+
+    @Override
+    public boolean isPocPending() {
+        try {
+<span class="nc bnc" id="L164" title="All 4 branches missed.">            if (pocInfo != null &amp;&amp; !pocInfo.equals(&quot;&quot;)) {</span>
+<span class="nc" id="L165">                JSONArray docPocInfoArray = new JSONArray(pocInfo);</span>
+<span class="nc bnc" id="L166" title="All 2 branches missed.">                JSONObject pocInfo = docPocInfoArray.length() != 0 ? docPocInfoArray.getJSONObject(docPocInfoArray.length() - 1)</span>
+                        : new JSONObject();
+<span class="nc bnc" id="L168" title="All 2 branches missed.">                if (pocInfo.getString(&quot;pending&quot;).length() != 0) {</span>
+<span class="nc" id="L169">                    return true;</span>
+                }
+            }
+<span class="nc" id="L172">        } catch (JSONException e) {</span>
+<span class="nc" id="L173">            e.printStackTrace();</span>
+<span class="nc" id="L174">        }</span>
+
+<span class="nc" id="L176">        return false;</span>
+    }
+
+
+    @Override
+    public String profilePhotoPath() {
+<span class="nc" id="L182">        return photo_path;</span>
+    }
+
+    @Override
+    public String locationStatus() {
+<span class="nc" id="L187">        return locationStatus;</span>
+    }
+
+    @Override
+    public boolean satisfiesFilter(String filter) {
+<span class="nc bnc" id="L192" title="All 6 branches missed.">        return name.toLowerCase(Locale.getDefault()).startsWith(filter.toLowerCase())</span>
+                || String.valueOf(ec_number).startsWith(filter)
+                || String.valueOf(thayi).startsWith(filter);
+    }
+
+    @Override
+    public int compareName(SmartRegisterClient client) {
+<span class="nc" id="L199">        return this.name().compareToIgnoreCase(client.name());</span>
+    }
+
+    @Override
+    public String pncNumber() {
+<span class="nc" id="L204">        return pncNumber;</span>
+    }
+
+    @Override
+    public String deliveryDateForDisplay() {
+<span class="nc" id="L209">        return formatFromISOString(deliveryDate, &quot;dd/MM/YY&quot;);</span>
+    }
+
+    @Override
+    public String deliveryShortDate() {
+<span class="nc" id="L214">        return formatFromISOString(deliveryDate, &quot;dd/MM&quot;);</span>
+    }
+
+    @Override
+    public LocalDate deliveryDate() {
+<span class="fc" id="L219">        return getLocalDateFromISOString(deliveryDate);</span>
+    }
+
+    @Override
+    public String deliveryPlace() {
+<span class="nc" id="L224">        return humanizeAndDoUPPERCASE(deliveryPlace);</span>
+    }
+
+    @Override
+    public String deliveryType() {
+<span class="nc" id="L229">        return humanize(deliveryType);</span>
+    }
+
+    @Override
+    public String deliveryComplications() {
+<span class="nc" id="L234">        return replaceAndHumanizeWithInitCapText(deliveryComplications, SPACE, COMMA_WITH_SPACE);</span>
+    }
+
+    @Override
+    public FPMethod fpMethod() {
+<span class="nc" id="L239">        return FPMethod.tryParse(this.fp_method, FPMethod.NONE);</span>
+    }
+
+    @Override
+    public String familyPlanningMethodChangeDate() {
+<span class="nc" id="L244">        return formatDate(family_planning_method_change_date, &quot;dd/MM/YYYY&quot;);</span>
+    }
+
+    @Override
+    public String numberOfOCPDelivered() {
+<span class="nc" id="L249">        return numberOfOCPDelivered;</span>
+    }
+
+    @Override
+    public String numberOfCondomsSupplied() {
+<span class="nc" id="L254">        return numberOfCondomsSupplied;</span>
+    }
+
+    @Override
+    public String numberOfCentchromanPillsDelivered() {
+<span class="nc" id="L259">        return numberOfCentchromanPillsDelivered;</span>
+    }
+
+
+    @Override
+    public String iudPerson() {
+<span class="nc" id="L265">        return humanizeAndDoUPPERCASE(iudPerson);</span>
+    }
+
+    @Override
+    public String iudPlace() {
+<span class="nc" id="L270">        return humanizeAndDoUPPERCASE(iudPlace);</span>
+    }
+
+    @Override
+    public String womanDOB() {
+<span class="nc" id="L275">        return formatDate(womanDOB, &quot;dd/MM/YYYY&quot;);</span>
+    }
+
+    public List&lt;ChildClient&gt; children() {
+<span class="nc" id="L279">        return children;</span>
+    }
+
+    public PNCClient withDeliveryPlace(String deliveryPlace) {
+<span class="nc" id="L283">        this.deliveryPlace = deliveryPlace;</span>
+<span class="nc" id="L284">        return this;</span>
+    }
+
+    public PNCClient withDeliveryType(String deliveryType) {
+<span class="nc" id="L288">        this.deliveryType = deliveryType;</span>
+<span class="nc" id="L289">        return this;</span>
+    }
+
+    public PNCClient withHusbandName(String husbandName) {
+<span class="nc" id="L293">        this.husbandName = husbandName;</span>
+<span class="nc" id="L294">        return this;</span>
+    }
+
+    public PNCClient withAge(String age) {
+<span class="nc" id="L298">        this.age = age;</span>
+<span class="nc" id="L299">        return this;</span>
+    }
+
+    public PNCClient withWomanDOB(String womanDOB) {
+<span class="nc" id="L303">        this.womanDOB = womanDOB;</span>
+<span class="nc" id="L304">        return this;</span>
+    }
+
+    public PNCClient withECNumber(String ecNumber) {
+<span class="nc" id="L308">        this.ec_number = ecNumber;</span>
+<span class="nc" id="L309">        return this;</span>
+    }
+
+    public PNCClient withPNCNumber(String pncNumber) {
+<span class="nc" id="L313">        this.pncNumber = pncNumber;</span>
+<span class="nc" id="L314">        return this;</span>
+    }
+
+
+    public PNCClient withIsHighPriority(boolean highPriority) {
+<span class="nc" id="L319">        this.isHighPriority = highPriority;</span>
+<span class="nc" id="L320">        return this;</span>
+    }
+
+    public PNCClient withIsHighRisk(boolean highRisk) {
+<span class="nc" id="L324">        this.isHighRisk = highRisk;</span>
+<span class="nc" id="L325">        return this;</span>
+    }
+
+    public PNCClient withIsOutOfArea(boolean outOfArea) {
+<span class="nc bnc" id="L329" title="All 2 branches missed.">        this.locationStatus = outOfArea ? OUT_OF_AREA : IN_AREA;</span>
+<span class="nc" id="L330">        return this;</span>
+    }
+
+    public PNCClient withCaste(String caste) {
+<span class="nc" id="L334">        this.caste = caste;</span>
+<span class="nc" id="L335">        return this;</span>
+    }
+
+    public PNCClient withEconomicStatus(String economicStatus) {
+<span class="nc" id="L339">        this.economicStatus = economicStatus;</span>
+<span class="nc" id="L340">        return this;</span>
+    }
+
+    public PNCClient withFPMethod(String fpMethod) {
+<span class="nc" id="L344">        this.fp_method = fpMethod;</span>
+<span class="nc" id="L345">        return this;</span>
+    }
+
+    public PNCClient withPhotoPath(String photoPath) {
+<span class="nc" id="L349">        this.photo_path = photoPath;</span>
+<span class="nc" id="L350">        return this;</span>
+    }
+
+    public PNCClient withIUDPlace(String iudPlace) {
+<span class="nc" id="L354">        this.iudPlace = iudPlace;</span>
+<span class="nc" id="L355">        return this;</span>
+    }
+
+    public PNCClient withIUDPerson(String iudPerson) {
+<span class="nc" id="L359">        this.iudPerson = iudPerson;</span>
+<span class="nc" id="L360">        return this;</span>
+    }
+
+    public PNCClient withFamilyPlanningMethodChangeDate(String family_planning_method_change_date) {
+<span class="nc" id="L364">        this.family_planning_method_change_date = family_planning_method_change_date;</span>
+<span class="nc" id="L365">        return this;</span>
+    }
+
+    public PNCClient withNumberOfCondomsSupplied(String numberOfCondomsSupplied) {
+<span class="nc" id="L369">        this.numberOfCondomsSupplied = numberOfCondomsSupplied;</span>
+<span class="nc" id="L370">        return this;</span>
+    }
+
+    public PNCClient withNumberOfOCPDelivered(String numberOfOCPDelivered) {
+<span class="nc" id="L374">        this.numberOfOCPDelivered = numberOfOCPDelivered;</span>
+<span class="nc" id="L375">        return this;</span>
+    }
+
+    public PNCClient withNumberOfCentchromanPillsDelivered(String numberOfCentchromanPillsDelivered) {
+<span class="nc" id="L379">        this.numberOfCentchromanPillsDelivered = numberOfCentchromanPillsDelivered;</span>
+<span class="nc" id="L380">        return this;</span>
+    }
+
+    public PNCClient withDeliveryComplications(String deliveryComplications) {
+<span class="nc" id="L384">        this.deliveryComplications = deliveryComplications;</span>
+<span class="nc" id="L385">        return this;</span>
+    }
+
+    public PNCClient withPNCComplications(String pncComplications) {
+<span class="nc" id="L389">        this.pncComplications = pncComplications;</span>
+<span class="nc" id="L390">        return this;</span>
+    }
+
+    public PNCClient withAlerts(List&lt;AlertDTO&gt; alerts) {
+<span class="fc" id="L394">        this.alerts = alerts;</span>
+<span class="fc" id="L395">        return this;</span>
+    }
+
+    public PNCClient withServicesProvided(List&lt;ServiceProvidedDTO&gt; servicesProvided) {
+<span class="fc" id="L399">        this.services_provided = servicesProvided;</span>
+<span class="fc" id="L400">        return this;</span>
+    }
+
+    public PNCClient withOtherDeliveryComplications(String otherDeliveryComplications) {
+<span class="nc" id="L404">        this.otherDeliveryComplications = otherDeliveryComplications;</span>
+<span class="nc" id="L405">        return this;</span>
+    }
+
+    public PNCClient withChildren(List&lt;ChildClient&gt; children) {
+<span class="nc" id="L409">        this.children = children;</span>
+<span class="nc" id="L410">        return this;</span>
+    }
+
+    public PNCClient withEntityIdToSavePhoto(String entityIdToSavePhoto) {
+<span class="nc" id="L414">        this.entityIdToSavePhoto = entityIdToSavePhoto;</span>
+<span class="nc" id="L415">        return this;</span>
+    }
+
+    public PNCClient withExpectedVisits(List&lt;ServiceProvidedDTO&gt; visits) {
+<span class="fc" id="L419">        this.expectedVisits = visits;</span>
+<span class="fc" id="L420">        return this;</span>
+    }
+
+    public PNCClient withFirstSevenDaysVisit(PNCFirstSevenDaysVisits pncFirstSevenDaysVisits) {
+<span class="fc" id="L424">        this.pncFirstSevenDaysVisits = pncFirstSevenDaysVisits;</span>
+<span class="fc" id="L425">        return this;</span>
+    }
+
+    public PNCClient withRecentlyProvidedServices(List&lt;ServiceProvidedDTO&gt; recentlyProvidedServices) {
+<span class="fc" id="L429">        this.recentlyProvidedServices = recentlyProvidedServices;</span>
+<span class="fc" id="L430">        return this;</span>
+    }
+
+    public PNCClient withServiceToVisitMap(Map&lt;String, Visits&gt; serviceToVisitsMap) {
+<span class="nc" id="L434">        this.serviceToVisitsMap = serviceToVisitsMap;</span>
+<span class="nc" id="L435">        return this;</span>
+    }
+
+    public PNCClient withPoc(String pocInfo) {
+<span class="nc" id="L439">        this.pocInfo = pocInfo;</span>
+<span class="nc" id="L440">        return this;</span>
+    }
+
+    public PNCClient withPreProcess() {
+<span class="fc" id="L444">        initialize(SERVICE_CATEGORIES, serviceToVisitsMap);</span>
+<span class="fc" id="L445">        initializeAllServiceToProvideAndProvided(categoriesToServiceTypeMap);</span>
+<span class="fc" id="L446">        return this;</span>
+    }
+
+    @Override
+    public boolean equals(Object o) {
+<span class="nc" id="L451">        return EqualsBuilder.reflectionEquals(this, o);</span>
+    }
+
+    @Override
+    public int hashCode() {
+<span class="nc" id="L456">        return HashCodeBuilder.reflectionHashCode(this);</span>
+    }
+
+    @Override
+    public String toString() {
+<span class="nc" id="L461">        return ToStringBuilder.reflectionToString(this);</span>
+    }
+
+    @Override
+    public List&lt;PNCCircleDatum&gt; pncCircleData() {
+<span class="fc" id="L466">        return pncFirstSevenDaysVisits.pncCircleData();</span>
+    }
+
+    @Override
+    public List&lt;PNCStatusDatum&gt; pncStatusData() {
+<span class="fc" id="L471">        return pncFirstSevenDaysVisits.pncStatusData();</span>
+    }
+
+    @Override
+    public PNCStatusColor pncVisitStatusColor() {
+<span class="fc" id="L476">        return pncFirstSevenDaysVisits.pncVisitStatusColor();</span>
+    }
+
+    @Override
+    public List&lt;PNCTickDatum&gt; pncTickData() {
+<span class="fc" id="L481">        return pncFirstSevenDaysVisits.pncTickData();</span>
+    }
+
+    @Override
+    public List&lt;PNCLineDatum&gt; pncLineData() {
+<span class="fc" id="L486">        return pncFirstSevenDaysVisits.pncLineData();</span>
+    }
+
+    @Override
+    public List&lt;PNCVisitDaysDatum&gt; visitDaysData() {
+<span class="fc" id="L491">        return pncFirstSevenDaysVisits.visitDaysData();</span>
+    }
+
+    @Override
+    public PNCFirstSevenDaysVisits firstSevenDaysVisits() {
+<span class="nc" id="L496">        return pncFirstSevenDaysVisits;</span>
+    }
+
+    @Override
+    public List&lt;ServiceProvidedDTO&gt; recentlyProvidedServices() {
+<span class="fc" id="L501">        return recentlyProvidedServices;</span>
+    }
+
+    @Override
+    public boolean isVisitsDone() {
+<span class="nc" id="L506">        return isServiceProvided(CATEGORY_PNC);</span>
+    }
+
+    @Override
+    public String visitDoneDateWithVisitName() {
+<span class="nc" id="L511">        return serviceProvidedToACategory(CATEGORY_PNC).servicedOnWithServiceName();</span>
+    }
+
+    @Override
+    public AlertDTO getAlert(ANCServiceType type) {
+<span class="nc" id="L516">        return serviceToProvide(type.category());</span>
+    }
+
+    private AlertDTO serviceToProvide(String category) {
+<span class="nc bnc" id="L520" title="All 2 branches missed.">        if (StringUtils.isBlank(category)) {</span>
+<span class="nc" id="L521">            return emptyAlert;</span>
+        }
+<span class="nc" id="L523">        return serviceToVisitsMap.get(category).toProvide;</span>
+    }
+
+    public ServiceProvidedDTO serviceProvidedToACategory(String category) {
+<span class="nc bnc" id="L527" title="All 2 branches missed.">        if (StringUtils.isBlank(category)) {</span>
+<span class="nc" id="L528">            return emptyService;</span>
+        }
+<span class="nc" id="L530">        return serviceToVisitsMap.get(category).provided;</span>
+    }
+
+    public Map&lt;String, Visits&gt; serviceToVisitsMap() {
+<span class="fc" id="L534">        return serviceToVisitsMap;</span>
+    }
+
+    public List&lt;ServiceProvidedDTO&gt; expectedVisits() {
+<span class="fc" id="L538">        return expectedVisits;</span>
+    }
+
+    public List&lt;ServiceProvidedDTO&gt; servicesProvided() {
+<span class="fc" id="L542">        return services_provided;</span>
+    }
+
+    private void initialize(String[] serviceCategories, Map&lt;String, Visits&gt; serviceToVisitsMap) {
+<span class="fc bfc" id="L546" title="All 2 branches covered.">        for (String type : serviceCategories) {</span>
+<span class="fc" id="L547">            serviceToVisitsMap.put(type, new Visits());</span>
+        }
+<span class="fc" id="L549">    }</span>
+
+    private void initializeAllServiceToProvideAndProvided(Map&lt;String, List&lt;ANCServiceType&gt;&gt; categoriesToServiceTypeMap) {
+<span class="fc" id="L552">        Set&lt;String&gt; keys = categoriesToServiceTypeMap.keySet();</span>
+<span class="fc bfc" id="L553" title="All 2 branches covered.">        for (String key : keys) {</span>
+<span class="fc" id="L554">            initializeServiceToProvideAndProvided(categoriesToServiceTypeMap.get(key));</span>
+<span class="fc" id="L555">        }</span>
+<span class="fc" id="L556">    }</span>
+
+    private void initializeServiceToProvideAndProvided(List&lt;ANCServiceType&gt; types) {
+<span class="fc bfc" id="L559" title="All 2 branches covered.">        for (ANCServiceType type : types) {</span>
+<span class="fc" id="L560">            initializeServiceToProvideAndProvided(type);</span>
+<span class="fc" id="L561">        }</span>
+<span class="fc" id="L562">    }</span>
+
+    private void initializeServiceToProvideAndProvided(ANCServiceType type) {
+<span class="fc bfc" id="L565" title="All 2 branches covered.">        for (AlertDTO alert : alerts) {</span>
+<span class="pc bpc" id="L566" title="1 of 2 branches missed.">            if (type.equals(alert.ancServiceType())) {</span>
+<span class="fc" id="L567">                serviceToVisitsMap.get(type.category()).toProvide = alert;</span>
+            }
+<span class="fc" id="L569">        }</span>
+
+<span class="fc bfc" id="L571" title="All 2 branches covered.">        for (ServiceProvidedDTO service : services_provided) {</span>
+<span class="pc bpc" id="L572" title="1 of 2 branches missed.">            if (type.equals(service.ancServiceType())) {</span>
+<span class="fc" id="L573">                serviceToVisitsMap.get(type.category()).provided = service;</span>
+            }
+<span class="fc" id="L575">        }</span>
+<span class="fc" id="L576">    }</span>
+
+    private boolean isServiceProvided(String category) {
+<span class="nc bnc" id="L579" title="All 2 branches missed.">        if (StringUtils.isBlank(category)) {</span>
+<span class="nc" id="L580">            return false;</span>
+        }
+<span class="nc" id="L582">        ServiceProvidedDTO serviceProvided = serviceToVisitsMap.get(category).provided;</span>
+<span class="nc bnc" id="L583" title="All 4 branches missed.">        return serviceProvided != null &amp;&amp; !serviceProvided.equals(emptyService);</span>
+    }
+
+    @Override
+    public String pncComplications() {
+<span class="nc bnc" id="L588" title="All 2 branches missed.">        if (StringUtils.isNotEmpty(pncComplications))</span>
+<span class="nc" id="L589">            return replaceAndHumanizeWithInitCapText(pncComplications.trim(), SPACE, COMMA_WITH_SPACE);</span>
+<span class="nc" id="L590">        return null;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.1.201405082137</span></div></body></html>

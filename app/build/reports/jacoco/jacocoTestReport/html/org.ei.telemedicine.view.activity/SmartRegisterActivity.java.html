@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>SmartRegisterActivity.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">org.ei.telemedicine.view.activity</a> &gt; <span class="el_source">SmartRegisterActivity.java</span></div><h1>SmartRegisterActivity.java</h1><pre class="source lang-java linenums">package org.ei.telemedicine.view.activity;
+
+import android.content.Intent;
+
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
+import org.ei.telemedicine.AllConstants;
+import org.ei.telemedicine.Context;
+import org.ei.telemedicine.event.CapturedPhotoInformation;
+import org.ei.telemedicine.event.Listener;
+
+import java.util.Map;
+
+import static org.ei.telemedicine.AllConstants.*;
+import static org.ei.telemedicine.event.Event.ON_PHOTO_CAPTURED;
+import static org.ei.telemedicine.util.Log.logInfo;
+
+<span class="nc" id="L19">public abstract class SmartRegisterActivity extends SecuredWebActivity {</span>
+    protected Listener&lt;CapturedPhotoInformation&gt; photoCaptureListener;
+
+    @Override
+    protected void onInitialization() {
+<span class="nc" id="L24">        onSmartRegisterInitialization();</span>
+
+<span class="nc" id="L26">        photoCaptureListener = new Listener&lt;CapturedPhotoInformation&gt;() {</span>
+            @Override
+            public void onEvent(CapturedPhotoInformation data) {
+<span class="nc bnc" id="L29" title="All 2 branches missed.">                if (webView != null) {</span>
+<span class="nc" id="L30">                    webView.loadUrl(&quot;javascript:pageView.reloadPhoto('&quot; + data.entityId() + &quot;', '&quot; + data.photoPath() + &quot;')&quot;);</span>
+                }
+<span class="nc" id="L32">            }</span>
+        };
+<span class="nc" id="L34">        ON_PHOTO_CAPTURED.addListener(photoCaptureListener);</span>
+<span class="nc" id="L35">    }</span>
+
+    protected abstract void onSmartRegisterInitialization();
+
+    @Override
+    public void onResumption() {
+<span class="nc" id="L41">        webView.loadUrl(&quot;javascript:if(window.pageView) {window.pageView.reload();}&quot;);</span>
+<span class="nc" id="L42">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.1.201405082137</span></div></body></html>

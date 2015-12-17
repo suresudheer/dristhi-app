@@ -1,0 +1,274 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>ANCServiceType.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">org.ei.telemedicine.domain</a> &gt; <span class="el_source">ANCServiceType.java</span></div><h1>ANCServiceType.java</h1><pre class="source lang-java linenums">package org.ei.telemedicine.domain;
+
+import org.apache.commons.lang3.StringUtils;
+import org.ei.telemedicine.Context;
+import org.ei.telemedicine.R;
+import org.ei.telemedicine.view.contract.ANCClient;
+
+import java.util.Locale;
+
+import static org.ei.telemedicine.util.Log.logWarn;
+
+<span class="fc" id="L12">public enum ANCServiceType {</span>
+<span class="fc" id="L13">    ANC_1 {</span>
+        @Override
+        public String displayName() {
+<span class="nc" id="L16">            return &quot;ANC 1&quot;;</span>
+        }
+
+        @Override
+        public String serviceName() {
+<span class="nc" id="L21">            return &quot;ANC 1&quot;;</span>
+        }
+
+        @Override
+        public String category() {
+<span class="nc" id="L26">            return ANCClient.CATEGORY_ANC;</span>
+        }
+    },
+<span class="fc" id="L29">    ANC_2 {</span>
+        @Override
+        public String displayName() {
+<span class="nc" id="L32">            return &quot;ANC 2&quot;;</span>
+        }
+
+        @Override
+        public String serviceName() {
+<span class="nc" id="L37">            return &quot;ANC 2&quot;;</span>
+        }
+
+        @Override
+        public String category() {
+<span class="nc" id="L42">            return ANCClient.CATEGORY_ANC;</span>
+        }
+    },
+<span class="fc" id="L45">    ANC_3 {</span>
+        @Override
+        public String displayName() {
+<span class="nc" id="L48">            return &quot;ANC 3&quot;;</span>
+        }
+
+        @Override
+        public String serviceName() {
+<span class="nc" id="L53">            return &quot;ANC 3&quot;;</span>
+        }
+
+        @Override
+        public String category() {
+<span class="nc" id="L58">            return ANCClient.CATEGORY_ANC;</span>
+        }
+    },
+<span class="fc" id="L61">    ANC_4 {</span>
+        @Override
+        public String displayName() {
+<span class="nc" id="L64">            return &quot;ANC 4&quot;;</span>
+        }
+
+        @Override
+        public String serviceName() {
+<span class="nc" id="L69">            return &quot;ANC 4&quot;;</span>
+        }
+
+        @Override
+        public String category() {
+<span class="nc" id="L74">            return ANCClient.CATEGORY_ANC;</span>
+        }
+    },
+<span class="fc" id="L77">    TT_1 {</span>
+        @Override
+        public String displayName() {
+<span class="nc" id="L80">            return &quot;TT&quot;;</span>
+        }
+
+        @Override
+        public String serviceName() {
+<span class="nc" id="L85">            return &quot;TT 1&quot;;</span>
+        }
+
+        @Override
+        public String serviceDisplayName() {
+<span class="nc" id="L90">            return &quot;TT 1&quot;;</span>
+        }
+
+        @Override
+        public String category() {
+<span class="nc" id="L95">            return ANCClient.CATEGORY_TT;</span>
+        }
+    },
+<span class="fc" id="L98">    TT_2 {</span>
+        @Override
+        public String serviceDisplayName() {
+<span class="nc" id="L101">            return &quot;TT 2&quot;;</span>
+        }
+
+        @Override
+        public String displayName() {
+<span class="nc" id="L106">            return &quot;TT 2&quot;;</span>
+        }
+
+        @Override
+        public String serviceName() {
+<span class="nc" id="L111">            return &quot;TT 2&quot;;</span>
+        }
+
+        @Override
+        public String category() {
+<span class="nc" id="L116">            return ANCClient.CATEGORY_TT;</span>
+        }
+    },
+<span class="fc" id="L119">    TT_BOOSTER {</span>
+        @Override
+        public String serviceDisplayName() {
+<span class="nc" id="L122">            return &quot;TT B&quot;;</span>
+        }
+
+        @Override
+        public String displayName() {
+<span class="nc" id="L127">            return &quot;TT B&quot;;</span>
+        }
+
+        @Override
+        public String serviceName() {
+<span class="nc" id="L132">            return &quot;TT Booster&quot;;</span>
+        }
+
+        @Override
+        public String category() {
+<span class="nc" id="L137">            return ANCClient.CATEGORY_TT;</span>
+        }
+    },
+<span class="fc" id="L140">    IFA {</span>
+        @Override
+        public String displayName() {
+<span class="nc" id="L143">            return &quot;IFA Tablets&quot;;</span>
+        }
+
+        @Override
+        public String serviceName() {
+<span class="nc" id="L148">            return &quot;IFA&quot;;</span>
+        }
+
+        @Override
+        public String category() {
+<span class="nc" id="L153">            return ANCClient.CATEGORY_IFA;</span>
+        }
+    },
+<span class="fc" id="L156">    HB_TEST {</span>
+        @Override
+        public String displayName() {
+<span class="nc" id="L159">            return &quot;Hb Test&quot;;</span>
+        }
+
+        @Override
+        public String serviceName() {
+<span class="nc" id="L164">            return &quot;Hb&quot;;</span>
+        }
+
+        @Override
+        public String category() {
+<span class="nc" id="L169">            return ANCClient.CATEGORY_HB;</span>
+        }
+    },
+<span class="fc" id="L172">    DELIVERY_PLAN {</span>
+        @Override
+        public String displayName() {
+<span class="nc" id="L175">            return &quot;Delivery Plan&quot;;</span>
+        }
+
+        @Override
+        public String serviceName() {
+<span class="nc" id="L180">            return &quot;Delivery Plan&quot;;</span>
+        }
+
+        @Override
+        public String category() {
+<span class="nc" id="L185">            return ANCClient.CATEGORY_DELIVERY_PLAN;</span>
+        }
+    },
+<span class="fc" id="L188">    PNC {</span>
+        @Override
+        public String displayName() {
+<span class="nc" id="L191">            return &quot;PNC&quot;;</span>
+        }
+
+        @Override
+        public String serviceName() {
+<span class="nc" id="L196">            return &quot;PNC&quot;;</span>
+        }
+
+        @Override
+        public String category() {
+<span class="fc" id="L201">            return ANCClient.CATEGORY_PNC;</span>
+        }
+    },
+<span class="fc" id="L204">    EMPTY {</span>
+        @Override
+        public String displayName() {
+<span class="nc" id="L207">            return Context.getInstance().applicationContext().getString(R.string.service_type_empty);</span>
+        }
+
+        @Override
+        public String serviceName() {
+<span class="nc" id="L212">            return &quot;&quot;;</span>
+        }
+
+        @Override
+        public String category() {
+<span class="nc" id="L217">            return &quot;&quot;;</span>
+        }
+    };
+
+    public abstract String displayName();
+
+    public abstract String serviceName();
+
+    public String serviceDisplayName() {
+<span class="nc" id="L226">        return serviceName();</span>
+    }
+
+    public String shortName() {
+<span class="nc" id="L230">        return displayName();</span>
+    }
+
+    public abstract String category();
+
+    public static ANCServiceType tryParse(String type, ANCServiceType defaultType) {
+        try {
+<span class="pc bpc" id="L237" title="1 of 2 branches missed.">            if (type.equalsIgnoreCase(&quot;ANC 1&quot;)) {</span>
+<span class="nc" id="L238">                return ANCServiceType.valueOf(&quot;ANC_1&quot;);</span>
+<span class="pc bpc" id="L239" title="1 of 2 branches missed.">            } else if (type.equalsIgnoreCase(&quot;ANC 2&quot;)) {</span>
+<span class="nc" id="L240">                return ANCServiceType.valueOf(&quot;ANC_2&quot;);</span>
+<span class="pc bpc" id="L241" title="1 of 2 branches missed.">            } else if (type.equalsIgnoreCase(&quot;ANC 3&quot;)) {</span>
+<span class="nc" id="L242">                return ANCServiceType.valueOf(&quot;ANC_3&quot;);</span>
+<span class="pc bpc" id="L243" title="1 of 2 branches missed.">            } else if (type.equalsIgnoreCase(&quot;ANC 4&quot;)) {</span>
+<span class="nc" id="L244">                return ANCServiceType.valueOf(&quot;ANC_4&quot;);</span>
+<span class="pc bpc" id="L245" title="1 of 2 branches missed.">            } else if (type.equalsIgnoreCase(&quot;TT 1&quot;)) {</span>
+<span class="nc" id="L246">                return ANCServiceType.valueOf(&quot;TT_1&quot;);</span>
+<span class="pc bpc" id="L247" title="1 of 2 branches missed.">            } else if (type.equalsIgnoreCase(&quot;TT 2&quot;)) {</span>
+<span class="nc" id="L248">                return ANCServiceType.valueOf(&quot;TT_2&quot;);</span>
+<span class="pc bpc" id="L249" title="1 of 2 branches missed.">            } else if (type.equalsIgnoreCase(&quot;TT Booster&quot;)) {</span>
+<span class="nc" id="L250">                return ANCServiceType.valueOf(&quot;TT_BOOSTER&quot;);</span>
+<span class="pc bpc" id="L251" title="1 of 2 branches missed.">            } else if (type.equalsIgnoreCase(&quot;IFA 1&quot;)) {</span>
+<span class="nc" id="L252">                return ANCServiceType.valueOf(&quot;IFA&quot;);</span>
+<span class="pc bpc" id="L253" title="1 of 2 branches missed.">            } else if (type.equalsIgnoreCase(&quot;IFA 2&quot;)) {</span>
+<span class="nc" id="L254">                return ANCServiceType.valueOf(&quot;IFA&quot;);</span>
+<span class="pc bpc" id="L255" title="1 of 2 branches missed.">            } else if (type.equalsIgnoreCase(&quot;IFA 3&quot;)) {</span>
+<span class="nc" id="L256">                return ANCServiceType.valueOf(&quot;IFA&quot;);</span>
+<span class="pc bpc" id="L257" title="1 of 2 branches missed.">            } else if (type.equalsIgnoreCase(&quot;HB Test 1&quot;)) {</span>
+<span class="nc" id="L258">                return ANCServiceType.valueOf(&quot;HB_TEST&quot;);</span>
+<span class="pc bpc" id="L259" title="1 of 2 branches missed.">            } else if (type.equalsIgnoreCase(&quot;HB Test 2&quot;)) {</span>
+<span class="nc" id="L260">                return ANCServiceType.valueOf(&quot;HB_TEST&quot;);</span>
+<span class="pc bpc" id="L261" title="1 of 2 branches missed.">            } else if (type.equalsIgnoreCase(&quot;Delivery Plan&quot;)) {</span>
+<span class="nc" id="L262">                return ANCServiceType.valueOf(&quot;DELIVERY_PLAN&quot;);</span>
+<span class="pc bpc" id="L263" title="1 of 2 branches missed.">            } else if (type.equalsIgnoreCase(&quot;PNC&quot;)) {</span>
+<span class="fc" id="L264">                return ANCServiceType.valueOf(&quot;PNC&quot;);</span>
+            } else {
+<span class="nc bnc" id="L266" title="All 2 branches missed.">                return StringUtils.isBlank(type) ? defaultType : ANCServiceType.valueOf(type.toUpperCase(Locale.getDefault()));</span>
+            }
+<span class="nc" id="L268">        } catch (IllegalArgumentException e) {</span>
+<span class="nc" id="L269">            logWarn(&quot;Unknown current Service Type : &quot; + type + &quot; Exception : &quot; + e);</span>
+<span class="nc" id="L270">            return defaultType;</span>
+        }
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.1.201405082137</span></div></body></html>

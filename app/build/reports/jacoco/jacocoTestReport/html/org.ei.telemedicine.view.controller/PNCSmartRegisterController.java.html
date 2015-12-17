@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>PNCSmartRegisterController.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">org.ei.telemedicine.view.controller</a> &gt; <span class="el_source">PNCSmartRegisterController.java</span></div><h1>PNCSmartRegisterController.java</h1><pre class="source lang-java linenums">package org.ei.telemedicine.view.controller;
+
+import static java.lang.String.valueOf;
+import static java.util.Collections.sort;
+import static org.apache.commons.lang3.StringUtils.isBlank;
+import static org.ei.telemedicine.AllConstants.DEFAULT_WOMAN_IMAGE_PLACEHOLDER_PATH;
+import static org.ei.telemedicine.AllConstants.ECRegistrationFields.CASTE;
+import static org.ei.telemedicine.AllConstants.ECRegistrationFields.CURRENT_FP_METHOD;
+import static org.ei.telemedicine.AllConstants.ECRegistrationFields.ECONOMIC_STATUS;
+import static org.ei.telemedicine.AllConstants.ECRegistrationFields.FAMILY_PLANNING_METHOD_CHANGE_DATE;
+import static org.ei.telemedicine.AllConstants.ECRegistrationFields.IUD_PERSON;
+import static org.ei.telemedicine.AllConstants.ECRegistrationFields.IUD_PLACE;
+import static org.ei.telemedicine.AllConstants.ECRegistrationFields.NUMBER_OF_CENTCHROMAN_PILLS_DELIVERED;
+import static org.ei.telemedicine.AllConstants.ECRegistrationFields.NUMBER_OF_CONDOMS_SUPPLIED;
+import static org.ei.telemedicine.AllConstants.ECRegistrationFields.NUMBER_OF_OCP_DELIVERED;
+import static org.ei.telemedicine.AllConstants.ECRegistrationFields.WOMAN_DOB;
+import static org.ei.telemedicine.AllConstants.PNCRegistrationFields.DELIVERY_COMPLICATIONS;
+import static org.ei.telemedicine.AllConstants.PNCRegistrationFields.DELIVERY_PLACE;
+import static org.ei.telemedicine.AllConstants.PNCRegistrationFields.DELIVERY_TYPE;
+import static org.ei.telemedicine.AllConstants.PNCRegistrationFields.IMMEDIATE_REFERRAL_REASON;
+import static org.ei.telemedicine.AllConstants.PNCRegistrationFields.OTHER_DELIVERY_COMPLICATIONS;
+import static org.ei.telemedicine.domain.ServiceProvided.PNC_SERVICE_PROVIDED_NAME;
+
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+
+import org.apache.commons.lang3.tuple.Pair;
+import org.ei.telemedicine.AllConstants;
+import org.ei.telemedicine.domain.Alert;
+import org.ei.telemedicine.domain.Child;
+import org.ei.telemedicine.domain.EligibleCouple;
+import org.ei.telemedicine.domain.Mother;
+import org.ei.telemedicine.domain.ServiceProvided;
+import org.ei.telemedicine.repository.AllBeneficiaries;
+import org.ei.telemedicine.repository.AllEligibleCouples;
+import org.ei.telemedicine.service.AlertService;
+import org.ei.telemedicine.service.ServiceProvidedService;
+import org.ei.telemedicine.util.Cache;
+import org.ei.telemedicine.util.CacheableData;
+import org.ei.telemedicine.view.contract.AlertDTO;
+import org.ei.telemedicine.view.contract.ChildClient;
+import org.ei.telemedicine.view.contract.ServiceProvidedDTO;
+import org.ei.telemedicine.view.contract.SmartRegisterClient;
+import org.ei.telemedicine.view.contract.Village;
+import org.ei.telemedicine.view.contract.pnc.PNCClient;
+import org.ei.telemedicine.view.contract.pnc.PNCClients;
+import org.ei.telemedicine.view.preProcessor.PNCClientPreProcessor;
+
+import com.google.gson.Gson;
+
+public class PNCSmartRegisterController {
+    private static final String PNC_1_ALERT_NAME = &quot;PNC 1&quot;;
+
+    private static final String PNC_CLIENTS_LIST = &quot;PNCClientList&quot;;
+    private AllEligibleCouples allEligibleCouples;
+    private AllBeneficiaries allBeneficiaries;
+    private AlertService alertService;
+    private Cache&lt;String&gt; cache;
+    private Cache&lt;PNCClients&gt; pncClientsCache;
+    private final ServiceProvidedService serviceProvidedService;
+    private PNCClientPreProcessor pncClientPreProcessor;
+
+    public PNCSmartRegisterController(ServiceProvidedService serviceProvidedService, AlertService alertService,
+                                      AllEligibleCouples allEligibleCouples, AllBeneficiaries allBeneficiaries,
+                                      Cache&lt;String&gt; cache, Cache&lt;PNCClients&gt; pncClientsCache) {
+<span class="nc" id="L67">        this(serviceProvidedService, alertService, allEligibleCouples, allBeneficiaries, cache, pncClientsCache, new PNCClientPreProcessor());</span>
+<span class="nc" id="L68">    }</span>
+
+    public PNCSmartRegisterController(ServiceProvidedService serviceProvidedService, AlertService alertService,
+                                      AllEligibleCouples allEligibleCouples, AllBeneficiaries allBeneficiaries,
+<span class="nc" id="L72">                                      Cache&lt;String&gt; cache, Cache&lt;PNCClients&gt; pncClientsCache, PNCClientPreProcessor pncClientPreProcessor) {</span>
+<span class="nc" id="L73">        this.allEligibleCouples = allEligibleCouples;</span>
+<span class="nc" id="L74">        this.allBeneficiaries = allBeneficiaries;</span>
+<span class="nc" id="L75">        this.alertService = alertService;</span>
+<span class="nc" id="L76">        this.serviceProvidedService = serviceProvidedService;</span>
+<span class="nc" id="L77">        this.cache = cache;</span>
+<span class="nc" id="L78">        this.pncClientsCache = pncClientsCache;</span>
+<span class="nc" id="L79">        this.pncClientPreProcessor = pncClientPreProcessor;</span>
+<span class="nc" id="L80">    }</span>
+
+    public PNCClients getClients() {
+<span class="nc" id="L83">        return pncClientsCache.get(PNC_CLIENTS_LIST, new CacheableData&lt;PNCClients&gt;() {</span>
+            @Override
+            public PNCClients fetch() {
+<span class="nc" id="L86">                PNCClients pncClients = new PNCClients();</span>
+<span class="nc" id="L87">                List&lt;Pair&lt;Mother, EligibleCouple&gt;&gt; pncsWithEcs = allBeneficiaries.allPNCsWithEC();</span>
+
+<span class="nc bnc" id="L89" title="All 2 branches missed.">                for (Pair&lt;Mother, EligibleCouple&gt; pncWithEc : pncsWithEcs) {</span>
+<span class="nc" id="L90">                    Mother pnc = pncWithEc.getLeft();</span>
+<span class="nc" id="L91">                    EligibleCouple ec = pncWithEc.getRight();</span>
+<span class="nc bnc" id="L92" title="All 2 branches missed.">                    String photoPath = isBlank(ec.photoPath()) ? DEFAULT_WOMAN_IMAGE_PLACEHOLDER_PATH : ec.photoPath();</span>
+
+<span class="nc" id="L94">                    List&lt;ServiceProvidedDTO&gt; servicesProvided = getServicesProvided(pnc.caseId());</span>
+<span class="nc" id="L95">                    List&lt;AlertDTO&gt; alerts = getAlerts(pnc.caseId());</span>
+<span class="nc" id="L96">                    PNCClient client = new PNCClient(pnc.caseId(), ec.village(), ec.wifeName(), pnc.thayiCardNumber(), pnc.referenceDate())</span>
+                            .withHusbandName(ec.husbandName())
+                            .withAge(ec.age())
+                            .withWomanDOB(ec.getDetail(WOMAN_DOB))
+                            .withECNumber(ec.ecNumber()).withPNCNumber(pnc.pncNumber())
+                            .withIsHighPriority(ec.isHighPriority())
+                            .withIsHighRisk(pnc.isHighRisk())
+                            .withEconomicStatus(ec.getDetail(ECONOMIC_STATUS))
+                            .withIsOutOfArea(ec.isOutOfArea())
+                            .withCaste(ec.getDetail(CASTE))
+                            .withPoc(pnc.getDetail(AllConstants.PNCRegistrationFields.PNC_POC_INFO))
+                            .withPhotoPath(photoPath)
+                            .withFPMethod(ec.getDetail(CURRENT_FP_METHOD))
+                            .withIUDPlace(ec.getDetail(IUD_PLACE))
+                            .withIUDPerson(ec.getDetail(IUD_PERSON))
+                            .withNumberOfCondomsSupplied(ec.getDetail(NUMBER_OF_CONDOMS_SUPPLIED))
+                            .withFamilyPlanningMethodChangeDate(ec.getDetail(FAMILY_PLANNING_METHOD_CHANGE_DATE))
+                            .withNumberOfOCPDelivered(ec.getDetail(NUMBER_OF_OCP_DELIVERED))
+                            .withNumberOfCentchromanPillsDelivered(ec.getDetail(NUMBER_OF_CENTCHROMAN_PILLS_DELIVERED))
+                            .withDeliveryPlace(pnc.getDetail(DELIVERY_PLACE))
+                            .withDeliveryType(pnc.getDetail(DELIVERY_TYPE))
+                            .withDeliveryComplications(pnc.getDetail(DELIVERY_COMPLICATIONS))
+                            .withPNCComplications(pnc.getDetail(IMMEDIATE_REFERRAL_REASON))
+                            .withOtherDeliveryComplications(pnc.getDetail(OTHER_DELIVERY_COMPLICATIONS))
+                            .withEntityIdToSavePhoto(ec.caseId())
+                            .withAlerts(alerts)
+                            .withServicesProvided(servicesProvided)
+                            .withChildren(findChildren(pnc))
+                            .withPreProcess();
+<span class="nc" id="L125">                    pncClients.add(pncClientPreProcessor.preProcess(client));</span>
+<span class="nc" id="L126">                }</span>
+<span class="nc" id="L127">                sortByName(pncClients);</span>
+<span class="nc" id="L128">                return pncClients;</span>
+            }
+        });
+    }
+
+    public String villages() {
+<span class="nc" id="L134">        List&lt;Village&gt; villagesList = new ArrayList&lt;Village&gt;();</span>
+<span class="nc" id="L135">        List&lt;String&gt; villages = allEligibleCouples.villages();</span>
+<span class="nc bnc" id="L136" title="All 2 branches missed.">        for (String village : villages) {</span>
+<span class="nc" id="L137">            villagesList.add(new Village(village));</span>
+<span class="nc" id="L138">        }</span>
+<span class="nc" id="L139">        return new Gson().toJson(villagesList);</span>
+    }
+
+    private List&lt;ServiceProvidedDTO&gt; getServicesProvided(String entityId) {
+<span class="nc" id="L143">        List&lt;ServiceProvided&gt; servicesProvided = serviceProvidedService.findByEntityIdAndServiceNames(entityId,</span>
+                PNC_SERVICE_PROVIDED_NAME);
+<span class="nc" id="L145">        List&lt;ServiceProvidedDTO&gt; serviceProvidedDTOs = new ArrayList&lt;ServiceProvidedDTO&gt;();</span>
+<span class="nc bnc" id="L146" title="All 2 branches missed.">        for (ServiceProvided serviceProvided : servicesProvided) {</span>
+<span class="nc" id="L147">            serviceProvidedDTOs.add(new ServiceProvidedDTO(serviceProvided.name(), serviceProvided.date(), serviceProvided.data()));</span>
+<span class="nc" id="L148">        }</span>
+<span class="nc" id="L149">        return serviceProvidedDTOs;</span>
+    }
+
+    private List&lt;AlertDTO&gt; getAlerts(String entityId) {
+<span class="nc" id="L153">        List&lt;Alert&gt; alerts = alertService.findByEntityIdAndAlertNames(entityId,</span>
+                PNC_1_ALERT_NAME
+        );
+<span class="nc" id="L156">        List&lt;AlertDTO&gt; alertDTOs = new ArrayList&lt;AlertDTO&gt;();</span>
+<span class="nc bnc" id="L157" title="All 2 branches missed.">        for (Alert alert : alerts) {</span>
+<span class="nc" id="L158">            alertDTOs.add(new AlertDTO(alert.visitCode(), valueOf(alert.status()), alert.startDate()));</span>
+<span class="nc" id="L159">        }</span>
+<span class="nc" id="L160">        return alertDTOs;</span>
+    }
+
+    private void sortByName(List&lt;? extends SmartRegisterClient&gt; pncClients) {
+<span class="nc" id="L164">        sort(pncClients, new Comparator&lt;SmartRegisterClient&gt;() {</span>
+            @Override
+            public int compare(SmartRegisterClient onePNCClient, SmartRegisterClient anotherPNCClient) {
+<span class="nc" id="L167">                return onePNCClient.wifeName().compareToIgnoreCase(anotherPNCClient.wifeName());</span>
+            }
+        });
+<span class="nc" id="L170">    }</span>
+
+    private List&lt;ChildClient&gt; findChildren(Mother mother) {
+<span class="nc" id="L173">        List&lt;Child&gt; children = allBeneficiaries.findAllChildrenByMotherId(mother.caseId());</span>
+<span class="nc" id="L174">        List&lt;ChildClient&gt; childClientList = new ArrayList&lt;ChildClient&gt;();</span>
+<span class="nc bnc" id="L175" title="All 2 branches missed.">        for (Child child : children) {</span>
+<span class="nc" id="L176">            childClientList.add(new ChildClient(child.caseId(), child.gender(), child.getDetail(&quot;weight&quot;), mother.thayiCardNumber()));</span>
+<span class="nc" id="L177">        }</span>
+<span class="nc" id="L178">        return childClientList;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.1.201405082137</span></div></body></html>

@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>NativeANCSmartRegisterActivity.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">org.ei.telemedicine.view.activity</a> &gt; <span class="el_source">NativeANCSmartRegisterActivity.java</span></div><h1>NativeANCSmartRegisterActivity.java</h1><pre class="source lang-java linenums">package org.ei.telemedicine.view.activity;
+
+import static com.google.common.collect.Iterables.concat;
+import static com.google.common.collect.Iterables.toArray;
+import static java.util.Arrays.asList;
+import static org.ei.telemedicine.AllConstants.FormNames.*;
+
+import java.util.List;
+
+import org.ei.telemedicine.AllConstants;
+import org.ei.telemedicine.R;
+import org.ei.telemedicine.adapter.SmartRegisterPaginatedAdapter;
+import org.ei.telemedicine.domain.form.FieldOverrides;
+import org.ei.telemedicine.provider.ANCSmartRegisterClientsProvider;
+import org.ei.telemedicine.provider.SmartRegisterClientsProvider;
+import org.ei.telemedicine.view.contract.SmartRegisterClient;
+import org.ei.telemedicine.view.controller.ANCSmartRegisterController;
+import org.ei.telemedicine.view.controller.VillageController;
+import org.ei.telemedicine.view.dialog.ANCOverviewServiceMode;
+import org.ei.telemedicine.view.dialog.ANCVisitsServiceMode;
+import org.ei.telemedicine.view.dialog.AllClientsFilter;
+import org.ei.telemedicine.view.dialog.DeliveryPlanServiceMode;
+import org.ei.telemedicine.view.dialog.DialogOption;
+import org.ei.telemedicine.view.dialog.DialogOptionMapper;
+import org.ei.telemedicine.view.dialog.DialogOptionModel;
+import org.ei.telemedicine.view.dialog.EditOption;
+import org.ei.telemedicine.view.dialog.EstimatedDateOfDeliverySort;
+import org.ei.telemedicine.view.dialog.FilterOption;
+import org.ei.telemedicine.view.dialog.HRPSort;
+import org.ei.telemedicine.view.dialog.HbIFAServiceMode;
+import org.ei.telemedicine.view.dialog.NameSort;
+import org.ei.telemedicine.view.dialog.OpenFormOption;
+import org.ei.telemedicine.view.dialog.OutOfAreaFilter;
+import org.ei.telemedicine.view.dialog.ServiceModeOption;
+import org.ei.telemedicine.view.dialog.SortOption;
+import org.ei.telemedicine.view.dialog.TTServiceMode;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import android.util.Log;
+import android.view.View;
+
+<span class="nc" id="L44">public class NativeANCSmartRegisterActivity extends SecuredNativeSmartRegisterActivity {</span>
+
+<span class="nc" id="L46">    private SmartRegisterClientsProvider clientProvider = null;</span>
+    private ANCSmartRegisterController controller;
+    private VillageController villageController;
+    private DialogOptionMapper dialogOptionMapper;
+<span class="nc" id="L50">    public static final List&lt;? extends DialogOption&gt; DEFAULT_ANC_FILTER_OPTIONS =</span>
+            asList(new OutOfAreaFilter());
+
+<span class="nc" id="L53">    private final ClientActionHandler clientActionHandler = new ClientActionHandler();</span>
+
+    @Override
+    protected SmartRegisterPaginatedAdapter adapter() {
+<span class="nc" id="L57">        return new SmartRegisterPaginatedAdapter(clientsProvider());</span>
+    }
+
+    @Override
+    protected SmartRegisterClientsProvider clientsProvider() {
+<span class="nc bnc" id="L62" title="All 2 branches missed.">        if (clientProvider == null) {</span>
+<span class="nc" id="L63">            clientProvider = new ANCSmartRegisterClientsProvider(</span>
+                    this, clientActionHandler, controller);
+        }
+<span class="nc" id="L66">        return clientProvider;</span>
+    }
+
+    @Override
+    protected DefaultOptionsProvider getDefaultOptionsProvider() {
+<span class="nc" id="L71">        return new DefaultOptionsProvider() {</span>
+
+            @Override
+            public ServiceModeOption serviceMode() {
+<span class="nc" id="L75">                return new ANCOverviewServiceMode(clientsProvider());</span>
+            }
+
+            @Override
+            public FilterOption villageFilter() {
+<span class="nc" id="L80">                return new AllClientsFilter();</span>
+            }
+
+            @Override
+            public SortOption sortOption() {
+<span class="nc" id="L85">                return new NameSort();</span>
+            }
+
+            @Override
+            public String nameInShortFormForTitle() {
+<span class="nc" id="L90">                return getResources().getString(R.string.anc_label);</span>
+            }
+        };
+    }
+
+    @Override
+    protected NavBarOptionsProvider getNavBarOptionsProvider() {
+<span class="nc" id="L97">        return new NavBarOptionsProvider() {</span>
+
+            @Override
+            public DialogOption[] filterOptions() {
+<span class="nc" id="L101">                Iterable&lt;? extends DialogOption&gt; villageFilterOptions =</span>
+                        dialogOptionMapper.mapToVillageFilterOptions(villageController.getVillages());
+<span class="nc" id="L103">                return toArray(concat(DEFAULT_FILTER_OPTIONS, DEFAULT_ANC_FILTER_OPTIONS, villageFilterOptions), DialogOption.class);</span>
+            }
+
+            @Override
+            public DialogOption[] serviceModeOptions() {
+<span class="nc" id="L108">                return new DialogOption[]{</span>
+                        new ANCOverviewServiceMode(clientsProvider()),
+                        new ANCVisitsServiceMode(clientsProvider()),
+                        new HbIFAServiceMode(clientsProvider()),
+                        new TTServiceMode(clientsProvider()),
+                        new DeliveryPlanServiceMode(clientsProvider())
+                };
+            }
+
+            @Override
+            public DialogOption[] sortingOptions() {
+<span class="nc" id="L119">                return new DialogOption[]{new NameSort(), new EstimatedDateOfDeliverySort(),</span>
+                        new HRPSort()};
+            }
+
+            @Override
+            public String searchHint() {
+<span class="nc" id="L125">                return getString(R.string.str_anc_search_hint);</span>
+            }
+        };
+    }
+
+    private DialogOption[] getEditOptions() {
+<span class="nc" id="L131">        return new DialogOption[]{</span>
+                new OpenFormOption(getString(R.string.str_register_anc_visit_form), ANC_VISIT, formController),
+//                new OpenFormOption(&quot;ANC Reg Edit&quot;, &quot;anc_reg_edit&quot;, formController),
+                new OpenFormOption(&quot;ANC Edit&quot;, ANC_EDIT, formController),
+                new OpenFormOption(getString(R.string.str_register_hb_test_form), HB_TEST, formController),
+                new OpenFormOption(getString(R.string.str_register_ifa_form), IFA, formController),
+                new OpenFormOption(getString(R.string.str_register_tt_form), TT, formController),
+                new OpenFormOption(getString(R.string.str_register_delivery_plan_form), DELIVERY_PLAN, formController),
+                new OpenFormOption(getString(R.string.str_anc_plan_of_care), AllConstants.VIEW_PLAN_OF_CARE, formController, NativeANCSmartRegisterActivity.this),
+                new OpenFormOption(getString(R.string.str_register_pnc_registration_form), DELIVERY_OUTCOME, formController),
+                new OpenFormOption(getString(R.string.str_register_anc_investigations_form), ANC_INVESTIGATIONS, formController),
+                new OpenFormOption(getString(R.string.str_register_anc_close_form), ANC_CLOSE, formController)
+        };
+    }
+
+    @Override
+    protected void onInitialization() {
+<span class="nc" id="L148">        controller = new ANCSmartRegisterController(</span>
+                context.serviceProvidedService(),
+                context.alertService(),
+                context.allBeneficiaries(),
+                context.listCache(),
+                context.ancClientsCache());
+
+<span class="nc" id="L155">        villageController = new VillageController(</span>
+                context.allEligibleCouples(),
+                context.listCache(),
+                context.villagesCache());
+
+<span class="nc" id="L160">        dialogOptionMapper = new DialogOptionMapper();</span>
+
+<span class="nc" id="L162">        clientsProvider().onServiceModeSelected(new ANCOverviewServiceMode(clientsProvider()));</span>
+<span class="nc" id="L163">    }</span>
+
+    @Override
+    protected void startRegistration(String village) throws JSONException {
+<span class="nc" id="L167">        String locationJSON = context.anmLocationController().getFormInfoJSON();</span>
+<span class="nc" id="L168">        JSONObject jsonFormInfo = new JSONObject(locationJSON);</span>
+<span class="nc" id="L169">        jsonFormInfo.put(&quot;village&quot;, village.trim().replace(&quot; &quot;, &quot;%20&quot;));</span>
+<span class="nc" id="L170">        String customFields = context.allSettings().fetchFieldLabels(&quot;ANCRegistration&quot;);</span>
+<span class="nc bnc" id="L171" title="All 4 branches missed.">        if (customFields != null &amp;&amp; !customFields.equals(&quot;&quot;)) {</span>
+<span class="nc" id="L172">            JSONArray customFieldsArray = new JSONArray(customFields);</span>
+<span class="nc bnc" id="L173" title="All 2 branches missed.">            for (int i = 0; i &lt; customFieldsArray.length(); i++) {</span>
+<span class="nc" id="L174">                jsonFormInfo.put(&quot;field&quot; + (i + 1), customFieldsArray.getString(i).trim().replace(&quot; &quot;, &quot;%20&quot;));</span>
+            }
+        }
+<span class="nc" id="L177">        FieldOverrides fieldOverrides = new FieldOverrides(jsonFormInfo.toString());</span>
+<span class="nc" id="L178">        Log.e(&quot;Json&quot;, fieldOverrides.getJSONString());</span>
+<span class="nc" id="L179">        startFormActivity(AllConstants.FormNames.ANC_REGISTRATION_OA, null, fieldOverrides.getJSONString());</span>
+<span class="nc" id="L180">    }</span>
+
+<span class="nc" id="L182">    private class ClientActionHandler implements View.OnClickListener {</span>
+        @Override
+        public void onClick(View view) {
+<span class="nc bnc" id="L185" title="All 3 branches missed.">            switch (view.getId()) {</span>
+                case R.id.profile_info_layout:
+<span class="nc" id="L187">                    showProfileView((SmartRegisterClient) view.getTag());</span>
+<span class="nc" id="L188">                    break;</span>
+                case R.id.btn_edit:
+<span class="nc" id="L190">                    showFragmentDialog(new EditDialogOptionModel(), view.getTag());</span>
+                    break;
+            }
+<span class="nc" id="L193">        }</span>
+
+        private void showProfileView(SmartRegisterClient client) {
+<span class="nc" id="L196">            navigationController.startANC(client.entityId());</span>
+<span class="nc" id="L197">        }</span>
+    }
+
+<span class="nc" id="L200">    private class EditDialogOptionModel implements DialogOptionModel {</span>
+        @Override
+        public DialogOption[] getDialogOptions() {
+<span class="nc" id="L203">            return getEditOptions();</span>
+        }
+
+        @Override
+        public void onDialogOptionSelection(DialogOption option, Object tag) {
+<span class="nc" id="L208">            onEditSelection((EditOption) option, (SmartRegisterClient) tag);</span>
+<span class="nc" id="L209">        }</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.1.201405082137</span></div></body></html>

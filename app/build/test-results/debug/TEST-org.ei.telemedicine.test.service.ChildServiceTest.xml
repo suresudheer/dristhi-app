@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="org.ei.telemedicine.test.service.ChildServiceTest" tests="17" skipped="0" failures="0" errors="0" timestamp="2015-12-17T05:22:14" hostname="DIPL-PC0206" time="0.135">
+  <properties/>
+  <testcase name="testShouldAddServiceProvidedWhenChildImmunizationsAreUpdated" classname="org.ei.telemedicine.test.service.ChildServiceTest" time="0.007"/>
+  <testcase name="testShouldCheckForEmptyInstanceInTheCaseOfStillBirth" classname="org.ei.telemedicine.test.service.ChildServiceTest" time="0.007"/>
+  <testcase name="testShouldNotCloseMotherWhenAnOpenANCAlreadyExistWhileRegisteringAChildForEC" classname="org.ei.telemedicine.test.service.ChildServiceTest" time="0.009"/>
+  <testcase name="testShouldMarkRemindersAsInProcessWhenImmunizationsAreProvided" classname="org.ei.telemedicine.test.service.ChildServiceTest" time="0.005"/>
+  <testcase name="testShouldUpdateVitaminADosagesForUpdateVitaminAProvidedAction" classname="org.ei.telemedicine.test.service.ChildServiceTest" time="0.004"/>
+  <testcase name="testShouldAddTimelineEventWhenChildIsRegisteredForEC" classname="org.ei.telemedicine.test.service.ChildServiceTest" time="0.008"/>
+  <testcase name="testShouldAddTimelineEventWhenChildIsRegisteredForOA" classname="org.ei.telemedicine.test.service.ChildServiceTest" time="0.007"/>
+  <testcase name="testShouldAddTimelineEventsWhenChildImmunizationsAreUpdated" classname="org.ei.telemedicine.test.service.ChildServiceTest" time="0.005"/>
+  <testcase name="testShouldDeleteRegisteredChildWhenPNCRegistrationOAIsHandledAndDeliveryOutcomeIsStillBirth" classname="org.ei.telemedicine.test.service.ChildServiceTest" time="0.003"/>
+  <testcase name="testShouldUpdateIllnessForUpdateIllnessAction" classname="org.ei.telemedicine.test.service.ChildServiceTest" time="0.005"/>
+  <testcase name="testShouldAddPNCVisitTimelineEventWhenPNCVisitHappens" classname="org.ei.telemedicine.test.service.ChildServiceTest" time="0.005"/>
+  <testcase name="testShouldUpdateNewlyRegisteredChildrenDuringPNCRegistrationOA" classname="org.ei.telemedicine.test.service.ChildServiceTest" time="0.012"/>
+  <testcase name="testShouldUpdateEveryOnlyNewlyBornChildrenWhileRegistering" classname="org.ei.telemedicine.test.service.ChildServiceTest" time="0.012"/>
+  <testcase name="testShouldDeleteRegisteredChildWhenDeliveryOutcomeIsStillBirth" classname="org.ei.telemedicine.test.service.ChildServiceTest" time="0.003"/>
+  <testcase name="testShouldAddPNCVisitServiceProvidedWhenPNCVisitHappens" classname="org.ei.telemedicine.test.service.ChildServiceTest" time="0.003"/>
+  <testcase name="testShouldHandleStillBirthWhenPNCVisitHappens" classname="org.ei.telemedicine.test.service.ChildServiceTest" time="0.003"/>
+  <testcase name="testShouldCloseChildRecordForDeleteChildAction" classname="org.ei.telemedicine.test.service.ChildServiceTest" time="0.002"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

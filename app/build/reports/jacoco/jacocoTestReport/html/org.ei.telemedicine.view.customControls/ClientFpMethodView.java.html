@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>ClientFpMethodView.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">org.ei.telemedicine.view.customControls</a> &gt; <span class="el_source">ClientFpMethodView.java</span></div><h1>ClientFpMethodView.java</h1><pre class="source lang-java linenums">package org.ei.telemedicine.view.customControls;
+
+import static org.ei.telemedicine.Context.getInstance;
+
+import org.apache.commons.lang3.StringUtils;
+import org.ei.telemedicine.R;
+import org.ei.telemedicine.domain.FPMethod;
+import org.ei.telemedicine.view.contract.BaseFPSmartRegisterClient;
+
+import android.content.Context;
+import android.graphics.Color;
+import android.util.AttributeSet;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+
+public class ClientFpMethodView extends LinearLayout {
+    private TextView fpMethodView;
+    private TextView fpMethodDateView;
+    private TextView fpMethodQuantityLabelView;
+    private TextView fpMethodQuantityView;
+    private TextView iudPlaceView;
+    private TextView iudPersonView;
+
+    @SuppressWarnings(&quot;UnusedDeclaration&quot;)
+    public ClientFpMethodView(Context context) {
+<span class="nc" id="L28">        this(context, null, 0);</span>
+<span class="nc" id="L29">    }</span>
+
+    @SuppressWarnings(&quot;UnusedDeclaration&quot;)
+    public ClientFpMethodView(Context context, AttributeSet attrs) {
+<span class="nc" id="L33">        this(context, attrs, 0);</span>
+<span class="nc" id="L34">    }</span>
+
+    public ClientFpMethodView(Context context, AttributeSet attrs, int defStyle) {
+<span class="nc" id="L37">        super(context, attrs, defStyle);</span>
+<span class="nc" id="L38">    }</span>
+
+    public void initialize() {
+<span class="nc" id="L41">        fpMethodView = (TextView) findViewById(R.id.txt_fp_method);</span>
+<span class="nc" id="L42">        fpMethodDateView = (TextView) findViewById(R.id.txt_fp_method_date);</span>
+<span class="nc" id="L43">        fpMethodQuantityLabelView = (TextView) findViewById(R.id.txt_fp_method_quantity_label);</span>
+<span class="nc" id="L44">        fpMethodQuantityView = (TextView) findViewById(R.id.txt_fp_method_quantity);</span>
+<span class="nc" id="L45">        iudPlaceView = (TextView) findViewById(R.id.txt_iud_place);</span>
+<span class="nc" id="L46">        iudPersonView = (TextView) findViewById(R.id.txt_iud_person);</span>
+<span class="nc" id="L47">    }</span>
+
+    public void setLayoutParams() {
+<span class="nc" id="L50">        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(</span>
+                (int) getResources().getDimension(R.dimen.list_fp_view_width),
+                ViewGroup.LayoutParams.FILL_PARENT,
+                getResources().getInteger(R.integer.fp_list_method_view_weight));
+
+<span class="nc" id="L55">        this.setLayoutParams(params);</span>
+<span class="nc" id="L56">    }</span>
+
+    public void bindData(BaseFPSmartRegisterClient client, int txtColorBlack) {
+<span class="nc" id="L59">        FPMethod fpMethod = client.fpMethod();</span>
+
+<span class="nc" id="L61">        refreshAllFPMethodDetailViews(txtColorBlack);</span>
+
+<span class="nc" id="L63">        fpMethodView.setText(fpMethod.displayName());</span>
+<span class="nc" id="L64">        fpMethodDateView.setVisibility(View.VISIBLE);</span>
+<span class="nc" id="L65">        fpMethodDateView.setText(client.familyPlanningMethodChangeDate());</span>
+
+<span class="nc bnc" id="L67" title="All 2 branches missed.">        if (fpMethod == FPMethod.NONE) {</span>
+<span class="nc" id="L68">            fpMethodView.setTextColor(Color.RED);</span>
+<span class="nc" id="L69">            fpMethodDateView.setVisibility(View.GONE);</span>
+<span class="nc bnc" id="L70" title="All 2 branches missed.">        } else if (fpMethod == FPMethod.OCP) {</span>
+<span class="nc" id="L71">            fpMethodQuantityLabelView.setVisibility(View.VISIBLE);</span>
+<span class="nc" id="L72">            fpMethodQuantityView.setVisibility(View.VISIBLE);</span>
+<span class="nc" id="L73">            fpMethodQuantityView.setText(client.numberOfOCPDelivered());</span>
+<span class="nc bnc" id="L74" title="All 2 branches missed.">        } else if (fpMethod == FPMethod.CONDOM) {</span>
+<span class="nc" id="L75">            fpMethodQuantityLabelView.setVisibility(View.VISIBLE);</span>
+<span class="nc" id="L76">            fpMethodQuantityLabelView.setText(getInstance().getStringResource(R.string.str_number_given));</span>
+<span class="nc" id="L77">            fpMethodQuantityView.setVisibility(View.VISIBLE);</span>
+<span class="nc" id="L78">            fpMethodQuantityView.setText(client.numberOfCondomsSupplied());</span>
+<span class="nc bnc" id="L79" title="All 2 branches missed.">        } else if (fpMethod == FPMethod.CENTCHROMAN) {</span>
+<span class="nc" id="L80">            fpMethodQuantityLabelView.setVisibility(View.VISIBLE);</span>
+<span class="nc" id="L81">            fpMethodQuantityView.setVisibility(View.VISIBLE);</span>
+<span class="nc" id="L82">            fpMethodQuantityView.setText(client.numberOfCentchromanPillsDelivered());</span>
+<span class="nc bnc" id="L83" title="All 2 branches missed.">        } else if (fpMethod == FPMethod.IUD) {</span>
+<span class="nc bnc" id="L84" title="All 2 branches missed.">            if (StringUtils.isNotBlank(client.iudPerson())) {</span>
+<span class="nc" id="L85">                iudPersonView.setVisibility(View.VISIBLE);</span>
+<span class="nc" id="L86">                iudPersonView.setText(client.iudPerson());</span>
+            }
+<span class="nc bnc" id="L88" title="All 2 branches missed.">            if (StringUtils.isNotBlank(client.iudPlace())) {</span>
+<span class="nc" id="L89">                iudPlaceView.setVisibility(View.VISIBLE);</span>
+<span class="nc" id="L90">                iudPlaceView.setText(client.iudPlace());</span>
+            }
+        }
+<span class="nc" id="L93">    }</span>
+
+    public void refreshAllFPMethodDetailViews(int fpMethodTextColor) {
+<span class="nc" id="L96">        fpMethodView.setTextColor(fpMethodTextColor);</span>
+<span class="nc" id="L97">        fpMethodDateView.setVisibility(View.GONE);</span>
+<span class="nc" id="L98">        fpMethodQuantityLabelView.setVisibility(View.GONE);</span>
+<span class="nc" id="L99">        fpMethodQuantityView.setVisibility(View.GONE);</span>
+<span class="nc" id="L100">        iudPersonView.setVisibility(View.GONE);</span>
+<span class="nc" id="L101">        iudPlaceView.setVisibility(View.GONE);</span>
+<span class="nc" id="L102">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.1.201405082137</span></div></body></html>

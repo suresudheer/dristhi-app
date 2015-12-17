@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>Alert.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">org.ei.telemedicine.domain</a> &gt; <span class="el_source">Alert.java</span></div><h1>Alert.java</h1><pre class="source lang-java linenums">package org.ei.telemedicine.domain;
+
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.ei.telemedicine.dto.AlertStatus;
+
+import static org.ei.telemedicine.dto.AlertStatus.complete;
+
+public class Alert {
+    private String caseID;
+    private final String scheduleName;
+    private String visitCode;
+    private AlertStatus status;
+    private String startDate;
+    private String expiryDate;
+    private String completionDate;
+
+<span class="fc" id="L19">    public Alert(String caseID, String scheduleName, String visitCode, AlertStatus status, String startDate, String expiryDate) {</span>
+<span class="fc" id="L20">        this.caseID = caseID;</span>
+<span class="fc" id="L21">        this.visitCode = visitCode;</span>
+<span class="fc" id="L22">        this.status = status;</span>
+<span class="fc" id="L23">        this.startDate = startDate;</span>
+<span class="fc" id="L24">        this.expiryDate = expiryDate;</span>
+<span class="fc" id="L25">        this.scheduleName = scheduleName;</span>
+<span class="fc" id="L26">    }</span>
+
+    public Alert withCompletionDate(String completionDate) {
+<span class="nc" id="L29">        this.completionDate = completionDate;</span>
+<span class="nc" id="L30">        return this;</span>
+    }
+
+    public String scheduleName() {
+<span class="nc" id="L34">        return scheduleName;</span>
+    }
+
+    public String visitCode() {
+<span class="fc" id="L38">        return visitCode;</span>
+    }
+
+    public AlertStatus status() {
+<span class="fc" id="L42">        return status;</span>
+    }
+
+    public String startDate() {
+<span class="fc" id="L46">        return startDate;</span>
+    }
+
+    public String expiryDate() {
+<span class="nc" id="L50">        return expiryDate;</span>
+    }
+
+    public String caseId() {
+<span class="nc" id="L54">        return caseID;</span>
+    }
+
+    public String completionDate() {
+<span class="nc" id="L58">        return completionDate;</span>
+    }
+
+    public boolean isComplete() {
+<span class="nc" id="L62">        return complete.equals(status);</span>
+    }
+
+    @Override
+    public boolean equals(Object o) {
+<span class="fc" id="L67">        return EqualsBuilder.reflectionEquals(this, o);</span>
+    }
+
+    @Override
+    public int hashCode() {
+<span class="nc" id="L72">        return HashCodeBuilder.reflectionHashCode(this);</span>
+    }
+
+    @Override
+    public String toString() {
+<span class="nc" id="L77">        return ToStringBuilder.reflectionToString(this);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.1.201405082137</span></div></body></html>

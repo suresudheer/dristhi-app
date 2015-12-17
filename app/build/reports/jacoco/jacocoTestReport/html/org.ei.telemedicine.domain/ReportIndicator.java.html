@@ -1,0 +1,1002 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>ReportIndicator.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">org.ei.telemedicine.domain</a> &gt; <span class="el_source">ReportIndicator.java</span></div><h1>ReportIndicator.java</h1><pre class="source lang-java linenums">package org.ei.telemedicine.domain;
+
+import org.ei.telemedicine.Context;
+import org.ei.telemedicine.view.contract.Beneficiary;
+
+import java.util.List;
+
+import static org.ei.telemedicine.view.controller.ProfileNavigationController.*;
+
+<span class="pc" id="L10">public enum ReportIndicator {</span>
+<span class="fc" id="L11">    IUD(&quot;IUD&quot;, &quot;IUD Adoption&quot;) {</span>
+        @Override
+        public void startCaseDetailActivity(android.content.Context context, String caseId) {
+<span class="nc" id="L14">            navigateToECProfile(context, caseId);</span>
+<span class="nc" id="L15">        }</span>
+
+        @Override
+        public List&lt;Beneficiary&gt; fetchCaseList(List&lt;String&gt; caseIds) {
+<span class="nc" id="L19">            return fetchECCaseList(caseIds);</span>
+        }
+    },
+<span class="fc" id="L22">    CONDOM(&quot;CONDOM&quot;, &quot;Condom Usage&quot;) {</span>
+        @Override
+        public void startCaseDetailActivity(android.content.Context context, String caseId) {
+<span class="nc" id="L25">            navigateToECProfile(context, caseId);</span>
+<span class="nc" id="L26">        }</span>
+
+        @Override
+        public List&lt;Beneficiary&gt; fetchCaseList(List&lt;String&gt; caseIds) {
+<span class="nc" id="L30">            return fetchECCaseList(caseIds);</span>
+        }
+    },
+<span class="fc" id="L33">    CONDOM_QTY(&quot;CONDOM_QTY&quot;, &quot;Condom Pieces&quot;) {</span>
+        @Override
+        public void startCaseDetailActivity(android.content.Context context, String caseId) {
+<span class="nc" id="L36">            navigateToECProfile(context, caseId);</span>
+<span class="nc" id="L37">        }</span>
+
+        @Override
+        public List&lt;Beneficiary&gt; fetchCaseList(List&lt;String&gt; caseIds) {
+<span class="nc" id="L41">            return fetchECCaseList(caseIds);</span>
+        }
+    },
+<span class="fc" id="L44">    OCP(&quot;OCP&quot;, &quot;Oral Pills&quot;) {</span>
+        @Override
+        public void startCaseDetailActivity(android.content.Context context, String caseId) {
+<span class="nc" id="L47">            navigateToECProfile(context, caseId);</span>
+<span class="nc" id="L48">        }</span>
+
+        @Override
+        public List&lt;Beneficiary&gt; fetchCaseList(List&lt;String&gt; caseIds) {
+<span class="nc" id="L52">            return fetchECCaseList(caseIds);</span>
+        }
+    },
+<span class="fc" id="L55">    OCP_ST(&quot;OCP_ST&quot;, &quot;Oral Pills ST&quot;) {</span>
+        @Override
+        public void startCaseDetailActivity(android.content.Context context, String caseId) {
+<span class="nc" id="L58">            navigateToECProfile(context, caseId);</span>
+<span class="nc" id="L59">        }</span>
+
+        @Override
+        public List&lt;Beneficiary&gt; fetchCaseList(List&lt;String&gt; caseIds) {
+<span class="nc" id="L63">            return fetchECCaseList(caseIds);</span>
+        }
+    },
+<span class="fc" id="L66">    OCP_SC(&quot;OCP_SC&quot;, &quot;Oral Pills SC&quot;) {</span>
+        @Override
+        public void startCaseDetailActivity(android.content.Context context, String caseId) {
+<span class="nc" id="L69">            navigateToECProfile(context, caseId);</span>
+<span class="nc" id="L70">        }</span>
+
+        @Override
+        public List&lt;Beneficiary&gt; fetchCaseList(List&lt;String&gt; caseIds) {
+<span class="nc" id="L74">            return fetchECCaseList(caseIds);</span>
+        }
+    },
+<span class="fc" id="L77">    OCP_C_OTHERS(&quot;OCP_C_OTHERS&quot;, &quot;Oral Pills Other Castes&quot;) {</span>
+        @Override
+        public void startCaseDetailActivity(android.content.Context context, String caseId) {
+<span class="nc" id="L80">            navigateToECProfile(context, caseId);</span>
+<span class="nc" id="L81">        }</span>
+
+        @Override
+        public List&lt;Beneficiary&gt; fetchCaseList(List&lt;String&gt; caseIds) {
+<span class="nc" id="L85">            return fetchECCaseList(caseIds);</span>
+        }
+    },
+<span class="fc" id="L88">    MALE_STERILIZATION(&quot;MALE_STERILIZATION&quot;, &quot;Male Sterilization&quot;) {</span>
+        @Override
+        public void startCaseDetailActivity(android.content.Context context, String caseId) {
+<span class="nc" id="L91">            navigateToECProfile(context, caseId);</span>
+<span class="nc" id="L92">        }</span>
+
+        @Override
+        public List&lt;Beneficiary&gt; fetchCaseList(List&lt;String&gt; caseIds) {
+<span class="nc" id="L96">            return fetchECCaseList(caseIds);</span>
+        }
+    },
+<span class="fc" id="L99">    FEMALE_STERILIZATION(&quot;FEMALE_STERILIZATION&quot;, &quot;Female Sterilization&quot;) {</span>
+        @Override
+        public void startCaseDetailActivity(android.content.Context context, String caseId) {
+<span class="nc" id="L102">            navigateToECProfile(context, caseId);</span>
+<span class="nc" id="L103">        }</span>
+
+        @Override
+        public List&lt;Beneficiary&gt; fetchCaseList(List&lt;String&gt; caseIds) {
+<span class="nc" id="L107">            return fetchECCaseList(caseIds);</span>
+        }
+    },
+<span class="fc" id="L110">    FS_APL(&quot;FS_APL&quot;, &quot;Female Sterilization APL&quot;) {</span>
+        @Override
+        public void startCaseDetailActivity(android.content.Context context, String caseId) {
+<span class="nc" id="L113">            navigateToECProfile(context, caseId);</span>
+<span class="nc" id="L114">        }</span>
+
+        @Override
+        public List&lt;Beneficiary&gt; fetchCaseList(List&lt;String&gt; caseIds) {
+<span class="nc" id="L118">            return fetchECCaseList(caseIds);</span>
+        }
+    },
+<span class="fc" id="L121">    FS_BPL(&quot;FS_BPL&quot;, &quot;Female Sterilization BPL&quot;) {</span>
+        @Override
+        public void startCaseDetailActivity(android.content.Context context, String caseId) {
+<span class="nc" id="L124">            navigateToECProfile(context, caseId);</span>
+<span class="nc" id="L125">        }</span>
+
+        @Override
+        public List&lt;Beneficiary&gt; fetchCaseList(List&lt;String&gt; caseIds) {
+<span class="nc" id="L129">            return fetchECCaseList(caseIds);</span>
+        }
+    },
+<span class="fc" id="L132">    PENTAVALENT3_OR_OPV3(&quot;PENTAVALENT3_OPV3&quot;, &quot;PENTAVALENT 3 / OPV 3&quot;) {</span>
+        @Override
+        public void startCaseDetailActivity(android.content.Context context, String caseId) {
+<span class="nc" id="L135">            navigateToChildProfile(context, caseId);</span>
+<span class="nc" id="L136">        }</span>
+
+        @Override
+        public List&lt;Beneficiary&gt; fetchCaseList(List&lt;String&gt; caseIds) {
+<span class="nc" id="L140">            return fetchChildCaseList(caseIds);</span>
+        }
+    },
+<span class="fc" id="L143">    DPT_BOOSTER_OR_OPV_BOOSTER(&quot;DPTB_OPVB&quot;, &quot;DPT Booster / OPV Booster&quot;) {</span>
+        @Override
+        public void startCaseDetailActivity(android.content.Context context, String caseId) {
+<span class="nc" id="L146">            navigateToChildProfile(context, caseId);</span>
+<span class="nc" id="L147">        }</span>
+
+        @Override
+        public List&lt;Beneficiary&gt; fetchCaseList(List&lt;String&gt; caseIds) {
+<span class="nc" id="L151">            return fetchChildCaseList(caseIds);</span>
+        }
+    },
+<span class="fc" id="L154">    DPT_BOOSTER2(&quot;DPT_BOOSTER_2&quot;, &quot;DPT Booster 2&quot;) {</span>
+        @Override
+        public void startCaseDetailActivity(android.content.Context context, String caseId) {
+<span class="nc" id="L157">            navigateToChildProfile(context, caseId);</span>
+<span class="nc" id="L158">        }</span>
+
+        @Override
+        public List&lt;Beneficiary&gt; fetchCaseList(List&lt;String&gt; caseIds) {
+<span class="nc" id="L162">            return fetchChildCaseList(caseIds);</span>
+        }
+    },
+<span class="fc" id="L165">    DPT_BOOSTER1(&quot;DPT_BOOSTER_1&quot;, &quot;DPT Booster 1&quot;) {</span>
+        @Override
+        public void startCaseDetailActivity(android.content.Context context, String caseId) {
+<span class="nc" id="L168">            navigateToChildProfile(context, caseId);</span>
+<span class="nc" id="L169">        }</span>
+
+        @Override
+        public List&lt;Beneficiary&gt; fetchCaseList(List&lt;String&gt; caseIds) {
+<span class="nc" id="L173">            return fetchChildCaseList(caseIds);</span>
+        }
+    },
+<span class="fc" id="L176">    OPV_BOOSTER(&quot;OPV_BOOSTER&quot;, &quot;OPV Booster&quot;) {</span>
+        @Override
+        public void startCaseDetailActivity(android.content.Context context, String caseId) {
+<span class="nc" id="L179">            navigateToChildProfile(context, caseId);</span>
+<span class="nc" id="L180">        }</span>
+
+        @Override
+        public List&lt;Beneficiary&gt; fetchCaseList(List&lt;String&gt; caseIds) {
+<span class="nc" id="L184">            return fetchChildCaseList(caseIds);</span>
+        }
+    },
+<span class="fc" id="L187">    OPV3(&quot;OPV3&quot;, &quot;OPV 3&quot;) {</span>
+        @Override
+        public void startCaseDetailActivity(android.content.Context context, String caseId) {
+<span class="nc" id="L190">            navigateToChildProfile(context, caseId);</span>
+<span class="nc" id="L191">        }</span>
+
+        @Override
+        public List&lt;Beneficiary&gt; fetchCaseList(List&lt;String&gt; caseIds) {
+<span class="nc" id="L195">            return fetchChildCaseList(caseIds);</span>
+        }
+    },
+<span class="fc" id="L198">    JE(&quot;JE&quot;, &quot;JE&quot;) {</span>
+        @Override
+        public void startCaseDetailActivity(android.content.Context context, String caseId) {
+<span class="nc" id="L201">            navigateToChildProfile(context, caseId);</span>
+<span class="nc" id="L202">        }</span>
+
+        @Override
+        public List&lt;Beneficiary&gt; fetchCaseList(List&lt;String&gt; caseIds) {
+<span class="nc" id="L206">            return fetchChildCaseList(caseIds);</span>
+        }
+    },
+<span class="fc" id="L209">    HEP(&quot;HEP&quot;, &quot;HEP&quot;) {</span>
+        @Override
+        public void startCaseDetailActivity(android.content.Context context, String caseId) {
+<span class="nc" id="L212">            navigateToChildProfile(context, caseId);</span>
+<span class="nc" id="L213">        }</span>
+
+        @Override
+        public List&lt;Beneficiary&gt; fetchCaseList(List&lt;String&gt; caseIds) {
+<span class="nc" id="L217">            return fetchChildCaseList(caseIds);</span>
+        }
+    },
+<span class="fc" id="L220">    OPV(&quot;OPV&quot;, &quot;OPV&quot;) {</span>
+        @Override
+        public void startCaseDetailActivity(android.content.Context context, String caseId) {
+<span class="nc" id="L223">            navigateToChildProfile(context, caseId);</span>
+<span class="nc" id="L224">        }</span>
+
+
+        @Override
+        public List&lt;Beneficiary&gt; fetchCaseList(List&lt;String&gt; caseIds) {
+<span class="nc" id="L229">            return fetchChildCaseList(caseIds);</span>
+        }
+    },
+<span class="fc" id="L232">    MEASLES(&quot;MEASLES&quot;, &quot;MEASLES&quot;) {</span>
+        @Override
+        public void startCaseDetailActivity(android.content.Context context, String caseId) {
+<span class="nc" id="L235">            navigateToChildProfile(context, caseId);</span>
+<span class="nc" id="L236">        }</span>
+
+        @Override
+        public List&lt;Beneficiary&gt; fetchCaseList(List&lt;String&gt; caseIds) {
+<span class="nc" id="L240">            return fetchChildCaseList(caseIds);</span>
+        }
+    },
+<span class="fc" id="L243">    PENTAVALENT_1(&quot;PENT1&quot;, &quot;Pentavalent 1&quot;) {</span>
+        @Override
+        public void startCaseDetailActivity(android.content.Context context, String caseId) {
+<span class="nc" id="L246">            navigateToChildProfile(context, caseId);</span>
+<span class="nc" id="L247">        }</span>
+
+        @Override
+        public List&lt;Beneficiary&gt; fetchCaseList(List&lt;String&gt; caseIds) {
+<span class="nc" id="L251">            return fetchChildCaseList(caseIds);</span>
+        }
+    },
+<span class="fc" id="L254">    PENTAVALENT_2(&quot;PENT2&quot;, &quot;Pentavalent 2&quot;) {</span>
+        @Override
+        public void startCaseDetailActivity(android.content.Context context, String caseId) {
+<span class="nc" id="L257">            navigateToChildProfile(context, caseId);</span>
+<span class="nc" id="L258">        }</span>
+
+        @Override
+        public List&lt;Beneficiary&gt; fetchCaseList(List&lt;String&gt; caseIds) {
+<span class="nc" id="L262">            return fetchChildCaseList(caseIds);</span>
+        }
+    },
+<span class="fc" id="L265">    PENTAVALENT_3(&quot;PENT3&quot;, &quot;Pentavalent 3&quot;) {</span>
+        @Override
+        public void startCaseDetailActivity(android.content.Context context, String caseId) {
+<span class="nc" id="L268">            navigateToChildProfile(context, caseId);</span>
+<span class="nc" id="L269">        }</span>
+
+        @Override
+        public List&lt;Beneficiary&gt; fetchCaseList(List&lt;String&gt; caseIds) {
+<span class="nc" id="L273">            return fetchChildCaseList(caseIds);</span>
+        }
+    },
+<span class="fc" id="L276">    VIT_A_1(&quot;VIT_A_1&quot;, &quot;First Dose of Vitamin A&quot;) {</span>
+        @Override
+        public void startCaseDetailActivity(android.content.Context context, String caseId) {
+<span class="nc" id="L279">            navigateToChildProfile(context, caseId);</span>
+<span class="nc" id="L280">        }</span>
+
+        @Override
+        public List&lt;Beneficiary&gt; fetchCaseList(List&lt;String&gt; caseIds) {
+<span class="nc" id="L284">            return fetchChildCaseList(caseIds);</span>
+        }
+    },
+<span class="fc" id="L287">    VIT_A_1_FOR_FEMALE_CHILD(&quot;F_VIT_A_1&quot;, &quot;Vit A 1 (Female)&quot;) {</span>
+        @Override
+        public void startCaseDetailActivity(android.content.Context context, String caseId) {
+<span class="nc" id="L290">            navigateToChildProfile(context, caseId);</span>
+<span class="nc" id="L291">        }</span>
+
+        @Override
+        public List&lt;Beneficiary&gt; fetchCaseList(List&lt;String&gt; caseIds) {
+<span class="nc" id="L295">            return fetchChildCaseList(caseIds);</span>
+        }
+    },
+<span class="fc" id="L298">    VIT_A_1_FOR_MALE_CHILD(&quot;M_VIT_A_1&quot;, &quot;Vit A 1 (Male)&quot;) {</span>
+        @Override
+        public void startCaseDetailActivity(android.content.Context context, String caseId) {
+<span class="nc" id="L301">            navigateToChildProfile(context, caseId);</span>
+<span class="nc" id="L302">        }</span>
+
+        @Override
+        public List&lt;Beneficiary&gt; fetchCaseList(List&lt;String&gt; caseIds) {
+<span class="nc" id="L306">            return fetchChildCaseList(caseIds);</span>
+        }
+    },
+<span class="fc" id="L309">    VIT_A_2(&quot;VIT_A_2&quot;, &quot;Second Dose of Vitamin A&quot;) {</span>
+        @Override
+        public void startCaseDetailActivity(android.content.Context context, String caseId) {
+<span class="nc" id="L312">            navigateToChildProfile(context, caseId);</span>
+<span class="nc" id="L313">        }</span>
+
+        @Override
+        public List&lt;Beneficiary&gt; fetchCaseList(List&lt;String&gt; caseIds) {
+<span class="nc" id="L317">            return fetchChildCaseList(caseIds);</span>
+        }
+    },
+<span class="fc" id="L320">    VIT_A_2_FOR_FEMALE_CHILD(&quot;F_VIT_A_2&quot;, &quot;Vit A 2 (Female)&quot;) {</span>
+        @Override
+        public void startCaseDetailActivity(android.content.Context context, String caseId) {
+<span class="nc" id="L323">            navigateToChildProfile(context, caseId);</span>
+<span class="nc" id="L324">        }</span>
+
+        @Override
+        public List&lt;Beneficiary&gt; fetchCaseList(List&lt;String&gt; caseIds) {
+<span class="nc" id="L328">            return fetchChildCaseList(caseIds);</span>
+        }
+    },
+<span class="fc" id="L331">    VIT_A_2_FOR_MALE_CHILD(&quot;M_VIT_A_2&quot;, &quot;Vit A 2 (Male)&quot;) {</span>
+        @Override
+        public void startCaseDetailActivity(android.content.Context context, String caseId) {
+<span class="nc" id="L334">            navigateToChildProfile(context, caseId);</span>
+<span class="nc" id="L335">        }</span>
+
+        @Override
+        public List&lt;Beneficiary&gt; fetchCaseList(List&lt;String&gt; caseIds) {
+<span class="nc" id="L339">            return fetchChildCaseList(caseIds);</span>
+        }
+    },
+<span class="fc" id="L342">    VIT_A_5_FOR_FEMALE_CHILD(&quot;F_VIT_A_5&quot;, &quot;Vit A 5 (Female)&quot;) {</span>
+        @Override
+        public void startCaseDetailActivity(android.content.Context context, String caseId) {
+<span class="nc" id="L345">            navigateToChildProfile(context, caseId);</span>
+<span class="nc" id="L346">        }</span>
+
+        @Override
+        public List&lt;Beneficiary&gt; fetchCaseList(List&lt;String&gt; caseIds) {
+<span class="nc" id="L350">            return fetchChildCaseList(caseIds);</span>
+        }
+    },
+<span class="fc" id="L353">    VIT_A_5_FOR_MALE_CHILD(&quot;M_VIT_A_5&quot;, &quot;Vit A 5 (Male)&quot;) {</span>
+        @Override
+        public void startCaseDetailActivity(android.content.Context context, String caseId) {
+<span class="nc" id="L356">            navigateToChildProfile(context, caseId);</span>
+<span class="nc" id="L357">        }</span>
+
+        @Override
+        public List&lt;Beneficiary&gt; fetchCaseList(List&lt;String&gt; caseIds) {
+<span class="nc" id="L361">            return fetchChildCaseList(caseIds);</span>
+        }
+    },
+<span class="fc" id="L364">    VIT_A_9_FOR_FEMALE_CHILD(&quot;F_VIT_A_9&quot;, &quot;Vit A 9 (Female)&quot;) {</span>
+        @Override
+        public void startCaseDetailActivity(android.content.Context context, String caseId) {
+<span class="nc" id="L367">            navigateToChildProfile(context, caseId);</span>
+<span class="nc" id="L368">        }</span>
+
+        @Override
+        public List&lt;Beneficiary&gt; fetchCaseList(List&lt;String&gt; caseIds) {
+<span class="nc" id="L372">            return fetchChildCaseList(caseIds);</span>
+        }
+    },
+<span class="fc" id="L375">    VIT_A_9_FOR_MALE_CHILD(&quot;M_VIT_A_9&quot;, &quot;Vit A 9 (Male)&quot;) {</span>
+        @Override
+        public void startCaseDetailActivity(android.content.Context context, String caseId) {
+<span class="nc" id="L378">            navigateToChildProfile(context, caseId);</span>
+<span class="nc" id="L379">        }</span>
+
+        @Override
+        public List&lt;Beneficiary&gt; fetchCaseList(List&lt;String&gt; caseIds) {
+<span class="nc" id="L383">            return fetchChildCaseList(caseIds);</span>
+        }
+    },
+<span class="fc" id="L386">    VIT_A_FOR_FEMALE(&quot;F_VIT_A&quot;, &quot;Vit A (Female)&quot;) {</span>
+        @Override
+        public void startCaseDetailActivity(android.content.Context context, String caseId) {
+<span class="nc" id="L389">            navigateToChildProfile(context, caseId);</span>
+<span class="nc" id="L390">        }</span>
+
+        @Override
+        public List&lt;Beneficiary&gt; fetchCaseList(List&lt;String&gt; caseIds) {
+<span class="nc" id="L394">            return fetchChildCaseList(caseIds);</span>
+        }
+    },
+<span class="fc" id="L397">    VIT_A_FOR_MALE(&quot;M_VIT_A&quot;, &quot;Vit A (Male)&quot;) {</span>
+        @Override
+        public void startCaseDetailActivity(android.content.Context context, String caseId) {
+<span class="nc" id="L400">            navigateToChildProfile(context, caseId);</span>
+<span class="nc" id="L401">        }</span>
+
+        @Override
+        public List&lt;Beneficiary&gt; fetchCaseList(List&lt;String&gt; caseIds) {
+<span class="nc" id="L405">            return fetchChildCaseList(caseIds);</span>
+        }
+    },
+<span class="fc" id="L408">    CHILD_DIARRHEA(&quot;CHILD_DIARRHEA&quot;, &quot;Number of children had diarrhea episode&quot;) {</span>
+        @Override
+        public void startCaseDetailActivity(android.content.Context context, String caseId) {
+<span class="nc" id="L411">            navigateToChildProfile(context, caseId);</span>
+<span class="nc" id="L412">        }</span>
+
+        @Override
+        public List&lt;Beneficiary&gt; fetchCaseList(List&lt;String&gt; caseIds) {
+<span class="nc" id="L416">            return fetchChildCaseList(caseIds);</span>
+        }
+    },
+<span class="fc" id="L419">    WEIGHED_AT_BIRTH(&quot;WEIGHED_AT_BIRTH&quot;, &quot;Number of infants weighed at birth&quot;) {</span>
+        @Override
+        public void startCaseDetailActivity(android.content.Context context, String caseId) {
+<span class="nc" id="L422">            navigateToChildProfile(context, caseId);</span>
+<span class="nc" id="L423">        }</span>
+
+        @Override
+        public List&lt;Beneficiary&gt; fetchCaseList(List&lt;String&gt; caseIds) {
+<span class="nc" id="L427">            return fetchChildCaseList(caseIds);</span>
+        }
+    },
+<span class="fc" id="L430">    BF_POST_BIRTH(&quot;BF_POST_BIRTH&quot;, &quot;Exclusively BF within 1 hr of birth&quot;) {</span>
+        @Override
+        public void startCaseDetailActivity(android.content.Context context, String caseId) {
+<span class="nc" id="L433">            navigateToChildProfile(context, caseId);</span>
+<span class="nc" id="L434">        }</span>
+
+        @Override
+        public List&lt;Beneficiary&gt; fetchCaseList(List&lt;String&gt; caseIds) {
+<span class="nc" id="L438">            return fetchChildCaseList(caseIds);</span>
+        }
+    },
+<span class="fc" id="L441">    BCG(&quot;BCG&quot;, &quot;BCG&quot;) {</span>
+        @Override
+        public void startCaseDetailActivity(android.content.Context context, String caseId) {
+<span class="nc" id="L444">            navigateToChildProfile(context, caseId);</span>
+<span class="nc" id="L445">        }</span>
+
+        @Override
+        public List&lt;Beneficiary&gt; fetchCaseList(List&lt;String&gt; caseIds) {
+<span class="nc" id="L449">            return fetchChildCaseList(caseIds);</span>
+        }
+    },
+<span class="fc" id="L452">    EARLY_ANC_REGISTRATIONS(&quot;ANC_LT_12&quot;, &quot;Early ANC Registration&quot;) {</span>
+        @Override
+        public void startCaseDetailActivity(android.content.Context context, String caseId) {
+<span class="nc" id="L455">            navigateToANCProfile(context, caseId);</span>
+<span class="nc" id="L456">        }</span>
+
+        @Override
+        public List&lt;Beneficiary&gt; fetchCaseList(List&lt;String&gt; caseIds) {
+<span class="nc" id="L460">            return fetchMotherCaseList(caseIds);</span>
+        }
+    },
+<span class="fc" id="L463">    LATE_ANC_REGISTRATIONS(&quot;ANC_GT_12&quot;, &quot;Late ANC Registration&quot;) {</span>
+        @Override
+        public void startCaseDetailActivity(android.content.Context context, String caseId) {
+<span class="nc" id="L466">            navigateToANCProfile(context, caseId);</span>
+<span class="nc" id="L467">        }</span>
+
+        @Override
+        public List&lt;Beneficiary&gt; fetchCaseList(List&lt;String&gt; caseIds) {
+<span class="nc" id="L471">            return fetchMotherCaseList(caseIds);</span>
+        }
+    },
+<span class="fc" id="L474">    TOTAL_ANC_REGISTRATIONS(&quot;ANC&quot;, &quot;Total ANC Registration&quot;) {</span>
+        @Override
+        public void startCaseDetailActivity(android.content.Context context, String caseId) {
+<span class="nc" id="L477">            navigateToANCProfile(context, caseId);</span>
+<span class="nc" id="L478">        }</span>
+
+        @Override
+        public List&lt;Beneficiary&gt; fetchCaseList(List&lt;String&gt; caseIds) {
+<span class="nc" id="L482">            return fetchMotherCaseList(caseIds);</span>
+        }
+    },
+<span class="fc" id="L485">    ANC4(&quot;ANC4&quot;, &quot;Minimum 4 ANC Visits&quot;) {</span>
+        @Override
+        public void startCaseDetailActivity(android.content.Context context, String caseId) {
+<span class="nc" id="L488">            navigateToANCProfile(context, caseId);</span>
+<span class="nc" id="L489">        }</span>
+
+        @Override
+        public List&lt;Beneficiary&gt; fetchCaseList(List&lt;String&gt; caseIds) {
+<span class="nc" id="L493">            return fetchMotherCaseList(caseIds);</span>
+        }
+    },
+<span class="fc" id="L496">    SUB_TT(&quot;SUB_TT&quot;, &quot;TT2 and TT Booster (Pregnant Women)&quot;) {</span>
+        @Override
+        public void startCaseDetailActivity(android.content.Context context, String caseId) {
+<span class="nc" id="L499">            navigateToANCProfile(context, caseId);</span>
+<span class="nc" id="L500">        }</span>
+
+        @Override
+        public List&lt;Beneficiary&gt; fetchCaseList(List&lt;String&gt; caseIds) {
+<span class="nc" id="L504">            return fetchMotherCaseList(caseIds);</span>
+        }
+    },
+<span class="fc" id="L507">    TT1(&quot;TT1&quot;, &quot;TT1&quot;) {</span>
+        @Override
+        public void startCaseDetailActivity(android.content.Context context, String caseId) {
+<span class="nc" id="L510">            navigateToANCProfile(context, caseId);</span>
+<span class="nc" id="L511">        }</span>
+
+        @Override
+        public List&lt;Beneficiary&gt; fetchCaseList(List&lt;String&gt; caseIds) {
+<span class="nc" id="L515">            return fetchMotherCaseList(caseIds);</span>
+        }
+    },
+<span class="fc" id="L518">    TT2(&quot;TT2&quot;, &quot;TT2&quot;) {</span>
+        @Override
+        public void startCaseDetailActivity(android.content.Context context, String caseId) {
+<span class="nc" id="L521">            navigateToANCProfile(context, caseId);</span>
+<span class="nc" id="L522">        }</span>
+
+        @Override
+        public List&lt;Beneficiary&gt; fetchCaseList(List&lt;String&gt; caseIds) {
+<span class="nc" id="L526">            return fetchMotherCaseList(caseIds);</span>
+        }
+    },
+<span class="fc" id="L529">    TTB(&quot;TTB&quot;, &quot;TT Booster&quot;) {</span>
+        @Override
+        public void startCaseDetailActivity(android.content.Context context, String caseId) {
+<span class="nc" id="L532">            navigateToANCProfile(context, caseId);</span>
+<span class="nc" id="L533">        }</span>
+
+        @Override
+        public List&lt;Beneficiary&gt; fetchCaseList(List&lt;String&gt; caseIds) {
+<span class="nc" id="L537">            return fetchMotherCaseList(caseIds);</span>
+        }
+    },
+<span class="fc" id="L540">    INFANT_MORTALITY(&quot;IM&quot;, &quot;Infant Mortality&quot;) {</span>
+        @Override
+        public void startCaseDetailActivity(android.content.Context context, String caseId) {
+<span class="nc" id="L543">        }</span>
+
+        @Override
+        public List&lt;Beneficiary&gt; fetchCaseList(List&lt;String&gt; caseIds) {
+<span class="nc" id="L547">            return fetchChildCaseList(caseIds);</span>
+        }
+    },
+<span class="fc" id="L550">    INFANT_BALANCE_BALANCE(&quot;IB_BAL&quot;, &quot;Infant Balance (Balance)&quot;) {</span>
+        @Override
+        public void startCaseDetailActivity(android.content.Context context, String caseId) {
+<span class="nc" id="L553">            navigateToChildProfile(context, caseId);</span>
+<span class="nc" id="L554">        }</span>
+
+        @Override
+        public List&lt;Beneficiary&gt; fetchCaseList(List&lt;String&gt; caseIds) {
+<span class="nc" id="L558">            return fetchChildCaseList(caseIds);</span>
+        }
+    },
+<span class="fc" id="L561">    INFANT_BALANCE_OA_CHILDREN(&quot;IB_OA&quot;, &quot;Infant Balance (O/A Infants)&quot;) {</span>
+        @Override
+        public void startCaseDetailActivity(android.content.Context context, String caseId) {
+<span class="nc" id="L564">            navigateToChildProfile(context, caseId);</span>
+<span class="nc" id="L565">        }</span>
+
+        @Override
+        public List&lt;Beneficiary&gt; fetchCaseList(List&lt;String&gt; caseIds) {
+<span class="nc" id="L569">            return fetchChildCaseList(caseIds);</span>
+        }
+    },
+<span class="fc" id="L572">    INFANT_BALANCE_LESS_THAN_ONE_YEAR(&quot;IB_LT_1Y&quot;, &quot;No. of children (0-1 Year)&quot;) {</span>
+        @Override
+        public void startCaseDetailActivity(android.content.Context context, String caseId) {
+<span class="nc" id="L575">            navigateToChildProfile(context, caseId);</span>
+<span class="nc" id="L576">        }</span>
+
+        @Override
+        public List&lt;Beneficiary&gt; fetchCaseList(List&lt;String&gt; caseIds) {
+<span class="nc" id="L580">            return fetchChildCaseList(caseIds);</span>
+        }
+    },
+<span class="fc" id="L583">    INFANT_BALANCE_LESS_THAN_FIVE_YEAR(&quot;IB_LT_5Y&quot;, &quot;No. of children (0-5 Years)&quot;) {</span>
+        @Override
+        public void startCaseDetailActivity(android.content.Context context, String caseId) {
+<span class="nc" id="L586">            navigateToChildProfile(context, caseId);</span>
+<span class="nc" id="L587">        }</span>
+
+        @Override
+        public List&lt;Beneficiary&gt; fetchCaseList(List&lt;String&gt; caseIds) {
+<span class="nc" id="L591">            return fetchChildCaseList(caseIds);</span>
+        }
+    },
+<span class="fc" id="L594">    ENM(&quot;ENM&quot;, &quot;Early Neonatal mortality&quot;) {</span>
+        @Override
+        public void startCaseDetailActivity(android.content.Context context, String caseId) {
+<span class="nc" id="L597">        }</span>
+
+        @Override
+        public List&lt;Beneficiary&gt; fetchCaseList(List&lt;String&gt; caseIds) {
+<span class="nc" id="L601">            return fetchChildCaseList(caseIds);</span>
+        }
+    },
+<span class="fc" id="L604">    NM(&quot;NM&quot;, &quot;Neonatal mortality&quot;) {</span>
+        @Override
+        public void startCaseDetailActivity(android.content.Context context, String caseId) {
+<span class="nc" id="L607">        }</span>
+
+        @Override
+        public List&lt;Beneficiary&gt; fetchCaseList(List&lt;String&gt; caseIds) {
+<span class="nc" id="L611">            return fetchChildCaseList(caseIds);</span>
+        }
+    },
+<span class="fc" id="L614">    LNM(&quot;LNM&quot;, &quot;29 days to 1 year of birth&quot;) {</span>
+        @Override
+        public void startCaseDetailActivity(android.content.Context context, String caseId) {
+<span class="nc" id="L617">        }</span>
+
+        @Override
+        public List&lt;Beneficiary&gt; fetchCaseList(List&lt;String&gt; caseIds) {
+<span class="nc" id="L621">            return fetchChildCaseList(caseIds);</span>
+        }
+    },
+<span class="fc" id="L624">    CHILD_MORTALITY(&quot;UFM&quot;, &quot;Under 5 mortality&quot;) {</span>
+        @Override
+        public void startCaseDetailActivity(android.content.Context context, String caseId) {
+<span class="nc" id="L627">        }</span>
+
+        @Override
+        public List&lt;Beneficiary&gt; fetchCaseList(List&lt;String&gt; caseIds) {
+<span class="nc" id="L631">            return fetchChildCaseList(caseIds);</span>
+        }
+    },
+<span class="fc" id="L634">    LIVE_BIRTH(&quot;LIVE_BIRTH&quot;, &quot;Live Birth&quot;) {</span>
+        @Override
+        public void startCaseDetailActivity(android.content.Context context, String caseId) {
+<span class="nc" id="L637">            navigateToPNCProfile(context, caseId);</span>
+<span class="nc" id="L638">        }</span>
+
+        @Override
+        public List&lt;Beneficiary&gt; fetchCaseList(List&lt;String&gt; caseIds) {
+<span class="nc" id="L642">            return fetchMotherCaseList(caseIds);</span>
+        }
+    },
+<span class="fc" id="L645">    STILL_BIRTH(&quot;STILL_BIRTH&quot;, &quot;Still Birth&quot;) {</span>
+        @Override
+        public void startCaseDetailActivity(android.content.Context context, String caseId) {
+<span class="nc" id="L648">            navigateToPNCProfile(context, caseId);</span>
+<span class="nc" id="L649">        }</span>
+
+        @Override
+        public List&lt;Beneficiary&gt; fetchCaseList(List&lt;String&gt; caseIds) {
+<span class="nc" id="L653">            return fetchMotherCaseList(caseIds);</span>
+        }
+    },
+<span class="fc" id="L656">    LBW(&quot;LBW&quot;, &quot;Low Birth Weight&quot;) {</span>
+        @Override
+        public void startCaseDetailActivity(android.content.Context context, String caseId) {
+<span class="nc" id="L659">            navigateToChildProfile(context, caseId);</span>
+<span class="nc" id="L660">        }</span>
+
+        @Override
+        public List&lt;Beneficiary&gt; fetchCaseList(List&lt;String&gt; caseIds) {
+<span class="nc" id="L664">            return fetchChildCaseList(caseIds);</span>
+        }
+    },
+<span class="fc" id="L667">    EARLY_ABORTIONS(&quot;MTP_LT_12&quot;, &quot;Abortions before 12 weeks&quot;) {</span>
+        @Override
+        public void startCaseDetailActivity(android.content.Context context, String caseId) {
+<span class="nc" id="L670">            navigateToPNCProfile(context, caseId);</span>
+<span class="nc" id="L671">        }</span>
+
+        @Override
+        public List&lt;Beneficiary&gt; fetchCaseList(List&lt;String&gt; caseIds) {
+<span class="nc" id="L675">            return fetchMotherCaseList(caseIds);</span>
+        }
+    },
+<span class="fc" id="L678">    LATE_ABORTIONS(&quot;MTP_GT_12&quot;, &quot;Abortions after 12 weeks&quot;) {</span>
+        @Override
+        public void startCaseDetailActivity(android.content.Context context, String caseId) {
+<span class="nc" id="L681">            navigateToPNCProfile(context, caseId);</span>
+<span class="nc" id="L682">        }</span>
+
+        @Override
+        public List&lt;Beneficiary&gt; fetchCaseList(List&lt;String&gt; caseIds) {
+<span class="nc" id="L686">            return fetchMotherCaseList(caseIds);</span>
+        }
+    },
+<span class="fc" id="L689">    SPONTANEOUS_ABORTION(&quot;SPONTANEOUS_ABORTION&quot;, &quot;Spontaneous abortions&quot;) {</span>
+        @Override
+        public void startCaseDetailActivity(android.content.Context context, String caseId) {
+<span class="nc" id="L692">            navigateToPNCProfile(context, caseId);</span>
+<span class="nc" id="L693">        }</span>
+
+        @Override
+        public List&lt;Beneficiary&gt; fetchCaseList(List&lt;String&gt; caseIds) {
+<span class="nc" id="L697">            return fetchMotherCaseList(caseIds);</span>
+        }
+    },
+<span class="fc" id="L700">    DELIVERY(&quot;DELIVERY&quot;, &quot;Total Deliveries&quot;) {</span>
+        @Override
+        public void startCaseDetailActivity(android.content.Context context, String caseId) {
+<span class="nc" id="L703">            navigateToPNCProfile(context, caseId);</span>
+<span class="nc" id="L704">        }</span>
+
+        @Override
+        public List&lt;Beneficiary&gt; fetchCaseList(List&lt;String&gt; caseIds) {
+<span class="nc" id="L708">            return fetchMotherCaseList(caseIds);</span>
+        }
+    },
+<span class="fc" id="L711">    CESAREAN(&quot;CESAREAN&quot;, &quot;Cesareans&quot;) {</span>
+        @Override
+        public void startCaseDetailActivity(android.content.Context context, String caseId) {
+<span class="nc" id="L714">            navigateToPNCProfile(context, caseId);</span>
+<span class="nc" id="L715">        }</span>
+
+        @Override
+        public List&lt;Beneficiary&gt; fetchCaseList(List&lt;String&gt; caseIds) {
+<span class="nc" id="L719">            return fetchMotherCaseList(caseIds);</span>
+        }
+    },
+<span class="fc" id="L722">    CESAREAN_GOV(&quot;CESAREAN_GOV&quot;, &quot;Cesareans Government Hospital&quot;) {</span>
+        @Override
+        public void startCaseDetailActivity(android.content.Context context, String caseId) {
+<span class="nc" id="L725">            navigateToPNCProfile(context, caseId);</span>
+<span class="nc" id="L726">        }</span>
+
+        @Override
+        public List&lt;Beneficiary&gt; fetchCaseList(List&lt;String&gt; caseIds) {
+<span class="nc" id="L730">            return fetchMotherCaseList(caseIds);</span>
+        }
+    },
+<span class="fc" id="L733">    CESAREAN_PRI(&quot;CESAREAN_PRI&quot;, &quot;Cesareans Private Hospital&quot;) {</span>
+        @Override
+        public void startCaseDetailActivity(android.content.Context context, String caseId) {
+<span class="nc" id="L736">            navigateToPNCProfile(context, caseId);</span>
+<span class="nc" id="L737">        }</span>
+
+        @Override
+        public List&lt;Beneficiary&gt; fetchCaseList(List&lt;String&gt; caseIds) {
+<span class="nc" id="L741">            return fetchMotherCaseList(caseIds);</span>
+        }
+    },
+<span class="fc" id="L744">    MMA(&quot;MMA&quot;, &quot;Mother mortality (during ANC)&quot;) {</span>
+        @Override
+        public void startCaseDetailActivity(android.content.Context context, String caseId) {
+<span class="nc" id="L747">        }</span>
+
+        @Override
+        public List&lt;Beneficiary&gt; fetchCaseList(List&lt;String&gt; caseIds) {
+<span class="nc" id="L751">            return fetchMotherCaseList(caseIds);</span>
+        }
+    },
+<span class="fc" id="L754">    MMD(&quot;MMD&quot;, &quot;Mother mortality (during Delivery)&quot;) {</span>
+        @Override
+        public void startCaseDetailActivity(android.content.Context context, String caseId) {
+<span class="nc" id="L757">        }</span>
+
+        @Override
+        public List&lt;Beneficiary&gt; fetchCaseList(List&lt;String&gt; caseIds) {
+<span class="nc" id="L761">            return fetchMotherCaseList(caseIds);</span>
+        }
+    },
+<span class="fc" id="L764">    MMP(&quot;MMP&quot;, &quot;Mother mortality (during PNC)&quot;) {</span>
+        @Override
+        public void startCaseDetailActivity(android.content.Context context, String caseId) {
+<span class="nc" id="L767">        }</span>
+
+        @Override
+        public List&lt;Beneficiary&gt; fetchCaseList(List&lt;String&gt; caseIds) {
+<span class="nc" id="L771">            return fetchMotherCaseList(caseIds);</span>
+        }
+    },
+<span class="fc" id="L774">    MM(&quot;MM&quot;, &quot;Total Mother Mortality &quot;) {</span>
+        @Override
+        public void startCaseDetailActivity(android.content.Context context, String caseId) {
+<span class="nc" id="L777">        }</span>
+
+        @Override
+        public List&lt;Beneficiary&gt; fetchCaseList(List&lt;String&gt; caseIds) {
+<span class="nc" id="L781">            return fetchMotherCaseList(caseIds);</span>
+        }
+    },
+<span class="fc" id="L784">    INSTITUTIONAL_DELIVERY(&quot;INSTITUTIONAL_DELIVERY&quot;, &quot;Institutional Deliveries&quot;) {</span>
+        @Override
+        public void startCaseDetailActivity(android.content.Context context, String caseId) {
+<span class="nc" id="L787">            navigateToPNCProfile(context, caseId);</span>
+<span class="nc" id="L788">        }</span>
+
+        @Override
+        public List&lt;Beneficiary&gt; fetchCaseList(List&lt;String&gt; caseIds) {
+<span class="nc" id="L792">            return fetchMotherCaseList(caseIds);</span>
+        }
+    },
+<span class="fc" id="L795">    PNC3(&quot;PNC3&quot;, &quot;No. of PNC women who received 3 visits&quot;) {</span>
+        @Override
+        public void startCaseDetailActivity(android.content.Context context, String caseId) {
+<span class="nc" id="L798">            navigateToPNCProfile(context, caseId);</span>
+<span class="nc" id="L799">        }</span>
+
+        @Override
+        public List&lt;Beneficiary&gt; fetchCaseList(List&lt;String&gt; caseIds) {
+<span class="nc" id="L803">            return fetchMotherCaseList(caseIds);</span>
+        }
+    },
+<span class="fc" id="L806">    D_HOM(&quot;D_HOM&quot;, &quot;Number of deliveries conducted at Home&quot;) {</span>
+        @Override
+        public void startCaseDetailActivity(android.content.Context context, String caseId) {
+<span class="nc" id="L809">            navigateToPNCProfile(context, caseId);</span>
+<span class="nc" id="L810">        }</span>
+
+        @Override
+        public List&lt;Beneficiary&gt; fetchCaseList(List&lt;String&gt; caseIds) {
+<span class="nc" id="L814">            return fetchMotherCaseList(caseIds);</span>
+        }
+    },
+<span class="fc" id="L817">    D_SC(&quot;D_SC&quot;, &quot;Number of deliveries conducted at Sub Center&quot;) {</span>
+        @Override
+        public void startCaseDetailActivity(android.content.Context context, String caseId) {
+<span class="nc" id="L820">            navigateToPNCProfile(context, caseId);</span>
+<span class="nc" id="L821">        }</span>
+
+        @Override
+        public List&lt;Beneficiary&gt; fetchCaseList(List&lt;String&gt; caseIds) {
+<span class="nc" id="L825">            return fetchMotherCaseList(caseIds);</span>
+        }
+    },
+<span class="fc" id="L828">    D_PHC(&quot;D_PHC&quot;, &quot;Number of deliveries conducted at PHC&quot;) {</span>
+        @Override
+        public void startCaseDetailActivity(android.content.Context context, String caseId) {
+<span class="nc" id="L831">            navigateToPNCProfile(context, caseId);</span>
+<span class="nc" id="L832">        }</span>
+
+        @Override
+        public List&lt;Beneficiary&gt; fetchCaseList(List&lt;String&gt; caseIds) {
+<span class="nc" id="L836">            return fetchMotherCaseList(caseIds);</span>
+        }
+    },
+<span class="fc" id="L839">    D_CHC(&quot;D_CHC&quot;, &quot;Number of deliveries conducted at Community Health Center&quot;) {</span>
+        @Override
+        public void startCaseDetailActivity(android.content.Context context, String caseId) {
+<span class="nc" id="L842">            navigateToPNCProfile(context, caseId);</span>
+<span class="nc" id="L843">        }</span>
+
+        @Override
+        public List&lt;Beneficiary&gt; fetchCaseList(List&lt;String&gt; caseIds) {
+<span class="nc" id="L847">            return fetchMotherCaseList(caseIds);</span>
+        }
+    },
+<span class="fc" id="L850">    D_SDH(&quot;D_SDH&quot;, &quot;Number of deliveries conducted at Sub District Hospital&quot;) {</span>
+        @Override
+        public void startCaseDetailActivity(android.content.Context context, String caseId) {
+<span class="nc" id="L853">            navigateToPNCProfile(context, caseId);</span>
+<span class="nc" id="L854">        }</span>
+
+        @Override
+        public List&lt;Beneficiary&gt; fetchCaseList(List&lt;String&gt; caseIds) {
+<span class="nc" id="L858">            return fetchMotherCaseList(caseIds);</span>
+        }
+    },
+<span class="fc" id="L861">    D_DH(&quot;D_DH&quot;, &quot;Number of deliveries conducted at District Hospital&quot;) {</span>
+        @Override
+        public void startCaseDetailActivity(android.content.Context context, String caseId) {
+<span class="nc" id="L864">            navigateToPNCProfile(context, caseId);</span>
+<span class="nc" id="L865">        }</span>
+
+        @Override
+        public List&lt;Beneficiary&gt; fetchCaseList(List&lt;String&gt; caseIds) {
+<span class="nc" id="L869">            return fetchMotherCaseList(caseIds);</span>
+        }
+    },
+<span class="fc" id="L872">    D_PRI(&quot;D_PRI&quot;, &quot;Number of deliveries conducted at Private facility&quot;) {</span>
+        @Override
+        public void startCaseDetailActivity(android.content.Context context, String caseId) {
+<span class="nc" id="L875">            navigateToPNCProfile(context, caseId);</span>
+<span class="nc" id="L876">        }</span>
+
+        @Override
+        public List&lt;Beneficiary&gt; fetchCaseList(List&lt;String&gt; caseIds) {
+<span class="nc" id="L880">            return fetchMotherCaseList(caseIds);</span>
+        }
+    },
+<span class="fc" id="L883">    INFANT_BALANCE_ON_HAND(&quot;IB_OH&quot;, &quot;Infant Balance (On Hand)&quot;) {</span>
+        @Override
+        public void startCaseDetailActivity(android.content.Context context, String caseId) {
+<span class="nc" id="L886">            navigateToChildProfile(context, caseId);</span>
+<span class="nc" id="L887">        }</span>
+
+        @Override
+        public List&lt;Beneficiary&gt; fetchCaseList(List&lt;String&gt; caseIds) {
+<span class="nc" id="L891">            return fetchChildCaseList(caseIds);</span>
+        }
+    },
+<span class="fc" id="L894">    INFANT_REG(&quot;INFANT_REG&quot;, &quot;Infant Balance (During Month Registration)&quot;) {</span>
+        @Override
+        public void startCaseDetailActivity(android.content.Context context, String caseId) {
+<span class="nc" id="L897">            navigateToChildProfile(context, caseId);</span>
+<span class="nc" id="L898">        }</span>
+
+        @Override
+        public List&lt;Beneficiary&gt; fetchCaseList(List&lt;String&gt; caseIds) {
+<span class="nc" id="L902">            return fetchChildCaseList(caseIds);</span>
+        }
+    },
+<span class="fc" id="L905">    INFANT_LEFT(&quot;INFANT_LEFT&quot;, &quot;Infant Balance (Left the Place)&quot;) {</span>
+        @Override
+        public void startCaseDetailActivity(android.content.Context context, String caseId) {
+<span class="nc" id="L908">            navigateToChildProfile(context, caseId);</span>
+<span class="nc" id="L909">        }</span>
+
+        @Override
+        public List&lt;Beneficiary&gt; fetchCaseList(List&lt;String&gt; caseIds) {
+<span class="nc" id="L913">            return fetchChildCaseList(caseIds);</span>
+        }
+    },
+<span class="fc" id="L916">    INFANT_BALANCE_TOTAL(&quot;IBT&quot;, &quot;Infant Balance (Total)&quot;) {</span>
+        @Override
+        public void startCaseDetailActivity(android.content.Context context, String caseId) {
+<span class="nc" id="L919">            navigateToChildProfile(context, caseId);</span>
+<span class="nc" id="L920">        }</span>
+
+        @Override
+        public List&lt;Beneficiary&gt; fetchCaseList(List&lt;String&gt; caseIds) {
+<span class="nc" id="L924">            return fetchChildCaseList(caseIds);</span>
+        }
+    },
+<span class="fc" id="L927">    CHILD_MORTALITY_DUE_TO_DIARRHEA(&quot;CMD&quot;, &quot;Number of children who died of diarrhea&quot;) {</span>
+        @Override
+        public void startCaseDetailActivity(android.content.Context context, String caseId) {
+<span class="nc" id="L930">            navigateToChildProfile(context, caseId);</span>
+<span class="nc" id="L931">        }</span>
+
+        @Override
+        public List&lt;Beneficiary&gt; fetchCaseList(List&lt;String&gt; caseIds) {
+<span class="nc" id="L935">            return fetchChildCaseList(caseIds);</span>
+        }
+    },
+<span class="fc" id="L938">    ANCS_AND_PNCS_WITH_BPL(&quot;ANCS_AND_PNCS_WITH_BPL&quot;, &quot;Number of open ANCs and PNCs who have economic status as BPL&quot;) {</span>
+        @Override
+        public void startCaseDetailActivity(android.content.Context context, String caseId) {
+
+<span class="nc" id="L942">        }</span>
+
+        @Override
+        public List&lt;Beneficiary&gt; fetchCaseList(List&lt;String&gt; caseIds) {
+<span class="nc" id="L946">            return fetchMotherCaseList(caseIds);</span>
+        }
+    },
+<span class="fc" id="L949">    IB_1Y(&quot;IB_1Y&quot;, &quot;Number of children turning one year old in the current reporting month&quot;){</span>
+        @Override
+        public void startCaseDetailActivity(android.content.Context context, String caseId) {
+<span class="nc" id="L952">            navigateToChildProfile(context, caseId);</span>
+<span class="nc" id="L953">        }</span>
+
+        @Override
+        public List&lt;Beneficiary&gt; fetchCaseList(List&lt;String&gt; caseIds) {
+<span class="nc" id="L957">            return fetchChildCaseList(caseIds);</span>
+        }
+    };
+
+    private String value;
+
+    private String description;
+
+<span class="fc" id="L965">    ReportIndicator(String value, String description) {</span>
+<span class="fc" id="L966">        this.value = value;</span>
+<span class="fc" id="L967">        this.description = description;</span>
+<span class="fc" id="L968">    }</span>
+
+    public String description() {
+<span class="fc" id="L971">        return description;</span>
+    }
+
+    public String value() {
+<span class="fc" id="L975">        return value;</span>
+    }
+
+    public abstract List&lt;Beneficiary&gt; fetchCaseList(List&lt;String&gt; caseIds);
+
+    public abstract void startCaseDetailActivity(android.content.Context context, String caseId);
+
+    private static List&lt;Beneficiary&gt; fetchECCaseList(List&lt;String&gt; caseIds) {
+<span class="nc" id="L983">        return Context.getInstance().beneficiaryService().fetchFromEcCaseIds(caseIds);</span>
+    }
+
+    private static List&lt;Beneficiary&gt; fetchMotherCaseList(List&lt;String&gt; caseIds) {
+<span class="nc" id="L987">        return Context.getInstance().beneficiaryService().fetchFromMotherCaseIds(caseIds);</span>
+    }
+
+    private static List&lt;Beneficiary&gt; fetchChildCaseList(List&lt;String&gt; caseIds) {
+<span class="nc" id="L991">        return Context.getInstance().beneficiaryService().fetchFromChildCaseIds(caseIds);</span>
+    }
+
+    public static ReportIndicator parseToReportIndicator(String indicator) {
+<span class="fc bfc" id="L995" title="All 2 branches covered.">        for (ReportIndicator reportIndicator : values()) {</span>
+<span class="fc bfc" id="L996" title="All 2 branches covered.">            if (reportIndicator.value().equalsIgnoreCase(indicator))</span>
+<span class="fc" id="L997">                return reportIndicator;</span>
+        }
+<span class="fc" id="L999">        throw new IllegalArgumentException(&quot;Could not find ReportIndicator for value: &quot; + indicator);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.1.201405082137</span></div></body></html>

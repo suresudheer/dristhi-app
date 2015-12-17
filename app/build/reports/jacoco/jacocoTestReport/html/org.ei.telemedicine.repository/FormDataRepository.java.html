@@ -1,0 +1,312 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>FormDataRepository.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">org.ei.telemedicine.repository</a> &gt; <span class="el_source">FormDataRepository.java</span></div><h1>FormDataRepository.java</h1><pre class="source lang-java linenums">package org.ei.telemedicine.repository;
+
+import android.content.ContentValues;
+import android.database.Cursor;
+import android.util.Log;
+
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
+import net.sqlcipher.database.SQLiteDatabase;
+
+import org.ei.telemedicine.domain.SyncStatus;
+import org.ei.telemedicine.domain.form.FormSubmission;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static java.lang.System.currentTimeMillis;
+import static java.util.Arrays.asList;
+import static java.util.UUID.randomUUID;
+import static net.sqlcipher.DatabaseUtils.longForQuery;
+import static org.ei.telemedicine.AllConstants.*;
+import static org.ei.telemedicine.domain.SyncStatus.PENDING;
+import static org.ei.telemedicine.domain.SyncStatus.SYNCED;
+
+public class FormDataRepository extends DrishtiRepository {
+    private static final String FORM_SUBMISSION_SQL = &quot;CREATE TABLE form_submission(instanceId VARCHAR PRIMARY KEY, entityId VARCHAR, &quot; +
+            &quot;formName VARCHAR, instance VARCHAR, version VARCHAR, serverVersion VARCHAR, formDataDefinitionVersion VARCHAR, syncStatus VARCHAR,village VARCHAR)&quot;;
+    public static final String INSTANCE_ID_COLUMN = &quot;instanceId&quot;;
+    public static final String ENTITY_ID_COLUMN = &quot;entityId&quot;;
+    private static final String FORM_NAME_COLUMN = &quot;formName&quot;;
+    private static final String INSTANCE_COLUMN = &quot;instance&quot;;
+    private static final String VILLAGE_NAME_COLUMN = &quot;village&quot;;
+    private static final String VERSION_COLUMN = &quot;version&quot;;
+    private static final String SERVER_VERSION_COLUMN = &quot;serverVersion&quot;;
+    private static final String SYNC_STATUS_COLUMN = &quot;syncStatus&quot;;
+    private static final String FORM_DATA_DEFINITION_VERSION_COLUMN = &quot;formDataDefinitionVersion&quot;;
+    private static final String FORM_SUBMISSION_TABLE_NAME = &quot;form_submission&quot;;
+<span class="fc" id="L41">    public static final String[] FORM_SUBMISSION_TABLE_COLUMNS = new String[]{INSTANCE_ID_COLUMN, ENTITY_ID_COLUMN, FORM_NAME_COLUMN,</span>
+            INSTANCE_COLUMN, VERSION_COLUMN, SERVER_VERSION_COLUMN, FORM_DATA_DEFINITION_VERSION_COLUMN, SYNC_STATUS_COLUMN, VILLAGE_NAME_COLUMN};
+    public static final String ID_COLUMN = &quot;id&quot;;
+    private static final String DETAILS_COLUMN_NAME = &quot;details&quot;;
+    private static final String FORM_NAME_PARAM = &quot;formName&quot;;
+    private Map&lt;String, String[]&gt; TABLE_COLUMN_MAP;
+<span class="nc" id="L47">    private String TAG = &quot;FormDataRepository&quot;;</span>
+
+<span class="nc" id="L49">    public FormDataRepository() {</span>
+<span class="nc" id="L50">        TABLE_COLUMN_MAP = new HashMap&lt;String, String[]&gt;();</span>
+<span class="nc" id="L51">        TABLE_COLUMN_MAP.put(EligibleCoupleRepository.EC_TABLE_NAME, EligibleCoupleRepository.EC_TABLE_COLUMNS);</span>
+<span class="nc" id="L52">        TABLE_COLUMN_MAP.put(MotherRepository.MOTHER_TABLE_NAME, MotherRepository.MOTHER_TABLE_COLUMNS);</span>
+<span class="nc" id="L53">        TABLE_COLUMN_MAP.put(ChildRepository.CHILD_TABLE_NAME, ChildRepository.CHILD_TABLE_COLUMNS);</span>
+<span class="nc" id="L54">    }</span>
+
+    @Override
+    protected void onCreate(SQLiteDatabase database) {
+<span class="nc" id="L58">        database.execSQL(FORM_SUBMISSION_SQL);</span>
+<span class="nc" id="L59">    }</span>
+
+    public String queryUniqueResult(String sql) {
+<span class="nc" id="L62">        SQLiteDatabase database = masterRepository.getReadableDatabase();</span>
+<span class="nc" id="L63">        Cursor cursor = database.rawQuery(sql, new String[]{});</span>
+
+<span class="nc" id="L65">        cursor.moveToFirst();</span>
+<span class="nc" id="L66">        Map&lt;String, String&gt; result = readARow(cursor);</span>
+<span class="nc" id="L67">        cursor.close();</span>
+
+<span class="nc" id="L69">        return new Gson().toJson(result);</span>
+    }
+
+    public String queryList(String sql) {
+<span class="nc" id="L73">        SQLiteDatabase database = masterRepository.getReadableDatabase();</span>
+<span class="nc" id="L74">        Cursor cursor = database.rawQuery(sql, new String[]{});</span>
+<span class="nc" id="L75">        List&lt;Map&lt;String, String&gt;&gt; results = new ArrayList&lt;Map&lt;String, String&gt;&gt;();</span>
+<span class="nc" id="L76">        cursor.moveToFirst();</span>
+<span class="nc bnc" id="L77" title="All 2 branches missed.">        while (!cursor.isAfterLast()) {</span>
+<span class="nc" id="L78">            results.add(readARow(cursor));</span>
+<span class="nc" id="L79">            cursor.moveToNext();</span>
+        }
+<span class="nc" id="L81">        cursor.close();</span>
+<span class="nc" id="L82">        return new Gson().toJson(results);</span>
+    }
+
+    public String getLastFormIndex(String villageName) {
+<span class="nc" id="L86">        long index = longForQuery(masterRepository.getReadableDatabase(), &quot;SELECT MAX(serverVersion) FROM &quot; + FORM_SUBMISSION_TABLE_NAME</span>
+                        + &quot; WHERE &quot; + VILLAGE_NAME_COLUMN + &quot; = ? &quot;,
+                new String[]{villageName});
+<span class="nc" id="L89">        return String.valueOf(index);</span>
+    }
+
+    public String saveFormSubmission(String paramsJSON, String data, String formDataDefinitionVersion) {
+
+<span class="nc" id="L94">        SQLiteDatabase database = masterRepository.getWritableDatabase();</span>
+<span class="nc" id="L95">        Map&lt;String, String&gt; params = new Gson().fromJson(paramsJSON, new TypeToken&lt;Map&lt;String, String&gt;&gt;() {</span>
+        }.getType());
+<span class="nc" id="L97">        database.insert(FORM_SUBMISSION_TABLE_NAME, null, createValuesForFormSubmission(params, data, formDataDefinitionVersion));</span>
+<span class="nc" id="L98">        return params.get(INSTANCE_ID_PARAM);</span>
+    }
+
+    public void saveFormSubmission(FormSubmission formSubmission) {
+<span class="nc" id="L102">        SQLiteDatabase database = masterRepository.getWritableDatabase();</span>
+<span class="nc" id="L103">        database.insert(FORM_SUBMISSION_TABLE_NAME, null, createValuesForFormSubmission(formSubmission));</span>
+<span class="nc" id="L104">    }</span>
+
+    public FormSubmission fetchFromSubmission(String instanceId) {
+<span class="nc" id="L107">        SQLiteDatabase database = masterRepository.getReadableDatabase();</span>
+<span class="nc" id="L108">        Cursor cursor = database.query(FORM_SUBMISSION_TABLE_NAME, FORM_SUBMISSION_TABLE_COLUMNS, INSTANCE_ID_COLUMN + &quot; = ?&quot;, new String[]{instanceId}, null, null, null);</span>
+<span class="nc" id="L109">        return readFormSubmission(cursor).get(0);</span>
+    }
+
+    public FormSubmission fetchFromSubmissionUseEntity(String entityId) {
+<span class="nc" id="L113">        SQLiteDatabase database = masterRepository.getReadableDatabase();</span>
+<span class="nc" id="L114">        Cursor cursor = database.query(FORM_SUBMISSION_TABLE_NAME, FORM_SUBMISSION_TABLE_COLUMNS, ENTITY_ID_COLUMN + &quot; = ?&quot;, new String[]{entityId}, null, null, null);</span>
+<span class="nc" id="L115">        return readFormSubmission(cursor).get(cursor.getCount() - 1);</span>
+    }
+
+    public List&lt;FormSubmission&gt; getPendingFormSubmissions() {
+<span class="nc" id="L119">        SQLiteDatabase database = masterRepository.getReadableDatabase();</span>
+<span class="nc" id="L120">        Cursor cursor = database.query(FORM_SUBMISSION_TABLE_NAME, FORM_SUBMISSION_TABLE_COLUMNS, SYNC_STATUS_COLUMN + &quot; = ?&quot;, new String[]{PENDING.value()}, null, null, null);</span>
+<span class="nc" id="L121">        return readFormSubmission(cursor);</span>
+    }
+
+    public long getPendingFormSubmissionsCount() {
+<span class="nc" id="L125">        return longForQuery(masterRepository.getReadableDatabase(), &quot;SELECT COUNT(1) FROM &quot; + FORM_SUBMISSION_TABLE_NAME</span>
+                        + &quot; WHERE &quot; + SYNC_STATUS_COLUMN + &quot; = ? &quot;,
+                new String[]{PENDING.value()});
+    }
+
+    public void markFormSubmissionsAsSynced(List&lt;FormSubmission&gt; formSubmissions) {
+<span class="nc" id="L131">        SQLiteDatabase database = masterRepository.getWritableDatabase();</span>
+<span class="nc bnc" id="L132" title="All 2 branches missed.">        for (FormSubmission submission : formSubmissions) {</span>
+<span class="nc" id="L133">            FormSubmission updatedSubmission = new FormSubmission(submission.instanceId(), submission.entityId(), submission.formName(), submission.instance(), submission.version(), SYNCED, &quot;1&quot;);</span>
+<span class="nc" id="L134">            database.update(FORM_SUBMISSION_TABLE_NAME, createValuesForFormSubmission(updatedSubmission), INSTANCE_ID_COLUMN + &quot; = ?&quot;, new String[]{updatedSubmission.instanceId()});</span>
+<span class="nc" id="L135">        }</span>
+<span class="nc" id="L136">    }</span>
+
+    public void updateServerVersion(String instanceId, String serverVersion, String villageName) {
+<span class="nc" id="L139">        SQLiteDatabase database = masterRepository.getWritableDatabase();</span>
+<span class="nc" id="L140">        ContentValues values = new ContentValues();</span>
+<span class="nc" id="L141">        values.put(SERVER_VERSION_COLUMN, serverVersion);</span>
+<span class="nc" id="L142">        values.put(VILLAGE_NAME_COLUMN, villageName);</span>
+//        values.put(INSTANCE_COLUMN, instance);
+<span class="nc" id="L144">        database.update(FORM_SUBMISSION_TABLE_NAME, values, INSTANCE_ID_COLUMN + &quot; = ?&quot;, new String[]{instanceId});</span>
+<span class="nc" id="L145">    }</span>
+
+    public boolean submissionExists(String instanceId) {
+<span class="nc" id="L148">        SQLiteDatabase database = masterRepository.getReadableDatabase();</span>
+<span class="nc" id="L149">        Cursor cursor = database.query(FORM_SUBMISSION_TABLE_NAME, new String[]{INSTANCE_ID_COLUMN}, INSTANCE_ID_COLUMN + &quot; = ?&quot;, new String[]{instanceId}, null, null, null);</span>
+<span class="nc" id="L150">        boolean isThere = cursor.moveToFirst();</span>
+<span class="nc" id="L151">        cursor.close();</span>
+<span class="nc" id="L152">        return isThere;</span>
+    }
+
+    public void removeForm(String instanceId) {
+<span class="nc" id="L156">        SQLiteDatabase database = masterRepository.getReadableDatabase();</span>
+<span class="nc" id="L157">        database.delete(FORM_SUBMISSION_TABLE_NAME, INSTANCE_ID_COLUMN + &quot; = ?&quot;, new String[]{instanceId});</span>
+<span class="nc" id="L158">    }</span>
+
+    public String saveEntity(String entityType, String fields) {
+<span class="nc" id="L161">        SQLiteDatabase database = masterRepository.getWritableDatabase();</span>
+<span class="nc" id="L162">        Map&lt;String, String&gt; updatedFieldsMap = new Gson().fromJson(fields, new TypeToken&lt;Map&lt;String, String&gt;&gt;() {</span>
+        }.getType());
+
+<span class="nc" id="L165">        String entityId = updatedFieldsMap.get(ENTITY_ID_FIELD_NAME);</span>
+<span class="nc" id="L166">        Map&lt;String, String&gt; entityMap = loadEntityMap(entityType, database, entityId);</span>
+
+<span class="nc" id="L168">        ContentValues contentValues = getContentValues(updatedFieldsMap, entityType, entityMap);</span>
+<span class="nc" id="L169">        database.replace(entityType, null, contentValues);</span>
+<span class="nc" id="L170">        return entityId;</span>
+    }
+
+    private ContentValues createValuesForFormSubmission(FormSubmission submission) {
+<span class="nc" id="L174">        ContentValues values = new ContentValues();</span>
+<span class="nc" id="L175">        values.put(INSTANCE_ID_COLUMN, submission.instanceId());</span>
+<span class="nc" id="L176">        values.put(ENTITY_ID_COLUMN, submission.entityId());</span>
+<span class="nc" id="L177">        values.put(FORM_NAME_COLUMN, submission.formName());</span>
+<span class="nc" id="L178">        values.put(INSTANCE_COLUMN, submission.instance());</span>
+<span class="nc" id="L179">        values.put(VERSION_COLUMN, submission.version());</span>
+<span class="nc" id="L180">        values.put(SERVER_VERSION_COLUMN, submission.serverVersion());</span>
+<span class="nc" id="L181">        values.put(FORM_DATA_DEFINITION_VERSION_COLUMN, submission.formDataDefinitionVersion());</span>
+<span class="nc" id="L182">        values.put(SYNC_STATUS_COLUMN, submission.syncStatus().value());</span>
+<span class="nc" id="L183">        return values;</span>
+    }
+
+    private ContentValues createValuesForFormSubmission(Map&lt;String, String&gt; params, String data, String formDataDefinitionVersion) {
+<span class="nc" id="L187">        ContentValues values = new ContentValues();</span>
+<span class="nc" id="L188">        values.put(INSTANCE_ID_COLUMN, params.get(INSTANCE_ID_PARAM));</span>
+<span class="nc" id="L189">        values.put(ENTITY_ID_COLUMN, params.get(ENTITY_ID_PARAM));</span>
+<span class="nc" id="L190">        values.put(FORM_NAME_COLUMN, params.get(FORM_NAME_PARAM));</span>
+<span class="nc" id="L191">        values.put(INSTANCE_COLUMN, data);</span>
+<span class="nc" id="L192">        values.put(VERSION_COLUMN, currentTimeMillis());</span>
+<span class="nc" id="L193">        values.put(FORM_DATA_DEFINITION_VERSION_COLUMN, formDataDefinitionVersion);</span>
+<span class="nc" id="L194">        String syncStatus = PENDING.value();</span>
+<span class="nc bnc" id="L195" title="All 2 branches missed.">        if (params.containsKey(SYNC_STATUS)) {</span>
+<span class="nc" id="L196">            syncStatus = params.get(SYNC_STATUS);</span>
+        }
+<span class="nc" id="L198">        values.put(SYNC_STATUS_COLUMN, syncStatus);</span>
+<span class="nc" id="L199">        return values;</span>
+    }
+
+    private List&lt;FormSubmission&gt; readFormSubmission(Cursor cursor) {
+<span class="nc" id="L203">        cursor.moveToFirst();</span>
+<span class="nc" id="L204">        List&lt;FormSubmission&gt; submissions = new ArrayList&lt;FormSubmission&gt;();</span>
+<span class="nc bnc" id="L205" title="All 2 branches missed.">        while (!cursor.isAfterLast()) {</span>
+<span class="nc" id="L206">            submissions.add(new FormSubmission(</span>
+                    cursor.getString(cursor.getColumnIndex(INSTANCE_ID_COLUMN)),
+                    cursor.getString(cursor.getColumnIndex(ENTITY_ID_COLUMN)),
+                    cursor.getString(cursor.getColumnIndex(FORM_NAME_COLUMN)),
+                    cursor.getString(cursor.getColumnIndex(INSTANCE_COLUMN)),
+                    cursor.getString(cursor.getColumnIndex(VERSION_COLUMN)),
+                    SyncStatus.valueOf(cursor.getString(cursor.getColumnIndex(SYNC_STATUS_COLUMN))),
+                    cursor.getString(cursor.getColumnIndex(FORM_DATA_DEFINITION_VERSION_COLUMN)),
+                    cursor.getString(cursor.getColumnIndex(SERVER_VERSION_COLUMN))
+            ));
+<span class="nc" id="L216">            cursor.moveToNext();</span>
+        }
+<span class="nc" id="L218">        cursor.close();</span>
+<span class="nc" id="L219">        return submissions;</span>
+    }
+
+    private Map&lt;String, String&gt; readARow(Cursor cursor) {
+<span class="nc" id="L223">        Map&lt;String, String&gt; columnValues = new HashMap&lt;String, String&gt;();</span>
+<span class="nc bnc" id="L224" title="All 2 branches missed.">        if (cursor.isAfterLast())</span>
+<span class="nc" id="L225">            return columnValues;</span>
+<span class="nc" id="L226">        String[] columns = cursor.getColumnNames();</span>
+<span class="nc" id="L227">        int numberOfColumns = columns.length;</span>
+<span class="nc bnc" id="L228" title="All 2 branches missed.">        for (int index = 0; index &lt; numberOfColumns; index++) {</span>
+<span class="nc bnc" id="L229" title="All 2 branches missed.">            if (DETAILS_COLUMN_NAME.equalsIgnoreCase(columns[index])) {</span>
+<span class="nc" id="L230">                Map&lt;String, String&gt; details = new Gson().fromJson(cursor.getString(index), new TypeToken&lt;Map&lt;String, String&gt;&gt;() {</span>
+                }.getType());
+<span class="nc" id="L232">                columnValues.putAll(details);</span>
+<span class="nc" id="L233">            } else {</span>
+<span class="nc" id="L234">                columnValues.put(columns[index], cursor.getString(index));</span>
+            }
+        }
+<span class="nc" id="L237">        return columnValues;</span>
+    }
+
+    private ContentValues getContentValues(Map&lt;String, String&gt; updatedFieldsMap, String entityType, Map&lt;String, String&gt; entityMap) {
+<span class="nc" id="L241">        List&lt;String&gt; columns = asList(TABLE_COLUMN_MAP.get(entityType));</span>
+<span class="nc" id="L242">        ContentValues contentValues = initializeContentValuesBasedExistingValues(entityMap);</span>
+<span class="nc" id="L243">        Map&lt;String, String&gt; details = initializeDetailsBasedOnExistingValues(entityMap);</span>
+
+<span class="nc bnc" id="L245" title="All 2 branches missed.">        for (String fieldName : updatedFieldsMap.keySet()) {</span>
+<span class="nc bnc" id="L246" title="All 2 branches missed.">            if (columns.contains(fieldName)) {</span>
+<span class="nc" id="L247">                contentValues.put(fieldName, updatedFieldsMap.get(fieldName));</span>
+            } else {
+<span class="nc" id="L249">                details.put(fieldName, updatedFieldsMap.get(fieldName));</span>
+            }
+<span class="nc" id="L251">        }</span>
+<span class="nc" id="L252">        contentValues.put(DETAILS_COLUMN_NAME, new Gson().toJson(details));</span>
+
+<span class="nc" id="L254">        return contentValues;</span>
+    }
+
+    private Map&lt;String, String&gt; initializeDetailsBasedOnExistingValues(Map&lt;String, String&gt; entityMap) {
+        Map&lt;String, String&gt; details;
+<span class="nc" id="L259">        String detailsJSON = entityMap.get(DETAILS_COLUMN_NAME);</span>
+<span class="nc bnc" id="L260" title="All 2 branches missed.">        if (detailsJSON == null) {</span>
+<span class="nc" id="L261">            details = new HashMap&lt;String, String&gt;();</span>
+        } else {
+<span class="nc" id="L263">            details = new Gson().fromJson(detailsJSON, new TypeToken&lt;Map&lt;String, String&gt;&gt;() {</span>
+            }.getType());
+        }
+<span class="nc" id="L266">        return details;</span>
+    }
+
+    private ContentValues initializeContentValuesBasedExistingValues(Map&lt;String, String&gt; entityMap) {
+<span class="nc" id="L270">        ContentValues contentValues = new ContentValues();</span>
+<span class="nc bnc" id="L271" title="All 2 branches missed.">        for (String column : entityMap.keySet()) {</span>
+<span class="nc" id="L272">            contentValues.put(column, entityMap.get(column));</span>
+<span class="nc" id="L273">        }</span>
+<span class="nc" id="L274">        return contentValues;</span>
+    }
+
+    private Map&lt;String, String&gt; loadEntityMap(String entityType, SQLiteDatabase database, String entityId) {
+<span class="nc" id="L278">        Map&lt;String, String&gt; entityMap = new HashMap&lt;String, String&gt;();</span>
+<span class="nc" id="L279">        Cursor cursor = database.query(entityType,</span>
+                TABLE_COLUMN_MAP.get(entityType), ID_COLUMN + &quot; =?&quot;, new String[]{entityId}, null, null, null);
+<span class="nc bnc" id="L281" title="All 2 branches missed.">        if (!cursor.isAfterLast()) {</span>
+<span class="nc" id="L282">            cursor.moveToFirst();</span>
+<span class="nc bnc" id="L283" title="All 2 branches missed.">            for (String column : cursor.getColumnNames()) {</span>
+<span class="nc" id="L284">                entityMap.put(column, cursor.getString(cursor.getColumnIndex(column)));</span>
+            }
+        }
+<span class="nc" id="L287">        cursor.close();</span>
+<span class="nc" id="L288">        return entityMap;</span>
+    }
+
+    public String generateIdFor(String entityType) {
+<span class="nc" id="L292">        return randomUUID().toString();</span>
+    }
+
+
+    public void updateInstance(String instanceId, String instanceData) {
+<span class="nc" id="L297">        SQLiteDatabase database = masterRepository.getWritableDatabase();</span>
+<span class="nc" id="L298">        ContentValues values = new ContentValues();</span>
+<span class="nc" id="L299">        values.put(INSTANCE_COLUMN, instanceData);</span>
+<span class="nc" id="L300">        values.put(SYNC_STATUS_COLUMN, PENDING.value());</span>
+<span class="nc" id="L301">        database.update(FORM_SUBMISSION_TABLE_NAME, values, INSTANCE_ID_COLUMN + &quot; = ?&quot;, new String[]{instanceId});</span>
+
+<span class="nc" id="L303">        Cursor cursor = database.rawQuery(&quot;select * from form_submission where instanceId= ?&quot;, new String[]{instanceId});</span>
+<span class="nc bnc" id="L304" title="All 2 branches missed.">        while (cursor.moveToNext()) {</span>
+<span class="nc" id="L305">            String instancestat = cursor.getString(cursor.getColumnIndex(&quot;syncStatus&quot;));</span>
+<span class="nc" id="L306">            Log.e(TAG, instancestat + &quot;-------------&quot; + cursor.getString(cursor.getColumnIndex(&quot;instanceId&quot;)));</span>
+
+<span class="nc" id="L308">        }</span>
+<span class="nc" id="L309">        cursor.close();</span>
+<span class="nc" id="L310">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.1.201405082137</span></div></body></html>

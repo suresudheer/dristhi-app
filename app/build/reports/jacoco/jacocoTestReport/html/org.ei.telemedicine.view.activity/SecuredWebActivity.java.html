@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>SecuredWebActivity.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">org.ei.telemedicine.view.activity</a> &gt; <span class="el_source">SecuredWebActivity.java</span></div><h1>SecuredWebActivity.java</h1><pre class="source lang-java linenums">package org.ei.telemedicine.view.activity;
+
+import static android.webkit.ConsoleMessage.MessageLevel.ERROR;
+import static java.text.MessageFormat.format;
+import static org.ei.telemedicine.util.Log.logDebug;
+import static org.ei.telemedicine.util.Log.logError;
+
+import org.acra.ACRA;
+import org.ei.telemedicine.R;
+import org.ei.telemedicine.sync.SyncAfterFetchListener;
+import org.ei.telemedicine.sync.SyncProgressIndicator;
+import org.ei.telemedicine.sync.UpdateActionsTask;
+import org.ei.telemedicine.view.InternationalizationContext;
+import org.ei.telemedicine.view.controller.UpdateController;
+
+import android.app.Activity;
+import android.app.ProgressDialog;
+import android.view.MenuItem;
+import android.view.View;
+import android.webkit.ConsoleMessage;
+import android.webkit.WebChromeClient;
+import android.webkit.WebSettings;
+import android.webkit.WebView;
+
+<span class="nc" id="L25">public abstract class SecuredWebActivity extends SecuredActivity {</span>
+    protected WebView webView;
+    protected UpdateController updateController;
+<span class="nc" id="L28">    protected boolean shouldDismissProgressBarOnProgressComplete = true;</span>
+    private ProgressDialog progressDialog;
+
+    @Override
+    public void onCreation() {
+<span class="nc" id="L33">        setActivityLayout();</span>
+
+<span class="nc" id="L35">        progressDialogInitialization();</span>
+<span class="nc" id="L36">        webViewInitialization(this);</span>
+
+<span class="nc" id="L38">        updateController = new UpdateController(webView);</span>
+
+<span class="nc" id="L40">        onInitialization();</span>
+<span class="nc" id="L41">    }</span>
+
+    protected void setActivityLayout() {
+<span class="nc" id="L44">        setContentView(R.layout.html);</span>
+<span class="nc" id="L45">    }</span>
+
+    protected abstract void onInitialization();
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+<span class="nc bnc" id="L51" title="All 2 branches missed.">        switch (item.getItemId()) {</span>
+            case R.id.updateMenuItem:
+<span class="nc" id="L53">                updateFromServer();</span>
+<span class="nc" id="L54">                return true;</span>
+
+            default:
+<span class="nc" id="L57">                return super.onOptionsItemSelected(item);</span>
+        }
+    }
+
+    public void updateFromServer() {
+<span class="nc" id="L62">        UpdateActionsTask updateActionsTask = new UpdateActionsTask(this, context.actionService(), context.formSubmissionSyncService(), new SyncProgressIndicator());</span>
+<span class="nc" id="L63">        updateActionsTask.updateFromServer(new SyncAfterFetchListener(),&quot;&quot;);</span>
+<span class="nc" id="L64">    }</span>
+
+    protected void closeDialog() {
+<span class="nc bnc" id="L67" title="All 2 branches missed.">        if (progressDialog.isShowing())</span>
+<span class="nc" id="L68">            progressDialog.dismiss();</span>
+<span class="nc" id="L69">    }</span>
+
+    @Override
+    public void onResumption() {
+<span class="nc" id="L73">    }</span>
+
+    //    Added to fix the memory leak caused due to bug in android which stops activities with webview to be GCed.
+    //    Refer to this link for more details - http://code.google.com/p/android/issues/detail?id=9375
+    @Override
+    protected void onDestroy() {
+<span class="nc" id="L79">        super.onDestroy();</span>
+
+<span class="nc bnc" id="L81" title="All 2 branches missed.">        if (webView != null) {</span>
+<span class="nc" id="L82">            webView.destroy();</span>
+<span class="nc" id="L83">            webView = null;</span>
+        }
+
+<span class="nc bnc" id="L86" title="All 2 branches missed.">        if (updateController != null)</span>
+<span class="nc" id="L87">            updateController.destroy();</span>
+<span class="nc" id="L88">    }</span>
+
+    private void progressDialogInitialization() {
+<span class="nc" id="L91">        progressDialog = new ProgressDialog(this);</span>
+<span class="nc" id="L92">        progressDialog.setCancelable(false);</span>
+<span class="nc" id="L93">        progressDialog.setTitle(&quot;Loading ...&quot;);</span>
+<span class="nc" id="L94">        progressDialog.setMessage(&quot;Please wait&quot;);</span>
+<span class="nc" id="L95">        progressDialog.show();</span>
+<span class="nc" id="L96">    }</span>
+
+    private void webViewInitialization(final Activity activity) {
+<span class="nc" id="L99">        webView = (WebView) findViewById(R.id.webview);</span>
+
+<span class="nc" id="L101">        webView.setWebChromeClient(new WebChromeClient() {</span>
+            public void onProgressChanged(WebView view, int progress) {
+<span class="nc" id="L103">                dismissProgressBarOnProgressComplete(progress, activity);</span>
+<span class="nc" id="L104">            }</span>
+            @Override
+            public boolean onConsoleMessage(ConsoleMessage consoleMessage) {
+<span class="nc" id="L107">                String message = format(&quot;Javascript Log. Message: {0}, lineNumber: {1}, sourceId, {2}&quot;, consoleMessage.message(),</span>
+                        consoleMessage.lineNumber(), consoleMessage.sourceId());
+
+<span class="nc bnc" id="L110" title="All 2 branches missed.">                if (consoleMessage.messageLevel() == ERROR) {</span>
+<span class="nc" id="L111">                    logError(message);</span>
+<span class="nc" id="L112">                    reportException(message);</span>
+                } else {
+<span class="nc" id="L114">                    logDebug(message);</span>
+                }
+<span class="nc" id="L116">                return true;</span>
+            }
+        });
+
+<span class="nc" id="L120">        webView.getSettings().setRenderPriority(WebSettings.RenderPriority.HIGH);</span>
+<span class="nc" id="L121">        webView.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);</span>
+<span class="nc" id="L122">        webView.getSettings().setJavaScriptEnabled(true);</span>
+<span class="nc" id="L123">        webView.getSettings().setAllowUniversalAccessFromFileURLs(true);</span>
+<span class="nc" id="L124">        webView.setScrollBarStyle(View.SCROLLBARS_INSIDE_OVERLAY);</span>
+<span class="nc" id="L125">        webView.addJavascriptInterface(formController, &quot;formContext&quot;);</span>
+<span class="nc" id="L126">        webView.addJavascriptInterface(navigationController, &quot;navigationContext&quot;);</span>
+<span class="nc" id="L127">        webView.addJavascriptInterface(new InternationalizationContext(getResources()), &quot;internationalizationContext&quot;);</span>
+<span class="nc" id="L128">    }</span>
+
+    private void dismissProgressBarOnProgressComplete(int progress, Activity activity) {
+<span class="nc bnc" id="L131" title="All 2 branches missed.">        if(shouldDismissProgressBarOnProgressComplete){</span>
+<span class="nc" id="L132">            activity.setProgress(progress * 1000);</span>
+
+<span class="nc bnc" id="L134" title="All 4 branches missed.">            if (progress == 100 &amp;&amp; progressDialog.isShowing())</span>
+<span class="nc" id="L135">                progressDialog.dismiss();</span>
+        }
+<span class="nc" id="L137">    }</span>
+
+    protected void reportException(String message) {
+<span class="nc" id="L140">        ACRA.getErrorReporter().handleSilentException(new RuntimeException(message));</span>
+<span class="nc" id="L141">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.1.201405082137</span></div></body></html>

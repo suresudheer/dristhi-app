@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>NativePNCSmartRegisterActivity.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">org.ei.telemedicine.view.activity</a> &gt; <span class="el_source">NativePNCSmartRegisterActivity.java</span></div><h1>NativePNCSmartRegisterActivity.java</h1><pre class="source lang-java linenums">package org.ei.telemedicine.view.activity;
+
+import static com.google.common.collect.Iterables.concat;
+import static com.google.common.collect.Iterables.toArray;
+import static java.util.Arrays.asList;
+import static org.ei.telemedicine.AllConstants.FormNames.PNC_CLOSE;
+import static org.ei.telemedicine.AllConstants.FormNames.PNC_POSTPARTUM_FAMILY_PLANNING;
+import static org.ei.telemedicine.AllConstants.FormNames.PNC_REGISTRATION_OA;
+import static org.ei.telemedicine.AllConstants.FormNames.PNC_VISIT;
+
+import java.util.List;
+
+import org.ei.telemedicine.AllConstants;
+import org.ei.telemedicine.R;
+import org.ei.telemedicine.adapter.SmartRegisterPaginatedAdapter;
+import org.ei.telemedicine.domain.form.FieldOverrides;
+import org.ei.telemedicine.provider.PNCSmartRegisterClientsProvider;
+import org.ei.telemedicine.provider.SmartRegisterClientsProvider;
+import org.ei.telemedicine.view.contract.SmartRegisterClient;
+import org.ei.telemedicine.view.controller.PNCSmartRegisterController;
+import org.ei.telemedicine.view.controller.VillageController;
+import org.ei.telemedicine.view.dialog.AllClientsFilter;
+import org.ei.telemedicine.view.dialog.DateOfDeliverySort;
+import org.ei.telemedicine.view.dialog.DialogOption;
+import org.ei.telemedicine.view.dialog.DialogOptionMapper;
+import org.ei.telemedicine.view.dialog.DialogOptionModel;
+import org.ei.telemedicine.view.dialog.EditOption;
+import org.ei.telemedicine.view.dialog.FilterOption;
+import org.ei.telemedicine.view.dialog.HighRiskSort;
+import org.ei.telemedicine.view.dialog.NameSort;
+import org.ei.telemedicine.view.dialog.OpenFormOption;
+import org.ei.telemedicine.view.dialog.OutOfAreaFilter;
+import org.ei.telemedicine.view.dialog.PNCOverviewServiceMode;
+import org.ei.telemedicine.view.dialog.PNCVisitsServiceMode;
+import org.ei.telemedicine.view.dialog.ServiceModeOption;
+import org.ei.telemedicine.view.dialog.SortOption;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import android.view.View;
+
+<span class="nc" id="L43">public class NativePNCSmartRegisterActivity extends SecuredNativeSmartRegisterActivity {</span>
+
+<span class="nc" id="L45">    private SmartRegisterClientsProvider clientProvider = null;</span>
+    private PNCSmartRegisterController controller;
+    private VillageController villageController;
+    private DialogOptionMapper dialogOptionMapper;
+<span class="nc" id="L49">    public static final List&lt;? extends DialogOption&gt; DEFAULT_PNC_FILTER_OPTIONS =</span>
+            asList(new OutOfAreaFilter());
+
+<span class="nc" id="L52">    private final ClientActionHandler clientActionHandler = new ClientActionHandler();</span>
+
+    @Override
+    protected SmartRegisterPaginatedAdapter adapter() {
+<span class="nc" id="L56">        return new SmartRegisterPaginatedAdapter(clientsProvider());</span>
+    }
+
+    @Override
+    protected DefaultOptionsProvider getDefaultOptionsProvider() {
+<span class="nc" id="L61">        return new DefaultOptionsProvider() {</span>
+
+            @Override
+            public ServiceModeOption serviceMode() {
+<span class="nc" id="L65">                return new PNCOverviewServiceMode(clientsProvider());</span>
+            }
+
+            @Override
+            public FilterOption villageFilter() {
+<span class="nc" id="L70">                return new AllClientsFilter();</span>
+            }
+
+            @Override
+            public SortOption sortOption() {
+<span class="nc" id="L75">                return new NameSort();</span>
+            }
+
+            @Override
+            public String nameInShortFormForTitle() {
+<span class="nc" id="L80">                return getResources().getString(R.string.pnc_register_title_in_short);</span>
+            }
+        };
+    }
+
+    @Override
+    protected NavBarOptionsProvider getNavBarOptionsProvider() {
+<span class="nc" id="L87">        return new NavBarOptionsProvider() {</span>
+
+            @Override
+            public DialogOption[] filterOptions() {
+<span class="nc" id="L91">                Iterable&lt;? extends DialogOption&gt; villageFilterOptions =</span>
+                        dialogOptionMapper.mapToVillageFilterOptions(villageController.getVillages());
+<span class="nc" id="L93">                return toArray(concat(DEFAULT_FILTER_OPTIONS, DEFAULT_PNC_FILTER_OPTIONS, villageFilterOptions), DialogOption.class);</span>
+            }
+
+            @Override
+            public DialogOption[] serviceModeOptions() {
+
+<span class="nc" id="L99">                return new DialogOption[]{</span>
+                        new PNCOverviewServiceMode(clientsProvider()),
+                        new PNCVisitsServiceMode(clientsProvider()),
+                };
+            }
+
+            @Override
+            public DialogOption[] sortingOptions() {
+<span class="nc" id="L107">                return new DialogOption[]{new NameSort(), new DateOfDeliverySort(),</span>
+                        new HighRiskSort()};
+            }
+
+            @Override
+            public String searchHint() {
+<span class="nc" id="L113">                return getString(R.string.str_pnc_search_hint);</span>
+            }
+        };
+    }
+
+    @Override
+    protected SmartRegisterClientsProvider clientsProvider() {
+<span class="nc bnc" id="L120" title="All 2 branches missed.">        if (clientProvider == null) {</span>
+<span class="nc" id="L121">            clientProvider = new PNCSmartRegisterClientsProvider(</span>
+                    this, clientActionHandler, controller);
+        }
+<span class="nc" id="L124">        return clientProvider;</span>
+    }
+
+    private DialogOption[] getUpdateOptions() {
+<span class="nc" id="L128">        return new DialogOption[]{</span>
+                new OpenFormOption(getString(R.string.str_pnc_visit_form), PNC_VISIT, formController),
+                new OpenFormOption(&quot;PNC Edit&quot;, &quot;pnc_edit&quot;, formController),
+                new OpenFormOption(getString(R.string.str_anc_plan_of_care), AllConstants.VIEW_PNC_PLAN_OF_CARE, formController, NativePNCSmartRegisterActivity.this),
+                new OpenFormOption(getString(R.string.str_pnc_postpartum_family_planning_form), PNC_POSTPARTUM_FAMILY_PLANNING, formController),
+                new OpenFormOption(getString(R.string.str_pnc_close_form), PNC_CLOSE, formController),
+        };
+    }
+
+    @Override
+    protected void onInitialization() {
+<span class="nc" id="L139">        controller = new PNCSmartRegisterController(context.serviceProvidedService(), context.alertService(), context.allEligibleCouples(),</span>
+                context.allBeneficiaries(),
+                context.listCache(), context.pncClientsCache());
+<span class="nc" id="L142">        villageController = new VillageController(context.allEligibleCouples(),</span>
+                context.listCache(), context.villagesCache());
+<span class="nc" id="L144">        dialogOptionMapper = new DialogOptionMapper();</span>
+<span class="nc" id="L145">        clientsProvider().onServiceModeSelected(new PNCOverviewServiceMode(clientsProvider()));</span>
+<span class="nc" id="L146">    }</span>
+
+    @Override
+    public void setupViews() {
+<span class="nc" id="L150">        super.setupViews();</span>
+<span class="nc" id="L151">    }</span>
+
+    @Override
+    protected void startRegistration(String village) throws JSONException {
+<span class="nc" id="L155">        String locationJSON = context.anmLocationController().getFormInfoJSON();</span>
+<span class="nc" id="L156">        JSONObject jsonFormInfo = new JSONObject(locationJSON);</span>
+<span class="nc" id="L157">        jsonFormInfo.put(&quot;village&quot;, village.trim().replace(&quot; &quot;, &quot;%20&quot;));</span>
+<span class="nc" id="L158">        String customFields = context.allSettings().fetchFieldLabels(&quot;PNCRegistration&quot;);</span>
+<span class="nc bnc" id="L159" title="All 4 branches missed.">        if (customFields != null &amp;&amp; !customFields.equals(&quot;&quot;)) {</span>
+<span class="nc" id="L160">            JSONArray customFieldsArray = new JSONArray(customFields);</span>
+<span class="nc bnc" id="L161" title="All 2 branches missed.">            for (int i = 0; i &lt; customFieldsArray.length(); i++) {</span>
+<span class="nc" id="L162">                jsonFormInfo.put(&quot;field&quot; + (i + 1), customFieldsArray.getString(i).trim().replace(&quot; &quot;, &quot;%20&quot;));</span>
+            }
+        }
+<span class="nc" id="L165">        FieldOverrides fieldOverrides = new FieldOverrides(jsonFormInfo.toString());</span>
+<span class="nc" id="L166">        startFormActivity(PNC_REGISTRATION_OA, null, fieldOverrides.getJSONString());</span>
+<span class="nc" id="L167">    }</span>
+
+<span class="nc" id="L169">    private class ClientActionHandler implements View.OnClickListener {</span>
+        @Override
+        public void onClick(View view) {
+<span class="nc bnc" id="L172" title="All 3 branches missed.">            switch (view.getId()) {</span>
+                case R.id.profile_info_layout:
+<span class="nc" id="L174">                    showProfileView((SmartRegisterClient) view.getTag());</span>
+<span class="nc" id="L175">                    break;</span>
+                case R.id.btn_edit:
+<span class="nc" id="L177">                    showFragmentDialog(new UpdateDialogOptionModel(), view.getTag());</span>
+                    break;
+            }
+<span class="nc" id="L180">        }</span>
+
+        private void showProfileView(SmartRegisterClient client) {
+<span class="nc" id="L183">            navigationController.startPNC(client.entityId());</span>
+<span class="nc" id="L184">        }</span>
+    }
+
+
+<span class="nc" id="L188">    private class UpdateDialogOptionModel implements DialogOptionModel {</span>
+        @Override
+        public DialogOption[] getDialogOptions() {
+<span class="nc" id="L191">            return getUpdateOptions();</span>
+        }
+
+        @Override
+        public void onDialogOptionSelection(DialogOption option, Object tag) {
+<span class="nc" id="L196">            onEditSelection((EditOption) option, (SmartRegisterClient) tag);</span>
+<span class="nc" id="L197">        }</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.1.201405082137</span></div></body></html>

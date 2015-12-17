@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>Constants.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">org.ei.telemedicine.bluetooth</a> &gt; <span class="el_source">Constants.java</span></div><h1>Constants.java</h1><pre class="source lang-java linenums">package org.ei.telemedicine.bluetooth;
+
+import java.util.UUID;
+
+public interface Constants {
+
+<span class="nc" id="L7">    public static final UUID MY_UUID = UUID</span>
+            .fromString(&quot;00001101-0000-1000-8000-00805F9B34FB&quot;);
+    public static final int NO_DEVICE = 100;
+
+    public static final String PULSE_DEVICE = &quot;Sp&quot;;
+    public static final int PULSE_DEVICE_NUM = 101;
+
+    public static final String BP_DEVICE = &quot;NIBP&quot;;
+    public static final int BP_DEVICE_NUM = 102;
+
+    public static final String EET_DEVICE = &quot;TEMP&quot;;
+    public static final int EET_DEVICE_NUM = 103;
+
+    public static final String FET_DEVICE = &quot;FHR&quot;;
+    public static final int FET_DEVICE_NUM = 104;
+
+    public static final String BLOOD_DEVICE = &quot;BG&quot;;
+    public static final int BLOOD_DEVICE_NUM = 105;
+
+//	public static final String PULSE_DEVICE = &quot;SpO2080999&quot;;
+//	public static final int PULSE_DEVICE_NUM = 101;
+//
+//	public static final String BP_DEVICE = &quot;NIBP042077&quot;;
+//	public static final int BP_DEVICE_NUM = 102;
+//
+//	public static final String EET_DEVICE = &quot;TEMP010210&quot;;
+//	public static final int EET_DEVICE_NUM = 103;
+//
+//	public static final String FET_DEVICE = &quot;FHR010093&quot;;
+//	public static final int FET_DEVICE_NUM = 104;
+//
+//	public static final String BLOOD_DEVICE = &quot;BG011081&quot;;
+//	public static final int BLOOD_DEVICE_NUM = 105;
+
+    // Constants that indicate the current connection state
+    public static final int STATE_NONE = 0; // we're doing nothing
+    public static final int STATE_LISTEN = 1; // now listening for incoming
+    // connections
+    public static final int STATE_CONNECTING = 2; // now initiating an outgoing
+    // connection
+    public static final int STATE_CONNECTED = 3; // now connected to a remote
+    // device
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.1.201405082137</span></div></body></html>

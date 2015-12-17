@@ -1,3 +1,4 @@
+/*
 package org.ei.telemedicine.test.view.activity;
 
 import android.app.Activity;
@@ -56,3 +57,4 @@ public class NativeECSmartRegisterActivityTest extends ActivityInstrumentationTe
         super.tearDown();
     }
 }
+*/

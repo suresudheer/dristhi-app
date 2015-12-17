@@ -1,0 +1,427 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>AllConstants.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">org.ei.telemedicine</a> &gt; <span class="el_source">AllConstants.java</span></div><h1>AllConstants.java</h1><pre class="source lang-java linenums">package org.ei.telemedicine;
+
+<span class="nc" id="L3">public class AllConstants {</span>
+    public static final String DRISTHI_DIRECTORY_NAME = &quot;OpenSRP&quot;;
+    public static final String HOME_SCREEN = &quot;homeScreen&quot;;
+    public static final String VIEW_PLAN_OF_CARE = &quot;viewPlanOfCare&quot;;
+    public static final String VIEW_PNC_PLAN_OF_CARE = &quot;viewPNCPlanOfCare&quot;;
+    public static final String VIEW_CHILD_PLAN_OF_CARE = &quot;viewCHILDPlanOfCare&quot;;
+    public static final String VISIT_TYPE = &quot;visitType&quot;;
+
+    public static final String PRESCRIBE_DRUGS = &quot;Prescribe Possible Drugs&quot;;
+    public static final String PERSONAL_INFO = &quot;personal_info&quot;;
+    public static final String ROLE = &quot;role&quot;;
+    public static final String DRUGS = &quot;drugs&quot;;
+    public static final String LOCATION = &quot;location&quot;;
+
+    public static final String REPORT_CATEGORY = &quot;reportCategory&quot;;
+    public static final String INDICATOR_DETAIL = &quot;indicatorDetail&quot;;
+    public static final String CATEGORY_DESCRIPTION = &quot;categoryDescription&quot;;
+    public static final String MONTH = &quot;month&quot;;
+    public static final String CASE_IDS = &quot;caseIds&quot;;
+    public static final String INDICATOR = &quot;indicator&quot;;
+    public static final String CASE_ID = &quot;caseId&quot;;
+
+    public static final String EC_REGISTERS_KEY = &quot;ec_reg_state&quot;;
+    public static final String FP_REGISTERS_KEY = &quot;fp_reg_state&quot;;
+    public static final String ANC_REGISTERS_KEY = &quot;anc_reg_state&quot;;
+    public static final String PNC_REGISTERS_KEY = &quot;pnc_reg_state&quot;;
+    public static final String CHILD_REGISTERS_KEY = &quot;child_reg_state&quot;;
+
+
+    public static final String LANGUAGE_PREFERENCE_KEY = &quot;locale&quot;;
+    public static final String ENGLISH_LOCALE = &quot;en&quot;;
+    public static final String KANNADA_LOCALE = &quot;kn&quot;;
+    public static final String DEFAULT_LOCALE = ENGLISH_LOCALE;
+    public static final String ENGLISH_LANGUAGE = &quot;English&quot;;
+    public static final String KANNADA_LANGUAGE = &quot;Kannada&quot;;
+    public static final String IS_SYNC_IN_PROGRESS_PREFERENCE_KEY = &quot;isSyncInProgress&quot;;
+    public static final String IS_FP = &quot;isFp&quot;;
+    public static final String TYPE = &quot;type&quot;;
+    public static final String WOMAN_TYPE = &quot;woman&quot;;
+    public static final String CHILD_TYPE = &quot;child&quot;;
+    public static final String REALM = &quot;Dristhi&quot;;
+    public static final String RECEIVING_URL = &quot;http://202.153.34.169:8004/recieve?id=%s&amp;peer_id=%s&quot;;
+    public static final String WEBSOCKET = &quot;ws://202.153.34.169:8004/wslogin?id=%s&quot;;
+    public static final String CALLING_URL = &quot;http://202.153.34.169:8004/call?id=%s&amp;peer_id=%s&quot;;
+
+
+    public static final String LOGIN_URL_PATH = &quot;/auth/?userid=&quot;;
+    public static final String VILLAGES_USER_URL_PATH = &quot;/anm-villages?anm-id=&quot;;
+    public static final String DOCTOR_REFER_URL_PATH = &quot;/doctor_refer/?docid=&quot;;
+    public static final String DOC_DATA_URL_PATH = &quot;docinfo&quot;;
+    public static final String DRUG_INFO_URL_PATH = &quot;/druginfo/&quot;;
+    public static final String DOCTOR_OVERVIEW_URL_PATH = &quot;/docoverview/?&quot;;
+    //    public static final String VITALS_INFO_URL_PATH = &quot;/vitalsdata/&quot;;
+    public static final String VITALS_INFO_URL_PATH = &quot;/vitalsdata/?visit=&quot;;
+    public static final String VITALS_INFO_RESULT = &quot;vitalsData&quot;;
+    public static final String VITAL_TYPE = &quot;vitalType&quot;;
+    public static final String POC_DATA_SAVE_URL_PATH = &quot;/pocupdate/?&quot;;
+
+
+    public static final String DRUG_INFO_RESULT = &quot;drugsResultData&quot;;
+    public static final String POC_DRUGS = &quot;drug_data&quot;;
+    public static final String POC_INVESTIGATIONS = &quot;investigation_data&quot;;
+    public static final String POC_DIAGNOSIS = &quot;diagnosis_data&quot;;
+    public static final String PSTETHOSCOPE_DATA = &quot;pstechoscopeData&quot;;
+
+    //    public static final String USER_DETAILS_URL_PATH = &quot;/user-details/anm?anm-id=&quot;;
+//    public static final String USER_DETAILS_URL_PATH = &quot;/user-details?anm-id=&quot;;
+    public static final String USER_DETAILS_URL_PATH = &quot;/user-role?anm-id=&quot;;
+    public static final String ANM_ROLE = &quot;ANM&quot;;
+    public static final String DOCTOR_ROLE = &quot;DOC&quot;;
+
+    public static final String FORM_NAME_PARAM = &quot;formName&quot;;
+    public static final String VIEW_FORM = &quot;viewForm&quot;;
+    public static final String INSTANCE_ID_PARAM = &quot;instanceId&quot;;
+    public static final String ENTITY_ID_PARAM = &quot;entityId&quot;;
+    public static final String FIELD_OVERRIDES_PARAM = &quot;fieldOverrides&quot;;
+    public static final String VERSION_PARAM = &quot;version&quot;;
+    public static final String SYNC_STATUS = &quot;sync_status&quot;;
+    public static final String ENTITY_ID_FIELD_NAME = &quot;id&quot;;
+    public static final String ZIGGY_FILE_LOADER = &quot;ziggyFileLoader&quot;;
+    public static final String FORM_SUBMISSION_ROUTER = &quot;formSubmissionRouter&quot;;
+    public static final String ANM_LOCATION_CONTROLLER = &quot;anmLocationContext&quot;;
+    public static final String SUB_FORM_COUNT = &quot;subFormCount&quot;;
+
+    public static final String REPOSITORY = &quot;formDataRepositoryContext&quot;;
+
+    public static final String NEW_FP_METHOD_FIELD_NAME = &quot;newMethod&quot;;
+    public static final String FORMINFO = &quot;formInfo&quot;;
+    public static final String ALLFORMDATA = &quot;allFormInfo&quot;;
+    public static final String ENTITY_ID = &quot;entityId&quot;;
+    public static final int FORM_SUCCESSFULLY_SUBMITTED_RESULT_CODE = 112;
+    public static final int DRUGS_INFO_RESULT_CODE = 113;
+    public static final String ALERT_NAME_PARAM = &quot;alertName&quot;;
+    public static final String BOOLEAN_TRUE = &quot;yes&quot;;
+    public static final String BOOLEAN_FALSE = &quot;no&quot;;
+    public static final String SPACE = &quot; &quot;;
+    public static final String COLON = &quot;;&quot;;
+    public static final String COMMA_WITH_SPACE = &quot;, &quot;;
+    public static final String DEFAULT_WOMAN_IMAGE_PLACEHOLDER_PATH = &quot;../../img/woman-placeholder.png&quot;;
+    public static final String DEFAULT_GIRL_INFANT_IMAGE_PLACEHOLDER_PATH = &quot;../../img/icons/child-girlinfant@3x.png&quot;;
+    public static final String DEFAULT_BOY_INFANT_IMAGE_PLACEHOLDER_PATH = &quot;../../img/icons/child-infant@3x.png&quot;;
+    public static final String FEMALE_GENDER = &quot;female&quot;;
+    public static final String FORM_DATE_TIME_FORMAT = &quot;EEE, dd MMM yyyy HH:mm:ss ZZZ&quot;;
+    public static final String SHORT_DATE_FORMAT = &quot;dd/MM&quot;;
+    public static final String FILE_PATH_STARTING_STRING = &quot;file:///&quot;;
+    public static final String SLASH_STRING = &quot;/&quot;;
+    public static final String FP_DIALOG_TAB_SELECTION = &quot;FP_DIALOG_TAB_SELECTION&quot;;
+
+    public static final String OUT_OF_AREA = &quot;out_of_area&quot;;
+    public static final String IN_AREA = &quot;in_area&quot;;
+
+<span class="nc" id="L114">    public class Configuration {</span>
+        public static final String WIFE_MIN_AGE = &quot;wifeAgeMin&quot;;
+        public static final String HUSBAND_MIN_AGE = &quot;husbandAgeMin&quot;;
+        public static final String WIFE_MAX_AGE = &quot;wifeAgeMax&quot;;
+        public static final String HUSBAND_MAX_AGE = &quot;husbandAgeMax&quot;;
+        public static final String TEMPERATURE = &quot;temperature&quot;;
+    }
+
+<span class="nc" id="L122">    public class FormNames {</span>
+        public static final String EC_REGISTRATION = &quot;ec_registration&quot;;
+        public static final String VIEW_EC_REGISTRATION = &quot;view_ec_registration&quot;;
+        public static final String VIEW_ANC_REGISTRATION = &quot;view_anc_registration_oa&quot;;
+        public static final String VIEW_ANC_REGISTRATION_EC = &quot;view_anc_registration_ec&quot;;
+        public static final String FP_COMPLICATIONS = &quot;fp_complications&quot;;
+        public static final String FP_CHANGE = &quot;fp_change&quot;;
+        public static final String RENEW_FP_PRODUCT = &quot;renew_fp_product&quot;;
+        public static final String EC_CLOSE = &quot;ec_close&quot;;
+        public static final String ANC_REGISTRATION = &quot;anc_registration&quot;;
+        public static final String ANC_REGISTRATION_OA = &quot;anc_registration_oa&quot;;
+        public static final String ANC_VISIT = &quot;anc_visit&quot;;
+        public static final String ANC_VISIT_EDIT = &quot;anc_visit_edit&quot;;
+        public static final String ANC_CLOSE = &quot;anc_close&quot;;
+        public static final String TT = &quot;tt&quot;;
+        public static final String TT_BOOSTER = &quot;tt_booster&quot;;
+        public static final String TT_1 = &quot;tt_1&quot;;
+        public static final String TT_2 = &quot;tt_2&quot;;
+        public static final String IFA = &quot;ifa&quot;;
+        public static final String HB_TEST = &quot;hb_test&quot;;
+        public static final String DELIVERY_OUTCOME = &quot;delivery_outcome&quot;;
+        public static final String PNC_REGISTRATION_OA = &quot;pnc_registration_oa&quot;;
+        public static final String PNC_CLOSE = &quot;pnc_close&quot;;
+        public static final String PNC_VISIT = &quot;pnc_visit&quot;;
+        public static final String PNC_POSTPARTUM_FAMILY_PLANNING = &quot;postpartum_family_planning&quot;;
+        public static final String CHILD_IMMUNIZATIONS = &quot;child_immunizations&quot;;
+        public static final String CHILD_REGISTRATION_EC = &quot;child_registration_ec&quot;;
+        public static final String CHILD_REGISTRATION_OA = &quot;child_registration_oa&quot;;
+        public static final String CHILD_CLOSE = &quot;child_close&quot;;
+        public static final String CHILD_ILLNESS = &quot;child_illness&quot;;
+        public static final String VITAMIN_A = &quot;vitamin_a&quot;;
+        public static final String DELIVERY_PLAN = &quot;delivery_plan&quot;;
+        public static final String EC_EDIT = &quot;ec_edit&quot;;
+        public static final String ANC_INVESTIGATIONS = &quot;anc_investigations&quot;;
+        public static final String RECORD_ECPS = &quot;record_ecps&quot;;
+        public static final String FP_REFERRAL_FOLLOWUP = &quot;fp_referral_followup&quot;;
+        public static final String FP_FOLLOWUP = &quot;fp_followup&quot;;
+        //New Content
+        public static final String ANC_EDIT = &quot;anc_edit&quot;;
+        public static final String ANC_REG_EDIT_OA = &quot;anc_reg_edit_oa&quot;;
+        public static final String ANC_REG_EDIT = &quot;anc_reg_edit&quot;;
+        public static final String PNC_EDIT = &quot;pnc_edit&quot;;
+        public static final String PNC_REG_EDIT_OA = &quot;pnc_reg_edit_oa&quot;;
+        public static final String PNC_REG_EDIT = &quot;pnc_reg_edit&quot;;
+        public static final String CHILD_EDIT = &quot;child_edit&quot;;
+        public static final String CHILD_REG_EDIT_OA = &quot;child_reg_edit_oa&quot;;
+        public static final String CHILD_REG_EDIT = &quot;child_reg_edit&quot;;
+
+    }
+
+<span class="nc" id="L172">    public class ECRegistrationFields {</span>
+        public static final String CURRENT_FP_METHOD = &quot;currentMethod&quot;;
+        public static final String WIFE_DOB = &quot;wifeDOB&quot;;
+        public static final String WOMAN_DOB = &quot;womanDOB&quot;;
+        public static final String FAMILY_PLANNING_METHOD_CHANGE_DATE = &quot;familyPlanningMethodChangeDate&quot;;
+        public static final String IUD_PLACE = &quot;iudPlace&quot;;
+        public static final String IUD_PERSON = &quot;iudPerson&quot;;
+        public static final String NUMBER_OF_CONDOMS_SUPPLIED = &quot;numberOfCondomsSupplied&quot;;
+        public static final String NUMBER_OF_CENTCHROMAN_PILLS_DELIVERED = &quot;numberOfCentchromanPillsDelivered&quot;;
+        public static final String NUMBER_OF_OCP_DELIVERED = &quot;numberOfOCPDelivered&quot;;
+        public static final String CASTE = &quot;caste&quot;;
+        public static final String ECONOMIC_STATUS = &quot;economicStatus&quot;;
+        public static final String NUMBER_OF_PREGNANCIES = &quot;numberOfPregnancies&quot;;
+        public static final String PARITY = &quot;parity&quot;;
+        public static final String NUMBER_OF_LIVING_CHILDREN = &quot;numberOfLivingChildren&quot;;
+        public static final String NUMBER_OF_STILL_BIRTHS = &quot;numberOfStillBirths&quot;;
+        public static final String NUMBER_OF_ABORTIONS = &quot;numberOfAbortions&quot;;
+        public static final String HIGH_PRIORITY_REASON = &quot;highPriorityReason&quot;;
+        public static final String IS_HIGH_PRIORITY = &quot;isHighPriority&quot;;
+        public static final String REGISTRATION_DATE = &quot;registrationDate&quot;;
+        public static final String BPL_VALUE = &quot;BPL&quot;;
+        public static final String SC_VALUE = &quot;SC&quot;;
+        public static final String ST_VALUE = &quot;ST&quot;;
+    }
+
+<span class="nc" id="L197">    public class ANCCloseFields {</span>
+        public static final String DEATH_OF_WOMAN_FIELD_VALUE = &quot;death_of_woman&quot;;
+        public static final String CLOSE_REASON_FIELD_NAME = &quot;closeReason&quot;;
+        public static final String PERMANENT_RELOCATION_FIELD_VALUE = &quot;relocation_permanent&quot;;
+    }
+
+<span class="nc" id="L203">    public class PNCCloseFields {</span>
+        public static final String DEATH_OF_MOTHER_FIELD_VALUE = &quot;death_of_mother&quot;;
+        public static final String PERMANENT_RELOCATION_FIELD_VALUE = &quot;permanent_relocation&quot;;
+    }
+
+<span class="nc" id="L208">    public class IFAFields {</span>
+        public static final String NUMBER_OF_IFA_TABLETS_GIVEN = &quot;numberOfIFATabletsGiven&quot;;
+        public static final String IFA_TABLETS_DATE = &quot;ifaTabletsDate&quot;;
+    }
+
+<span class="nc" id="L213">    public class HbTestFields {</span>
+        public static final String HB_LEVEL = &quot;hbLevel&quot;;
+        public static final String HB_TEST_DATE = &quot;hbTestDate&quot;;
+    }
+
+<span class="nc" id="L218">    public class TTFields {</span>
+        public static final String TT_DOSE = &quot;ttDose&quot;;
+        public static final String TT_DATE = &quot;ttDate&quot;;
+    }
+
+<span class="nc" id="L223">    public class VisitTypes {</span>
+        public static final String ANC_VISIT = &quot;ANC&quot;;
+        public static final String PNC_VISIT = &quot;PNC&quot;;
+        public static final String CHILD_VISIT = &quot;CHILD&quot;;
+    }
+
+<span class="nc" id="L229">    public class GraphFields {</span>
+        public static final String TEMPERATURE = &quot;temperature&quot;;
+        public static final String FETALDATA = &quot;fetalData&quot;;
+        public static final String BP = &quot;bpDiastolic&quot;;
+        public static final String BP_DIA = &quot;bpDiastolic&quot;;
+        public static final String BP_SYS = &quot;bpSystolic&quot;;
+        public static final String VISIT_DATE = &quot;visitDate&quot;;
+        public static final String VISITNUMBER = &quot;visit_number&quot;;
+        public static final String BLOODGLUCOSEDATA = &quot;bloodGlucoseData&quot;;
+    }
+
+<span class="nc" id="L240">    public class ANCRegistrationFields {</span>
+        public static final String EDD = &quot;edd&quot;;
+        public static final String HIGH_RISK_REASON = &quot;highRiskReason&quot;;
+        public static final String IS_HIGH_RISK = &quot;isHighRisk&quot;;
+        public static final String ASHA_PHONE_NUMBER = &quot;ashaPhoneNumber&quot;;
+        public static final String ANC_NUMBER = &quot;ancNumber&quot;;
+        public static final String ANC_POC_INFO = &quot;docPocInfo&quot;;
+        public static final String REGISTRATION_DATE = &quot;registrationDate&quot;;
+        public static final String RISK_OBSERVED_DURING_ANC = &quot;riskObservedDuringANC&quot;;
+    }
+
+<span class="nc" id="L251">    public class PNCRegistrationFields {</span>
+        public static final String PNC_POC_INFO = &quot;docPocInfo&quot;;
+        public static final String PNC_NUMBER = &quot;pncNumber&quot;;
+        public static final String DELIVERY_PLACE = &quot;deliveryPlace&quot;;
+        public static final String DELIVERY_TYPE = &quot;deliveryType&quot;;
+        public static final String DELIVERY_COMPLICATIONS = &quot;deliveryComplications&quot;;
+        public static final String OTHER_DELIVERY_COMPLICATIONS = &quot;otherDeliveryComplications&quot;;
+        public static final String IMMEDIATE_REFERRAL_REASON = &quot;immediateReferralReason&quot;;
+    }
+
+<span class="nc" id="L261">    public class ANCVisitFields {</span>
+        public static final String REFERENCE_DATE = &quot;referenceDate&quot;;
+        public static final String THAYI_CARD_NUMBER = &quot;thayiCardNumber&quot;;
+        public static final String ANC_VISIT_NUMBER = &quot;ancVisitNumber&quot;;
+        public static final String ANC_VISIT_DATE = &quot;ancVisitDate&quot;;
+        public static final String BP_SYSTOLIC = &quot;bpSystolic&quot;;
+        public static final String BP_DIASTOLIC = &quot;bpDiastolic&quot;;
+        public static final String TEMPERATURE = &quot;temperature&quot;;
+        public static final String HBLEVEL = &quot;hbLevel&quot;;
+        public static final String BLOODGLUCOSEDATA = &quot;bloodGlucoseData&quot;;
+        public static final String ISCONSULTDOCTOR = &quot;isConsultDoctor&quot;;
+        public static final String FETALDATA = &quot;fetalData&quot;;
+        public static final String WEIGHT = &quot;weight&quot;;
+        public static final String ANM_POC = &quot;anmPoc&quot;;
+        public static final String POC_INFO = &quot;docPocInfo&quot;;
+        public static final String RISKS = &quot;riskObservedDuringANC&quot;;
+    }
+
+<span class="nc" id="L279">    public class PNCVisitFields {</span>
+        public static final String PNC_VISIT_DAY = &quot;pncVisitDay&quot;;
+        public static final String PNC_VISIT_DATE = &quot;pncVisitDate&quot;;
+        public static final String BP_SYSTOLIC = &quot;bpSystolic&quot;;
+        public static final String BP_DIASTOLIC = &quot;bpDiastolic&quot;;
+        public static final String TEMPERATURE = &quot;temperature&quot;;
+        public static final String CHILD_TEMPERATURE = &quot;childTemperature&quot;;
+        public static final String WEIGHT = &quot;weight&quot;;
+        public static final String HB_LEVEL = &quot;hbLevel&quot;;
+        public static final String BLOODGLUCOSEDATA = &quot;bloodGlucoseData&quot;;
+        public static final String ISCONSULTDOCTOR = &quot;isConsultDoctor&quot;;
+        public static final String PNC_RISKS = &quot;pncRisks&quot;;
+
+        public static final String NUMBER_OF_IFA_TABLETS_GIVEN = &quot;numberOfIFATabletsGiven&quot;;
+        public static final String CHILD_PNC_VISIT_SUB_FORM_NAME = &quot;child_pnc_visit&quot;;
+    }
+
+<span class="nc" id="L296">    public class DeliveryOutcomeFields {</span>
+        public static final String DID_WOMAN_SURVIVE = &quot;didWomanSurvive&quot;;
+        public static final String DID_MOTHER_SURVIVE = &quot;didMotherSurvive&quot;;
+        public static final String REFERENCE_DATE = &quot;referenceDate&quot;;
+        public static final String DELIVERY_PLACE = &quot;deliveryPlace&quot;;
+        public static final String DELIVERY_OUTCOME = &quot;deliveryOutcome&quot;;
+        public static final String CHILD_REGISTRATION_SUB_FORM_NAME = &quot;child_registration&quot;;
+        public static final String STILL_BIRTH_VALUE = &quot;still_birth&quot;;
+    }
+
+<span class="nc" id="L306">    public class ChildRegistrationECFields {</span>
+        public static final String BCG_DATE = &quot;bcgDate&quot;;
+        public static final String MEASLES_DATE = &quot;measlesDate&quot;;
+        public static final String MEASLESBOOSTER_DATE = &quot;measlesboosterDate&quot;;
+        public static final String OPV_0_DATE = &quot;opv0Date&quot;;
+        public static final String OPV_1_DATE = &quot;opv1Date&quot;;
+        public static final String OPV_2_DATE = &quot;opv2Date&quot;;
+        public static final String OPV_3_DATE = &quot;opv3Date&quot;;
+        public static final String OPVBOOSTER_DATE = &quot;opvboosterDate&quot;;
+        public static final String DPTBOOSTER_1_DATE = &quot;dptbooster1Date&quot;;
+        public static final String DPTBOOSTER_2_DATE = &quot;dptbooster2Date&quot;;
+        public static final String PENTAVALENT_1_DATE = &quot;pentavalent1Date&quot;;
+        public static final String PENTAVALENT_2_DATE = &quot;pentavalent2Date&quot;;
+        public static final String PENTAVALENT_3_DATE = &quot;pentavalent3Date&quot;;
+        public static final String HEPB_BIRTH_DOSE_DATE = &quot;hepb0Date&quot;;
+        public static final String SHOULD_CLOSE_MOTHER = &quot;shouldCloseMother&quot;;
+        public static final String MMR_DATE = &quot;mmrDate&quot;;
+        public static final String JE_DATE = &quot;jeDate&quot;;
+    }
+
+<span class="nc" id="L326">    public class ChildRegistrationFields {</span>
+        public static final String CHILD_POC_INFO = &quot;docPocInfo&quot;;
+        public static final String MOTHER_ID = &quot;motherId&quot;;
+        public static final String CHILD_ID = &quot;childId&quot;;
+        public static final String DATE_OF_BIRTH = &quot;dateOfBirth&quot;;
+        public static final String WEIGHT = &quot;weight&quot;;
+        public static final String IMMUNIZATIONS_GIVEN = &quot;immunizationsGiven&quot;;
+        public static final String GENDER = &quot;gender&quot;;
+        public static final String NAME = &quot;name&quot;;
+        public static final String HIGH_RISK_REASON = &quot;childHighRiskReason&quot;;
+        public static final String IS_CHILD_HIGH_RISK = &quot;isChildHighRisk&quot;;
+    }
+
+<span class="nc" id="L339">    public class ChildRegistrationOAFields {</span>
+        public static final String CHILD_ID = &quot;id&quot;;
+        public static final String DATE_OF_BIRTH = &quot;dateOfBirth&quot;;
+        public static final String WEIGHT = &quot;weight&quot;;
+        public static final String IMMUNIZATIONS_GIVEN = &quot;immunizationsGiven&quot;;
+        public static final String NAME = &quot;name&quot;;
+        public static final String THAYI_CARD_NUMBER = &quot;thayiCardNumber&quot;;
+    }
+
+<span class="nc" id="L348">    public class PNCRegistrationOAFields {</span>
+        public static final String WEIGHT = &quot;weight&quot;;
+        public static final String IMMUNIZATIONS_GIVEN = &quot;immunizationsGiven&quot;;
+        public static final String CHILD_REGISTRATION_OA_SUB_FORM_NAME = &quot;child_registration_oa&quot;;
+    }
+
+<span class="nc" id="L354">    public class ChildImmunizationsFields {</span>
+        public static final String PREVIOUS_IMMUNIZATIONS_GIVEN = &quot;previousImmunizations&quot;;
+        public static final String IMMUNIZATIONS_GIVEN = &quot;immunizationsGiven&quot;;
+        public static final String IMMUNIZATION_DATE = &quot;immunizationDate&quot;;
+    }
+
+<span class="nc" id="L360">    public static class Immunizations {</span>
+        public static final String BCG = &quot;bcg&quot;;
+
+        public static final String MEASLES = &quot;measles&quot;;
+        public static final String MEASLES_BOOSTER = &quot;measlesbooster&quot;;
+
+        public static final String OPV_0 = &quot;opv_0&quot;;
+        public static final String OPV_1 = &quot;opv_1&quot;;
+        public static final String OPV_2 = &quot;opv_2&quot;;
+        public static final String OPV_3 = &quot;opv_3&quot;;
+        public static final String OPV_BOOSTER = &quot;opvbooster&quot;;
+
+        public static final String DPT_BOOSTER_1 = &quot;dptbooster_1&quot;;
+        public static final String DPT_BOOSTER_2 = &quot;dptbooster_2&quot;;
+
+        public static final String PENTAVALENT_1 = &quot;pentavalent_1&quot;;
+        public static final String PENTAVALENT_2 = &quot;pentavalent_2&quot;;
+        public static final String PENTAVALENT_3 = &quot;pentavalent_3&quot;;
+
+        public static final String HEPATITIS_BIRTH_DOSE = &quot;hepb_0&quot;;
+        public static final String MMR = &quot;mmr&quot;;
+        public static final String JE = &quot;je&quot;;
+
+<span class="fc" id="L383">        public static final String[] ALL = new String[]{</span>
+                BCG,
+                MEASLES, MEASLES_BOOSTER,
+                OPV_0, OPV_1, OPV_2, OPV_3, OPV_BOOSTER,
+                DPT_BOOSTER_1, DPT_BOOSTER_2,
+                PENTAVALENT_1, PENTAVALENT_2, PENTAVALENT_3,
+                HEPATITIS_BIRTH_DOSE,
+                JE,
+                MMR};
+    }
+
+<span class="nc" id="L394">    public class ChildIllnessFields {</span>
+        public static final String CHILD_SIGNS = &quot;childSigns&quot;;
+        public static final String CHILD_SIGNS_OTHER = &quot;childSignsOther&quot;;
+        public static final String SICK_VISIT_DATE = &quot;sickVisitDate&quot;;
+        public static final String REPORT_CHILD_DISEASE = &quot;reportChildDisease&quot;;
+        public static final String REPORT_CHILD_DISEASE_OTHER = &quot;reportChildDiseaseOther&quot;;
+        public static final String REPORT_CHILD_DISEASE_DATE = &quot;reportChildDiseaseDate&quot;;
+        public static final String REPORT_CHILD_DISEASE_PLACE = &quot;reportChildDiseasePlace&quot;;
+        public static final String CHILD_REFERRAL = &quot;childReferral&quot;;
+    }
+
+<span class="nc" id="L405">    public class VitaminAFields {</span>
+        public static final String VITAMIN_A_DOSE = &quot;vitaminADose&quot;;
+        public static final String VITAMIN_A_DATE = &quot;vitaminADate&quot;;
+        public static final String VITAMIN_A_PLACE = &quot;vitaminAPlace&quot;;
+    }
+
+<span class="nc" id="L411">    public class CommonFormFields {</span>
+        public static final String SUBMISSION_DATE = &quot;submissionDate&quot;;
+    }
+
+<span class="nc" id="L415">    public class DeliveryPlanFields {</span>
+        public static final String DELIVERY_FACILITY_NAME = &quot;deliveryFacilityName&quot;;
+        public static final String TRANSPORTATION_PLAN = &quot;transportationPlan&quot;;
+        public static final String BIRTH_COMPANION = &quot;birthCompanion&quot;;
+        public static final String ASHA_PHONE_NUMBER = &quot;ashaPhoneNumber&quot;;
+        public static final String PHONE_NUMBER = &quot;phoneNumber&quot;;
+        public static final String REVIEWED_HRP_STATUS = &quot;reviewedHRPStatus&quot;;
+        public static final String DELIVERY_FACILITY_HOME_VALUE = &quot;home&quot;;
+        public static final String DELIVERY_FACILITY_SDH_VALUE = &quot;sdh&quot;;
+        public static final String DELIVERY_FACILITY_DH_VALUE = &quot;dh&quot;;
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.1.201405082137</span></div></body></html>

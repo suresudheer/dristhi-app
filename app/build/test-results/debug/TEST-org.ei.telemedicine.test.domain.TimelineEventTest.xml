@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="org.ei.telemedicine.test.domain.TimelineEventTest" tests="21" skipped="0" failures="0" errors="0" timestamp="2015-12-17T05:22:15" hostname="DIPL-PC0206" time="0.012">
+  <properties/>
+  <testcase name="shouldCreateTimelineEventForANCVisitExcludingThoseDetailsWhichDoNotHaveValue" classname="org.ei.telemedicine.test.domain.TimelineEventTest" time="0.0"/>
+  <testcase name="shouldCreateTimelineEventWithTitleBasedOnSex" classname="org.ei.telemedicine.test.domain.TimelineEventTest" time="0.001"/>
+  <testcase name="shouldCreateTimelineEventForFPCondomRenew" classname="org.ei.telemedicine.test.domain.TimelineEventTest" time="0.0"/>
+  <testcase name="shouldCreateTimelineEventForANCVisitWithDetails" classname="org.ei.telemedicine.test.domain.TimelineEventTest" time="0.0"/>
+  <testcase name="shouldCreateTimelineEventForChildPNCVisitWithDetails" classname="org.ei.telemedicine.test.domain.TimelineEventTest" time="0.001"/>
+  <testcase name="shouldCreateTimelineEventForChildBirthInMotherProfileWithDetails" classname="org.ei.telemedicine.test.domain.TimelineEventTest" time="0.0"/>
+  <testcase name="shouldCreateTimelineEventForMotherPNCVisitWithDetails" classname="org.ei.telemedicine.test.domain.TimelineEventTest" time="0.0"/>
+  <testcase name="shouldCreateTimelineEventForFPDMPARenew" classname="org.ei.telemedicine.test.domain.TimelineEventTest" time="0.0"/>
+  <testcase name="shouldCreateTimelineEventForChildPNCVisitExcludingThoseDetailsWhichDoNotHaveValue" classname="org.ei.telemedicine.test.domain.TimelineEventTest" time="0.001"/>
+  <testcase name="shouldCreateTimelineEventForUpdateImmunization" classname="org.ei.telemedicine.test.domain.TimelineEventTest" time="0.0"/>
+  <testcase name="shouldCreateTimelineEventForDeliveryPlan" classname="org.ei.telemedicine.test.domain.TimelineEventTest" time="0.001"/>
+  <testcase name="shouldCreateTimelineEventForChildBirthInECProfileExcludingThoseDetailsWhichDoNotHaveValue" classname="org.ei.telemedicine.test.domain.TimelineEventTest" time="0.0"/>
+  <testcase name="shouldCreateTimelineEventForChildBirthInMotherProfileExcludingThoseDetailsWhichDoNotHaveValue" classname="org.ei.telemedicine.test.domain.TimelineEventTest" time="0.0"/>
+  <testcase name="shouldCreateTimelineEventForFPOCPRenew" classname="org.ei.telemedicine.test.domain.TimelineEventTest" time="0.0"/>
+  <testcase name="shouldCreateTimelineEventForChildBirthInChildProfileExcludingThoseDetailsWhichDoNotHaveValue" classname="org.ei.telemedicine.test.domain.TimelineEventTest" time="0.0"/>
+  <testcase name="shouldCreateTimelineEventForStartOfPregnancyWithReferenceDateAndRegistrationDate" classname="org.ei.telemedicine.test.domain.TimelineEventTest" time="0.0"/>
+  <testcase name="shouldCreateTimelineEventForMotherPNCVisitExcludingThoseDetailsWhichDoNotHaveValue" classname="org.ei.telemedicine.test.domain.TimelineEventTest" time="0.0"/>
+  <testcase name="shouldCreateTimelineEventForChildBirthInECProfileWithDetails" classname="org.ei.telemedicine.test.domain.TimelineEventTest" time="0.0"/>
+  <testcase name="shouldCreateTimelineEventForFPIUDRenew" classname="org.ei.telemedicine.test.domain.TimelineEventTest" time="0.001"/>
+  <testcase name="shouldCreateTimelineEventForChildBirthInChildProfileWithDetails" classname="org.ei.telemedicine.test.domain.TimelineEventTest" time="0.0"/>
+  <testcase name="shouldCreateTimelineEventForStartOfPregnancyForECWithReferenceDateAndRegistrationDate" classname="org.ei.telemedicine.test.domain.TimelineEventTest" time="0.001"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>SecuredFormActivity.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">org.ei.telemedicine.view.activity</a> &gt; <span class="el_source">SecuredFormActivity.java</span></div><h1>SecuredFormActivity.java</h1><pre class="source lang-java linenums">package org.ei.telemedicine.view.activity;
+
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.util.Log;
+import android.webkit.WebSettings;
+
+import org.apache.commons.io.IOUtils;
+import org.ei.telemedicine.AllConstants;
+import org.ei.telemedicine.Context;
+
+import java.io.IOException;
+import java.net.URLEncoder;
+import java.text.MessageFormat;
+
+import static java.util.UUID.randomUUID;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
+import static org.ei.telemedicine.AllConstants.ENTITY_ID_PARAM;
+import static org.ei.telemedicine.AllConstants.FIELD_OVERRIDES_PARAM;
+import static org.ei.telemedicine.AllConstants.FORM_NAME_PARAM;
+import static org.ei.telemedicine.AllConstants.FORM_SUBMISSION_ROUTER;
+import static org.ei.telemedicine.AllConstants.INSTANCE_ID_PARAM;
+import static org.ei.telemedicine.AllConstants.REPOSITORY;
+import static org.ei.telemedicine.AllConstants.VIEW_FORM;
+import static org.ei.telemedicine.AllConstants.ZIGGY_FILE_LOADER;
+import static org.ei.telemedicine.R.string.edd_label;
+import static org.ei.telemedicine.R.string.form_back_confirm_dialog_message;
+import static org.ei.telemedicine.R.string.form_back_confirm_dialog_title;
+import static org.ei.telemedicine.R.string.no_button_label;
+import static org.ei.telemedicine.R.string.yes_button_label;
+import static org.ei.telemedicine.util.Log.logError;
+
+public abstract class SecuredFormActivity extends SecuredWebActivity {
+    public static final String ANDROID_CONTEXT_FIELD = &quot;androidContext&quot;;
+    private String model;
+    private String form;
+    private String formName;
+    private boolean isViewForm;
+    private String entityId;
+    private String fieldOverrides;
+<span class="nc" id="L42">    private String TAG = &quot;SecuredFormActivity&quot;;</span>
+
+    public SecuredFormActivity() {
+<span class="nc" id="L45">        super();</span>
+<span class="nc" id="L46">        shouldDismissProgressBarOnProgressComplete = false;</span>
+<span class="nc" id="L47">    }</span>
+
+    @Override
+    protected void onInitialization() {
+        try {
+<span class="nc" id="L52">            getIntentData();</span>
+<span class="nc" id="L53">        } catch (IOException e) {</span>
+<span class="nc" id="L54">            logError(e.toString());</span>
+<span class="nc" id="L55">            finish();</span>
+<span class="nc" id="L56">        }</span>
+<span class="nc" id="L57">        webViewInitialization();</span>
+<span class="nc" id="L58">    }</span>
+
+    private void getIntentData() throws IOException {
+<span class="nc" id="L61">        Intent intent = getIntent();</span>
+<span class="nc" id="L62">        formName = intent.getStringExtra(FORM_NAME_PARAM);</span>
+<span class="nc" id="L63">        entityId = intent.getStringExtra(ENTITY_ID_PARAM);</span>
+<span class="nc" id="L64">        fieldOverrides = intent.getStringExtra(FIELD_OVERRIDES_PARAM);</span>
+<span class="nc bnc" id="L65" title="All 4 branches missed.">        isViewForm = intent.hasExtra(VIEW_FORM) &amp;&amp; intent.getBooleanExtra(VIEW_FORM, false);</span>
+<span class="nc" id="L66">        model = IOUtils.toString(getAssets().open(</span>
+                &quot;www/form/&quot; + formName + &quot;/model.xml&quot;));
+<span class="nc" id="L68">        form = IOUtils.toString(getAssets().open(</span>
+                &quot;www/form/&quot; + formName + &quot;/form.xml&quot;));
+//        model = IOUtils.toString(new FileInputStream(new File(Environment.getExternalStorageDirectory().getPath() + &quot;/forms/anc_visit/model.xml&quot;)), null);
+//        form = IOUtils.toString(new FileInputStream(new File(Environment.getExternalStorageDirectory().getPath() + &quot;/forms/anc_visit/form.xml&quot;)), null);
+<span class="nc" id="L72">        Log.e(&quot;Form Details&quot;, formName + &quot;--&quot; + entityId);</span>
+<span class="nc" id="L73">        context.userService().setFormDetails(formName, entityId);</span>
+<span class="nc" id="L74">    }</span>
+
+    private void webViewInitialization() {
+<span class="nc" id="L77">        WebSettings webViewSettings = webView.getSettings();</span>
+<span class="nc" id="L78">        webViewSettings.setJavaScriptEnabled(true);</span>
+<span class="nc" id="L79">        webViewSettings.setDatabaseEnabled(true);</span>
+<span class="nc" id="L80">        webViewSettings.setDomStorageEnabled(true);</span>
+<span class="nc" id="L81">        webView.addJavascriptInterface(new FormWebInterface(model, form, this),</span>
+                ANDROID_CONTEXT_FIELD);
+<span class="nc" id="L83">        webView.addJavascriptInterface(Context.getInstance()</span>
+                .formDataRepository(), REPOSITORY);
+<span class="nc" id="L85">        webView.addJavascriptInterface(Context.getInstance().ziggyFileLoader(),</span>
+                ZIGGY_FILE_LOADER);
+<span class="nc" id="L87">        webView.addJavascriptInterface(Context.getInstance()</span>
+                .formSubmissionRouter(), FORM_SUBMISSION_ROUTER);
+<span class="nc" id="L89">        String encodedFieldOverrides = null;</span>
+        try {
+<span class="nc bnc" id="L91" title="All 2 branches missed.">            if (isNotBlank(this.fieldOverrides)) {</span>
+<span class="nc" id="L92">                encodedFieldOverrides = URLEncoder.encode(this.fieldOverrides,</span>
+                        &quot;utf-8&quot;);
+<span class="nc" id="L94">                Log.e(TAG, &quot;Encoded Field Overriedes&quot; + encodedFieldOverrides);</span>
+            }
+<span class="nc" id="L96">        } catch (Exception e) {</span>
+<span class="nc" id="L97">            logError(MessageFormat.format(</span>
+                    &quot;Cannot encode field overrides: {0} due to : {1}&quot;,
+                    fieldOverrides, e));
+<span class="nc" id="L100">        }</span>
+        String loadingURL;
+<span class="nc" id="L102">        Log.e(TAG, &quot;View &quot; + isViewForm + &quot;&quot;);</span>
+<span class="nc bnc" id="L103" title="All 2 branches missed.">        if (!isViewForm)</span>
+<span class="nc" id="L104">            loadingURL = MessageFormat</span>
+                    .format(&quot;file:///android_asset/www/enketo/template.html?{0}={1}&amp;{2}={3}&amp;{4}={5}&amp;{6}={7}&amp;touch=true&quot;,
+                            FORM_NAME_PARAM, formName, ENTITY_ID_PARAM, entityId,
+                            INSTANCE_ID_PARAM, randomUUID(), FIELD_OVERRIDES_PARAM,
+                            encodedFieldOverrides);
+        else
+<span class="nc" id="L110">            loadingURL = MessageFormat</span>
+                    .format(&quot;file:///android_asset/www/enketo/view_template.html?{0}={1}&amp;{2}={3}&amp;{4}={5}&amp;{6}={7}&amp;touch=true&quot;,
+                            FORM_NAME_PARAM, formName, ENTITY_ID_PARAM, entityId,
+                            INSTANCE_ID_PARAM, randomUUID(), FIELD_OVERRIDES_PARAM,
+                            encodedFieldOverrides);
+
+<span class="nc" id="L116">        Log.e(TAG, &quot;Loading URl &quot; + loadingURL);</span>
+<span class="nc" id="L117">        webView.loadUrl(loadingURL);</span>
+<span class="nc" id="L118">    }</span>
+
+    @Override
+    protected void reportException(String message) {
+
+<span class="nc" id="L123">    }</span>
+
+    @Override
+    public void onBackPressed() {
+<span class="nc bnc" id="L127" title="All 2 branches missed.">        if (isViewForm)</span>
+<span class="nc" id="L128">            this.finish();</span>
+//            goBack();
+        else
+<span class="nc" id="L131">            new AlertDialog.Builder(this)</span>
+                    .setMessage(form_back_confirm_dialog_message)
+                    .setTitle(form_back_confirm_dialog_title)
+                    .setCancelable(false)
+                    .setPositiveButton(yes_button_label,
+<span class="nc" id="L136">                            new DialogInterface.OnClickListener() {</span>
+                                public void onClick(DialogInterface dialog,
+                                                    int whichButton) {
+<span class="nc" id="L139">                                    goBack();</span>
+<span class="nc" id="L140">                                }</span>
+                            })
+                    .setNegativeButton(no_button_label,
+<span class="nc" id="L143">                            new DialogInterface.OnClickListener() {</span>
+                                public void onClick(DialogInterface dialog,
+                                                    int whichButton) {
+<span class="nc" id="L146">                                }</span>
+                            }).show();
+<span class="nc" id="L148">    }</span>
+
+    private void goBack() {
+//        super.onBackPressed();
+<span class="nc" id="L152">        finish();</span>
+<span class="nc" id="L153">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.1.201405082137</span></div></body></html>

@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>AlertRepository.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">org.ei.telemedicine.repository</a> &gt; <span class="el_source">AlertRepository.java</span></div><h1>AlertRepository.java</h1><pre class="source lang-java linenums">package org.ei.telemedicine.repository;
+
+import android.content.ContentValues;
+import android.database.Cursor;
+import net.sqlcipher.database.SQLiteDatabase;
+
+import org.ei.telemedicine.domain.Alert;
+import org.joda.time.LocalDate;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static java.lang.String.format;
+import static org.apache.commons.lang3.ArrayUtils.addAll;
+import static org.apache.commons.lang3.StringUtils.repeat;
+import static org.ei.telemedicine.dto.AlertStatus.*;
+
+<span class="nc" id="L18">public class AlertRepository extends DrishtiRepository {</span>
+    private static final String ALERTS_SQL = &quot;CREATE TABLE alerts(caseID VARCHAR, scheduleName VARCHAR, visitCode VARCHAR, status VARCHAR, startDate VARCHAR, expiryDate VARCHAR, completionDate VARCHAR)&quot;;
+    private static final String ALERTS_TABLE_NAME = &quot;alerts&quot;;
+    public static final String ALERTS_CASEID_COLUMN = &quot;caseID&quot;;
+    public static final String ALERTS_SCHEDULE_NAME_COLUMN = &quot;scheduleName&quot;;
+    public static final String ALERTS_VISIT_CODE_COLUMN = &quot;visitCode&quot;;
+    public static final String ALERTS_STATUS_COLUMN = &quot;status&quot;;
+    public static final String ALERTS_STARTDATE_COLUMN = &quot;startDate&quot;;
+    public static final String ALERTS_EXPIRYDATE_COLUMN = &quot;expiryDate&quot;;
+    public static final String ALERTS_COMPLETIONDATE_COLUMN = &quot;completionDate&quot;;
+<span class="fc" id="L28">    private static final String[] ALERTS_TABLE_COLUMNS = new String[]{</span>
+            ALERTS_CASEID_COLUMN,
+            ALERTS_SCHEDULE_NAME_COLUMN,
+            ALERTS_VISIT_CODE_COLUMN,
+            ALERTS_STATUS_COLUMN,
+            ALERTS_STARTDATE_COLUMN,
+            ALERTS_EXPIRYDATE_COLUMN,
+            ALERTS_COMPLETIONDATE_COLUMN
+    };
+    public static final String CASE_AND_VISIT_CODE_COLUMN_SELECTIONS = ALERTS_CASEID_COLUMN + &quot; = ? AND &quot; + ALERTS_VISIT_CODE_COLUMN + &quot; = ?&quot;;
+
+    @Override
+    protected void onCreate(SQLiteDatabase database) {
+<span class="nc" id="L41">        database.execSQL(ALERTS_SQL);</span>
+<span class="nc" id="L42">    }</span>
+
+    public List&lt;Alert&gt; allAlerts() {
+<span class="nc" id="L45">        SQLiteDatabase database = masterRepository.getReadableDatabase();</span>
+<span class="nc" id="L46">        Cursor cursor = database.query(ALERTS_TABLE_NAME, ALERTS_TABLE_COLUMNS, null, null, null, null, null, null);</span>
+<span class="nc" id="L47">        return readAllAlerts(cursor);</span>
+    }
+
+    public List&lt;Alert&gt; allActiveAlertsForCase(String caseId) {
+<span class="nc" id="L51">        SQLiteDatabase database = masterRepository.getReadableDatabase();</span>
+<span class="nc" id="L52">        Cursor cursor = database.query(ALERTS_TABLE_NAME, ALERTS_TABLE_COLUMNS, ALERTS_CASEID_COLUMN + &quot; = ?&quot;, new String[]{caseId}, null, null, null, null);</span>
+<span class="nc" id="L53">        return filterActiveAlerts(readAllAlerts(cursor));</span>
+    }
+
+    public void createAlert(Alert alert) {
+<span class="nc" id="L57">        SQLiteDatabase database = masterRepository.getWritableDatabase();</span>
+<span class="nc" id="L58">        String[] caseAndScheduleNameColumnValues = {alert.caseId(), alert.scheduleName()};</span>
+
+<span class="nc" id="L60">        String caseAndScheduleNameColumnSelections = ALERTS_CASEID_COLUMN + &quot; = ? AND &quot; + ALERTS_SCHEDULE_NAME_COLUMN + &quot; = ?&quot;;</span>
+<span class="nc" id="L61">        Cursor cursor = database.query(ALERTS_TABLE_NAME, ALERTS_TABLE_COLUMNS, caseAndScheduleNameColumnSelections, caseAndScheduleNameColumnValues, null, null, null, null);</span>
+<span class="nc" id="L62">        List&lt;Alert&gt; existingAlerts = readAllAlerts(cursor);</span>
+
+<span class="nc" id="L64">        ContentValues values = createValuesFor(alert);</span>
+<span class="nc bnc" id="L65" title="All 2 branches missed.">        if (existingAlerts.isEmpty()) {</span>
+<span class="nc" id="L66">            database.insert(ALERTS_TABLE_NAME, null, values);</span>
+        } else {
+<span class="nc" id="L68">            database.update(ALERTS_TABLE_NAME, values, caseAndScheduleNameColumnSelections, caseAndScheduleNameColumnValues);</span>
+        }
+<span class="nc" id="L70">    }</span>
+
+    public void markAlertAsClosed(String caseId, String visitCode, String completionDate) {
+<span class="nc" id="L73">        SQLiteDatabase database = masterRepository.getWritableDatabase();</span>
+<span class="nc" id="L74">        String[] caseAndVisitCodeColumnValues = {caseId, visitCode};</span>
+
+<span class="nc" id="L76">        ContentValues valuesToBeUpdated = new ContentValues();</span>
+<span class="nc" id="L77">        valuesToBeUpdated.put(ALERTS_STATUS_COLUMN, complete.value());</span>
+<span class="nc" id="L78">        valuesToBeUpdated.put(ALERTS_COMPLETIONDATE_COLUMN, completionDate);</span>
+<span class="nc" id="L79">        database.update(ALERTS_TABLE_NAME, valuesToBeUpdated, CASE_AND_VISIT_CODE_COLUMN_SELECTIONS, caseAndVisitCodeColumnValues);</span>
+<span class="nc" id="L80">    }</span>
+
+    public void deleteAllAlertsForEntity(String caseId) {
+<span class="nc" id="L83">        SQLiteDatabase database = masterRepository.getWritableDatabase();</span>
+<span class="nc" id="L84">        database.delete(ALERTS_TABLE_NAME, ALERTS_CASEID_COLUMN + &quot;= ?&quot;, new String[]{caseId});</span>
+<span class="nc" id="L85">    }</span>
+
+    public void deleteAllAlerts() {
+<span class="nc" id="L88">        SQLiteDatabase database = masterRepository.getWritableDatabase();</span>
+<span class="nc" id="L89">        database.delete(ALERTS_TABLE_NAME, null, null);</span>
+<span class="nc" id="L90">    }</span>
+
+    private List&lt;Alert&gt; readAllAlerts(Cursor cursor) {
+<span class="nc" id="L93">        cursor.moveToFirst();</span>
+<span class="nc" id="L94">        List&lt;Alert&gt; alerts = new ArrayList&lt;Alert&gt;();</span>
+<span class="nc bnc" id="L95" title="All 2 branches missed.">        while (!cursor.isAfterLast()) {</span>
+<span class="nc" id="L96">            alerts.add(</span>
+                    new Alert(cursor.getString(cursor.getColumnIndex(ALERTS_CASEID_COLUMN)),
+                            cursor.getString(cursor.getColumnIndex(ALERTS_SCHEDULE_NAME_COLUMN)), cursor.getString(cursor.getColumnIndex(ALERTS_VISIT_CODE_COLUMN)),
+                            from(cursor.getString(cursor.getColumnIndex(ALERTS_STATUS_COLUMN))),
+                            cursor.getString(cursor.getColumnIndex(ALERTS_STARTDATE_COLUMN)),
+                            cursor.getString(cursor.getColumnIndex(ALERTS_EXPIRYDATE_COLUMN))
+                    )
+                            .withCompletionDate(cursor.getString(cursor.getColumnIndex(ALERTS_COMPLETIONDATE_COLUMN))));
+<span class="nc" id="L104">            cursor.moveToNext();</span>
+        }
+<span class="nc" id="L106">        cursor.close();</span>
+<span class="nc" id="L107">        return alerts;</span>
+    }
+
+    private List&lt;Alert&gt; filterActiveAlerts(List&lt;Alert&gt; alerts) {
+<span class="nc" id="L111">        List&lt;Alert&gt; activeAlerts = new ArrayList&lt;Alert&gt;();</span>
+<span class="nc bnc" id="L112" title="All 2 branches missed.">        for (Alert alert : alerts) {</span>
+<span class="nc" id="L113">            LocalDate today = LocalDate.now();</span>
+<span class="nc bnc" id="L114" title="All 6 branches missed.">            if (LocalDate.parse(alert.expiryDate()).isAfter(today) || (complete.equals(alert.status()) &amp;&amp; LocalDate.parse(alert.completionDate()).isAfter(today.minusDays(3)))) {</span>
+<span class="nc" id="L115">                activeAlerts.add(alert);</span>
+            }
+<span class="nc" id="L117">        }</span>
+<span class="nc" id="L118">        return activeAlerts;</span>
+    }
+
+    private ContentValues createValuesFor(Alert alert) {
+<span class="nc" id="L122">        ContentValues values = new ContentValues();</span>
+<span class="nc" id="L123">        values.put(ALERTS_CASEID_COLUMN, alert.caseId());</span>
+<span class="nc" id="L124">        values.put(ALERTS_SCHEDULE_NAME_COLUMN, alert.scheduleName());</span>
+<span class="nc" id="L125">        values.put(ALERTS_VISIT_CODE_COLUMN, alert.visitCode());</span>
+<span class="nc" id="L126">        values.put(ALERTS_STATUS_COLUMN, alert.status().value());</span>
+<span class="nc" id="L127">        values.put(ALERTS_STARTDATE_COLUMN, alert.startDate());</span>
+<span class="nc" id="L128">        values.put(ALERTS_EXPIRYDATE_COLUMN, alert.expiryDate());</span>
+<span class="nc" id="L129">        values.put(ALERTS_COMPLETIONDATE_COLUMN, alert.completionDate());</span>
+<span class="nc" id="L130">        return values;</span>
+    }
+
+    public List&lt;Alert&gt; findByEntityIdAndAlertNames(String entityId, String... names) {
+<span class="nc" id="L134">        SQLiteDatabase database = masterRepository.getReadableDatabase();</span>
+<span class="nc" id="L135">        Cursor cursor = database.rawQuery(format(&quot;SELECT * FROM %s WHERE %s = ? AND %s IN (%s) ORDER BY DATE(%s)&quot;,</span>
+                ALERTS_TABLE_NAME, ALERTS_CASEID_COLUMN, ALERTS_VISIT_CODE_COLUMN,
+                insertPlaceholdersForInClause(names.length), ALERTS_STARTDATE_COLUMN), addAll(new String[]{entityId}, names));
+<span class="nc" id="L138">        return readAllAlerts(cursor);</span>
+    }
+
+    private String insertPlaceholdersForInClause(int length) {
+<span class="nc" id="L142">        return repeat(&quot;?&quot;, &quot;,&quot;, length);</span>
+    }
+
+    public void changeAlertStatusToInProcess(String entityId, String alertName) {
+<span class="nc" id="L146">        SQLiteDatabase database = masterRepository.getWritableDatabase();</span>
+<span class="nc" id="L147">        String[] caseAndVisitCodeColumnValues = {entityId, alertName};</span>
+
+<span class="nc" id="L149">        ContentValues valuesToBeUpdated = new ContentValues();</span>
+<span class="nc" id="L150">        valuesToBeUpdated.put(ALERTS_STATUS_COLUMN, inProcess.value());</span>
+<span class="nc" id="L151">        database.update(ALERTS_TABLE_NAME, valuesToBeUpdated, CASE_AND_VISIT_CODE_COLUMN_SELECTIONS, caseAndVisitCodeColumnValues);</span>
+<span class="nc" id="L152">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.1.201405082137</span></div></body></html>

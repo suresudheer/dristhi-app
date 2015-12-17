@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>BeneficiaryService.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">org.ei.telemedicine.service</a> &gt; <span class="el_source">BeneficiaryService.java</span></div><h1>BeneficiaryService.java</h1><pre class="source lang-java linenums">package org.ei.telemedicine.service;
+
+import org.ei.telemedicine.domain.Child;
+import org.ei.telemedicine.domain.EligibleCouple;
+import org.ei.telemedicine.domain.Mother;
+import org.ei.telemedicine.repository.AllBeneficiaries;
+import org.ei.telemedicine.repository.AllEligibleCouples;
+import org.ei.telemedicine.view.contract.Beneficiary;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class BeneficiaryService {
+    private final AllEligibleCouples allEligibleCouples;
+    private final AllBeneficiaries allBeneficiaries;
+
+<span class="fc" id="L17">    public BeneficiaryService(AllEligibleCouples allEligibleCouples, AllBeneficiaries allBeneficiaries) {</span>
+<span class="fc" id="L18">        this.allEligibleCouples = allEligibleCouples;</span>
+<span class="fc" id="L19">        this.allBeneficiaries = allBeneficiaries;</span>
+<span class="fc" id="L20">    }</span>
+
+    public List&lt;Beneficiary&gt; fetchFromEcCaseIds(List&lt;String&gt; caseIds) {
+<span class="fc" id="L23">        List&lt;Beneficiary&gt; beneficiaries = new ArrayList&lt;Beneficiary&gt;();</span>
+<span class="fc" id="L24">        List&lt;EligibleCouple&gt; eligibleCouples = allEligibleCouples.findByCaseIDs(caseIds);</span>
+<span class="fc bfc" id="L25" title="All 2 branches covered.">        for (EligibleCouple ec : eligibleCouples) {</span>
+<span class="fc" id="L26">            beneficiaries.add(new Beneficiary(ec.caseId(), ec.wifeName(), ec.husbandName(), &quot;&quot;, ec.ecNumber(), ec.village(), ec.isHighPriority()));</span>
+<span class="fc" id="L27">        }</span>
+<span class="fc" id="L28">        return beneficiaries;</span>
+    }
+
+    public List&lt;Beneficiary&gt; fetchFromChildCaseIds(List&lt;String&gt; caseIds) {
+<span class="fc" id="L32">        List&lt;Beneficiary&gt; beneficiaries = new ArrayList&lt;Beneficiary&gt;();</span>
+<span class="fc" id="L33">        List&lt;Child&gt; children = allBeneficiaries.findAllChildrenByCaseIDs(caseIds);</span>
+<span class="fc bfc" id="L34" title="All 2 branches covered.">        for (Child child : children) {</span>
+<span class="fc" id="L35">            Mother mother = allBeneficiaries.findMother(child.motherCaseId());</span>
+<span class="fc" id="L36">            EligibleCouple parents = allEligibleCouples.findByCaseID(mother.ecCaseId());</span>
+<span class="fc" id="L37">            beneficiaries.add(new Beneficiary(child.caseId(), parents.wifeName(), parents.husbandName(), child.thayiCardNumber(), parents.ecNumber(), parents.village(), child.isHighRisk()));</span>
+<span class="fc" id="L38">        }</span>
+<span class="fc" id="L39">        return beneficiaries;</span>
+    }
+
+    public List&lt;Beneficiary&gt; fetchFromMotherCaseIds(List&lt;String&gt; caseIds) {
+<span class="fc" id="L43">        List&lt;Beneficiary&gt; beneficiaries = new ArrayList&lt;Beneficiary&gt;();</span>
+<span class="fc" id="L44">        List&lt;Mother&gt; mothers = allBeneficiaries.findAllMothersByCaseIDs(caseIds);</span>
+<span class="fc bfc" id="L45" title="All 2 branches covered.">        for (Mother mother : mothers) {</span>
+<span class="fc" id="L46">            EligibleCouple ec = allEligibleCouples.findByCaseID(mother.ecCaseId());</span>
+<span class="fc" id="L47">            beneficiaries.add(new Beneficiary(mother.caseId(), ec.wifeName(), ec.husbandName(), mother.thayiCardNumber(), ec.ecNumber(), ec.village(), mother.isHighRisk()));</span>
+<span class="fc" id="L48">        }</span>
+<span class="fc" id="L49">        return beneficiaries;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.1.201405082137</span></div></body></html>

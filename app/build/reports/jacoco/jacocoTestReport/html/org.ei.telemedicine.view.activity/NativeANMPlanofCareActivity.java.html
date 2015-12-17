@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>NativeANMPlanofCareActivity.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">org.ei.telemedicine.view.activity</a> &gt; <span class="el_source">NativeANMPlanofCareActivity.java</span></div><h1>NativeANMPlanofCareActivity.java</h1><pre class="source lang-java linenums">package org.ei.telemedicine.view.activity;
+
+import android.app.ActionBar;
+import android.app.Activity;
+import android.content.Intent;
+import android.graphics.Color;
+import android.os.Bundle;
+import android.support.annotation.ColorRes;
+import android.util.Log;
+import android.view.View;
+import android.view.Window;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import org.ei.telemedicine.AllConstants;
+import org.ei.telemedicine.Context;
+import org.ei.telemedicine.R;
+import org.ei.telemedicine.bluetooth.BlueToothInfoActivity;
+import org.ei.telemedicine.view.customControls.CustomFontTextView;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+
+import static org.ei.telemedicine.AllConstants.*;
+
+<span class="nc" id="L32">public class NativeANMPlanofCareActivity extends Activity implements CompoundButton.OnCheckedChangeListener, View.OnClickListener {</span>
+    LinearLayout ll_drugs;
+    Context context;
+    CheckBox[] checkBox;
+<span class="nc" id="L36">    ArrayList&lt;String&gt; drugsList = new ArrayList&lt;String&gt;();</span>
+<span class="nc" id="L37">    JSONArray drugsArray = new JSONArray();</span>
+    CustomFontTextView save_poc_data;
+<span class="nc" id="L39">    String risks = &quot;&quot;;</span>
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+<span class="nc" id="L43">        super.onCreate(savedInstanceState);</span>
+<span class="nc" id="L44">        setContentView(R.layout.anm_poc_info);</span>
+<span class="nc" id="L45">        Bundle extras = getIntent().getExtras();</span>
+<span class="nc bnc" id="L46" title="All 4 branches missed.">        if (extras != null &amp;&amp; extras.containsKey(AllConstants.ANCVisitFields.RISKS))</span>
+<span class="nc" id="L47">            risks = extras.getString(AllConstants.ANCVisitFields.RISKS, &quot;&quot;);</span>
+//        Toast.makeText(this, risks, Toast.LENGTH_SHORT).show();
+
+<span class="nc" id="L50">        ll_drugs = (LinearLayout) findViewById(R.id.ll_drugs);</span>
+<span class="nc" id="L51">        save_poc_data = (CustomFontTextView) findViewById(R.id.bt_info_save);</span>
+<span class="nc" id="L52">        context = Context.getInstance();</span>
+<span class="nc" id="L53">        String drugsJson = context.allSettings().fetchDrugs();</span>
+<span class="nc" id="L54">        save_poc_data.setOnClickListener(this);</span>
+<span class="nc bnc" id="L55" title="All 2 branches missed.">        if (!risks.equals(&quot;&quot;)) {</span>
+            try {
+<span class="nc" id="L57">                JSONObject jsonData = new JSONObject(drugsJson);</span>
+<span class="nc" id="L58">                Iterator&lt;String&gt; keys = jsonData.keys();</span>
+<span class="nc bnc" id="L59" title="All 2 branches missed.">                while (keys.hasNext()) {</span>
+<span class="nc" id="L60">                    String key = (String) keys.next();</span>
+<span class="nc bnc" id="L61" title="All 2 branches missed.">                    if (risks.toLowerCase().contains(key.toLowerCase())) {</span>
+<span class="nc" id="L62">                        TextView tv_diseaseName = new TextView(this);</span>
+<span class="nc" id="L63">                        tv_diseaseName.setText(key);</span>
+<span class="nc" id="L64">                        tv_diseaseName.setTextColor(context.getColorResource(R.color.light_blue));</span>
+<span class="nc" id="L65">                        tv_diseaseName.setTextSize(20);</span>
+<span class="nc" id="L66">                        tv_diseaseName.setPadding(10, 10, 10, 10);</span>
+<span class="nc" id="L67">                        ll_drugs.addView(tv_diseaseName);</span>
+<span class="nc" id="L68">                        JSONArray drugsArray = jsonData.getJSONArray(key);</span>
+<span class="nc" id="L69">                        checkBox = new CheckBox[drugsArray.length()];</span>
+<span class="nc bnc" id="L70" title="All 2 branches missed.">                        for (int i = 0; i &lt; drugsArray.length(); i++) {</span>
+<span class="nc" id="L71">                            checkBox[i] = new CheckBox(this);</span>
+<span class="nc" id="L72">                            checkBox[i].setText(drugsArray.getString(i));</span>
+<span class="nc" id="L73">                            checkBox[i].setTextColor(Color.BLACK);</span>
+<span class="nc" id="L74">                            checkBox[i].setTextSize(25);</span>
+<span class="nc" id="L75">                            checkBox[i].setTag(tv_diseaseName.getText().toString());</span>
+<span class="nc" id="L76">                            checkBox[i].setOnCheckedChangeListener(this);</span>
+<span class="nc" id="L77">                            ll_drugs.addView(checkBox[i]);</span>
+                        }
+                    }
+<span class="nc" id="L80">                }</span>
+<span class="nc" id="L81">            } catch (JSONException e) {</span>
+<span class="nc" id="L82">                e.printStackTrace();</span>
+<span class="nc" id="L83">            }</span>
+        } else
+<span class="nc" id="L85">            Toast.makeText(this, &quot;No Risks&quot;, Toast.LENGTH_SHORT).show();</span>
+<span class="nc" id="L86">    }</span>
+
+    @Override
+    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+<span class="nc bnc" id="L90" title="All 2 branches missed.">        if (isChecked) {</span>
+<span class="nc bnc" id="L91" title="All 2 branches missed.">            if (!drugsList.contains(buttonView.getTag().toString() + &quot;-&quot; + buttonView.getText().toString()))</span>
+<span class="nc" id="L92">                drugsList.add(buttonView.getTag().toString().replace(&quot; &quot;, &quot;_&quot;) + &quot;-&quot; + buttonView.getText().toString());</span>
+        }
+<span class="nc" id="L94">    }</span>
+
+    @Override
+    public void onClick(View v) {
+<span class="nc bnc" id="L98" title="All 2 branches missed.">        switch (v.getId()) {</span>
+            case R.id.bt_info_save:
+<span class="nc bnc" id="L100" title="All 2 branches missed.">                for (int i = 0; i &lt; drugsList.size(); i++) {</span>
+<span class="nc" id="L101">                    drugsArray.put(drugsList.get(i));</span>
+                }
+<span class="nc" id="L103">                Intent intent = new Intent();</span>
+<span class="nc" id="L104">                intent.putExtra(DRUGS, drugsArray.toString());</span>
+<span class="nc" id="L105">                setResult(DRUGS_INFO_RESULT_CODE, intent);</span>
+<span class="nc" id="L106">                finish();</span>
+        }
+<span class="nc" id="L108">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.1.201405082137</span></div></body></html>

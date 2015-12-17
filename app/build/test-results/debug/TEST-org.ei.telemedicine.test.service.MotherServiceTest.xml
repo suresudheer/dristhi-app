@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="org.ei.telemedicine.test.service.MotherServiceTest" tests="24" skipped="0" failures="0" errors="0" timestamp="2015-12-17T05:22:14" hostname="DIPL-PC0206" time="0.333">
+  <properties/>
+  <testcase name="testShouldCloseECWhenMotherIsClosedAndReasonIsPermanentRelocation" classname="org.ei.telemedicine.test.service.MotherServiceTest" time="0.019"/>
+  <testcase name="testShouldHandleDeliveryOutcome" classname="org.ei.telemedicine.test.service.MotherServiceTest" time="0.004"/>
+  <testcase name="testShouldAddIFATabletsGivenTimelineEventWhenPNCVisitHappens" classname="org.ei.telemedicine.test.service.MotherServiceTest" time="0.171"/>
+  <testcase name="testShouldHandleHBTest" classname="org.ei.telemedicine.test.service.MotherServiceTest" time="0.003"/>
+  <testcase name="testShouldDoNothingWhenIFATabletsAreNotGiven" classname="org.ei.telemedicine.test.service.MotherServiceTest" time="0.002"/>
+  <testcase name="testShouldAddTimelineEventWhenDeliveryPlanHappens" classname="org.ei.telemedicine.test.service.MotherServiceTest" time="0.005"/>
+  <testcase name="testShouldAddServiceProvidedWhenIFATabletsAreGiven" classname="org.ei.telemedicine.test.service.MotherServiceTest" time="0.003"/>
+  <testcase name="testShouldHandleTTProvided" classname="org.ei.telemedicine.test.service.MotherServiceTest" time="0.009"/>
+  <testcase name="testShouldAddServiceProvidedWhenANCVisitHappens" classname="org.ei.telemedicine.test.service.MotherServiceTest" time="0.006"/>
+  <testcase name="testShouldNotDoAnythingWhenANCIsClosedAndMotherDoesNotExist" classname="org.ei.telemedicine.test.service.MotherServiceTest" time="0.003"/>
+  <testcase name="testShouldCloseWomanIfDeadDuringDeliveryOutcome" classname="org.ei.telemedicine.test.service.MotherServiceTest" time="0.003"/>
+  <testcase name="testShouldAddPNCVisitTimelineEventWhenPNCVisitHappens" classname="org.ei.telemedicine.test.service.MotherServiceTest" time="0.007"/>
+  <testcase name="testShouldRegisterANC" classname="org.ei.telemedicine.test.service.MotherServiceTest" time="0.012"/>
+  <testcase name="testShouldCloseECWhenWomanIsClosedAndReasonIsDeath" classname="org.ei.telemedicine.test.service.MotherServiceTest" time="0.002"/>
+  <testcase name="testShouldNotCloseECWhenMotherIsClosedForOtherReasons" classname="org.ei.telemedicine.test.service.MotherServiceTest" time="0.002"/>
+  <testcase name="testShouldCreateTimelineEventsWhenANCVisitHappens" classname="org.ei.telemedicine.test.service.MotherServiceTest" time="0.005"/>
+  <testcase name="testShouldRegisterOutOfAreaANC" classname="org.ei.telemedicine.test.service.MotherServiceTest" time="0.004"/>
+  <testcase name="testShouldAddServiceProvidedWhenDeliveryPlanHappens" classname="org.ei.telemedicine.test.service.MotherServiceTest" time="0.005"/>
+  <testcase name="testShouldAddPNCVisitServiceProvidedWhenPNCVisitHappens" classname="org.ei.telemedicine.test.service.MotherServiceTest" time="0.005"/>
+  <testcase name="testShouldCloseECWhenMotherIsClosedUsingPNCCloseAndReasonIsPermanentRelocation" classname="org.ei.telemedicine.test.service.MotherServiceTest" time="0.002"/>
+  <testcase name="testShouldNotAddIFATabletsGivenTimelineEventWhenPNCVisitHappensAndNoIFATabletsWereGiven" classname="org.ei.telemedicine.test.service.MotherServiceTest" time="0.004"/>
+  <testcase name="testShouldCloseECWhenMotherIsClosedAndReasonIsDeath" classname="org.ei.telemedicine.test.service.MotherServiceTest" time="0.003"/>
+  <testcase name="testShouldAddTimelineEventWhenIFATabletsAreGiven" classname="org.ei.telemedicine.test.service.MotherServiceTest" time="0.003"/>
+  <testcase name="testShouldCloseMotherAndECIfDeadDuringDeliveryOutcome" classname="org.ei.telemedicine.test.service.MotherServiceTest" time="0.002"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

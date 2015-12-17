@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="org.ei.telemedicine.test.service.AlertServiceTest" tests="7" skipped="0" failures="0" errors="0" timestamp="2015-12-17T05:22:14" hostname="DIPL-PC0206" time="0.012">
+  <properties/>
+  <testcase name="testShouldAddAnAlertIntoAlertRepositoryForMotherCreateAlertAction" classname="org.ei.telemedicine.test.service.AlertServiceTest" time="0.002"/>
+  <testcase name="testShouldAddAnAlertIntoAlertRepositoryForChildCreateAlertAction" classname="org.ei.telemedicine.test.service.AlertServiceTest" time="0.001"/>
+  <testcase name="testShouldNotCreateIfActionIsInactive" classname="org.ei.telemedicine.test.service.AlertServiceTest" time="0.0"/>
+  <testcase name="testShouldMarkAlertAsClosedInRepositoryForCloseActions" classname="org.ei.telemedicine.test.service.AlertServiceTest" time="0.001"/>
+  <testcase name="testShouldAddAnAlertIntoAlertRepositoryForECCreateAlertActionWhenThereIsNoMother" classname="org.ei.telemedicine.test.service.AlertServiceTest" time="0.001"/>
+  <testcase name="testShouldAddAnAlertIntoAlertRepositoryForECCreateAlertAction" classname="org.ei.telemedicine.test.service.AlertServiceTest" time="0.001"/>
+  <testcase name="testShouldDeleteAllFromRepositoryForDeleteAllActions" classname="org.ei.telemedicine.test.service.AlertServiceTest" time="0.001"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

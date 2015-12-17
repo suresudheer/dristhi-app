@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>ConnectivityChangeReceiver.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">org.ei.telemedicine.view.receiver</a> &gt; <span class="el_source">ConnectivityChangeReceiver.java</span></div><h1>ConnectivityChangeReceiver.java</h1><pre class="source lang-java linenums">package org.ei.telemedicine.view.receiver;
+
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+
+import org.ei.telemedicine.sync.DrishtiSyncScheduler;
+
+import static org.ei.telemedicine.util.Log.logInfo;
+
+<span class="nc" id="L13">public class ConnectivityChangeReceiver extends BroadcastReceiver {</span>
+    @Override
+    public void onReceive(final Context context, Intent intent) {
+<span class="nc" id="L16">        logInfo(&quot;Connectivity change receiver triggered.&quot;);</span>
+<span class="nc bnc" id="L17" title="All 2 branches missed.">        if (intent.getExtras() != null) {</span>
+<span class="nc bnc" id="L18" title="All 2 branches missed.">            if (isDeviceDisconnectedFromNetwork(intent)) {</span>
+<span class="nc" id="L19">                logInfo(&quot;Device got disconnected from network. Stopping Dristhi Sync scheduler.&quot;);</span>
+<span class="nc" id="L20">                DrishtiSyncScheduler.stop(context);</span>
+<span class="nc" id="L21">                return;</span>
+            }
+<span class="nc bnc" id="L23" title="All 2 branches missed.">            if (isDeviceConnectedToNetwork(intent)) {</span>
+<span class="nc" id="L24">                logInfo(&quot;Device got connected to network. Trying to start Dristhi Sync scheduler.&quot;);</span>
+<span class="nc" id="L25">                DrishtiSyncScheduler.start(context);</span>
+            }
+        }
+<span class="nc" id="L28">    }</span>
+
+    private boolean isDeviceDisconnectedFromNetwork(Intent intent) {
+<span class="nc" id="L31">        return intent.getExtras().getBoolean(ConnectivityManager.EXTRA_NO_CONNECTIVITY, false);</span>
+    }
+
+    private boolean isDeviceConnectedToNetwork(Intent intent) {
+<span class="nc" id="L35">        NetworkInfo networkInfo = (NetworkInfo) intent.getExtras().get(ConnectivityManager.EXTRA_NETWORK_INFO);</span>
+<span class="nc bnc" id="L36" title="All 4 branches missed.">        return networkInfo != null &amp;&amp; networkInfo.isConnected();</span>
+    }
+}
+
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.1.201405082137</span></div></body></html>

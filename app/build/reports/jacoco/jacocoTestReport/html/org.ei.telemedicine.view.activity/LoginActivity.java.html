@@ -1,0 +1,356 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>LoginActivity.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">org.ei.telemedicine.view.activity</a> &gt; <span class="el_source">LoginActivity.java</span></div><h1>LoginActivity.java</h1><pre class="source lang-java linenums">package org.ei.telemedicine.view.activity;
+
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.ProgressDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.KeyEvent;
+import android.view.View;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import org.ei.telemedicine.AllConstants;
+import org.ei.telemedicine.Context;
+import org.ei.telemedicine.R;
+import org.ei.telemedicine.doctor.NativeDoctorActivity;
+import org.ei.telemedicine.domain.LoginResponse;
+import org.ei.telemedicine.event.Listener;
+
+import org.ei.telemedicine.sync.DrishtiSyncScheduler;
+import org.ei.telemedicine.view.BackgroundAction;
+import org.ei.telemedicine.view.LockingBackgroundTask;
+import org.ei.telemedicine.view.ProgressIndicator;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
+import java.security.PublicKey;
+import java.text.SimpleDateFormat;
+import java.util.Locale;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
+import org.json.JSONObject;
+
+import de.tavendo.autobahn.WebSocketConnection;
+import de.tavendo.autobahn.WebSocketException;
+import de.tavendo.autobahn.WebSocketHandler;
+
+
+
+
+import static android.view.inputmethod.InputMethodManager.HIDE_NOT_ALWAYS;
+import static org.ei.telemedicine.domain.LoginResponse.SUCCESS;
+import static org.ei.telemedicine.util.Log.logError;
+import static org.ei.telemedicine.util.Log.logVerbose;
+
+<span class="nc" id="L57">public class LoginActivity extends Activity {</span>
+    private Context context;
+    private EditText userNameEditText;
+    private EditText passwordEditText;
+<span class="nc" id="L61">    private final String CALLER = &quot;name&quot;;</span>
+
+    private ProgressDialog progressDialog;
+<span class="nc" id="L64">    private String TAG = &quot;LoginActivity&quot;;</span>
+
+<span class="nc" id="L66">    private int waitTime = 5;</span>
+<span class="nc" id="L67">    private final WebSocketConnection mConnection = new WebSocketConnection();</span>
+
+    public String getUsern()
+    {
+<span class="nc" id="L71">        context = Context.getInstance().updateApplicationContext(this.getApplicationContext());</span>
+<span class="nc" id="L72">        return context.allSharedPreferences().fetchRegisteredANM();</span>
+    }
+
+    private void start() {
+
+
+<span class="nc" id="L78">        final String wsuri = AllConstants.WEBSOCKET;</span>
+        try {
+<span class="nc" id="L80">            mConnection.connect(String.format(wsuri,getUsern()), new WebSocketHandler() {</span>
+
+                @Override
+                public void onOpen() {
+<span class="nc" id="L84">                    Log.d(TAG, &quot;Status: Connected to &quot; + wsuri);</span>
+                    //Toast.makeText(getApplicationContext(),String.format(wsuri,getUsern()), Toast.LENGTH_SHORT).show();
+                    //mConnection.sendTextMessage(&quot;Hello, world!&quot;);
+<span class="nc" id="L87">                }</span>
+
+                @Override
+                public void onTextMessage(String payload) {
+<span class="nc" id="L91">                    Log.d(TAG, &quot;Got echo: &quot; + payload);</span>
+                    try {
+<span class="nc" id="L93">                        JSONObject jObject = new JSONObject(payload);</span>
+<span class="nc" id="L94">                        String status = jObject.getString(&quot;status&quot;);</span>
+<span class="nc" id="L95">                        String msg = jObject.getString(&quot;msg_type&quot;);</span>
+<span class="nc" id="L96">                        String caller = jObject.getString(&quot;caller&quot;);</span>
+                        //Log.d(TAG, check);
+<span class="nc" id="L98">                        String match = &quot;INI&quot;;</span>
+<span class="nc" id="L99">                        boolean response = (status.equals(match));</span>
+<span class="nc bnc" id="L100" title="All 2 branches missed.">                        if (response)</span>
+                        {
+                            //Toast.makeText(getApplicationContext(),&quot;call started&quot;,Toast.LENGTH_LONG).show();
+<span class="nc" id="L103">                            Intent i = new Intent(getApplicationContext(), ActionActivity.class);</span>
+<span class="nc" id="L104">                            i.putExtra(CALLER, caller);</span>
+<span class="nc" id="L105">                            i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);</span>
+<span class="nc" id="L106">                            startActivity(i);</span>
+                        }
+
+<span class="nc" id="L109">                    }catch (Exception ex)</span>
+                    {
+<span class="nc" id="L111">                        Log.d(TAG, ex.toString());</span>
+<span class="nc" id="L112">                    }</span>
+<span class="nc" id="L113">                }</span>
+
+                @Override
+                public void onClose(int code, String reason) {
+<span class="nc" id="L117">                    Log.d(TAG, &quot;Connection lost.&quot;);</span>
+                    //Toast.makeText(getApplicationContext(),&quot;closed&quot;,Toast.LENGTH_SHORT).show();
+                    try {
+<span class="nc" id="L120">                        Thread.sleep(waitTime);</span>
+<span class="nc" id="L121">                        waitTime = waitTime*2;</span>
+<span class="nc" id="L122">                    } catch (InterruptedException e) {</span>
+<span class="nc" id="L123">                        e.printStackTrace();</span>
+<span class="nc" id="L124">                    }</span>
+<span class="nc" id="L125">                    start();</span>
+
+<span class="nc" id="L127">                }</span>
+            });
+<span class="nc" id="L129">        } catch (WebSocketException e) {</span>
+
+<span class="nc" id="L131">            Log.d(TAG, e.toString());</span>
+<span class="nc" id="L132">        }</span>
+<span class="nc" id="L133">    }</span>
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+<span class="nc" id="L137">        super.onCreate(savedInstanceState);</span>
+<span class="nc" id="L138">        logVerbose(&quot;Initializing ...&quot;);</span>
+<span class="nc" id="L139">        setContentView(R.layout.login);</span>
+
+<span class="nc" id="L141">        context = Context.getInstance().updateApplicationContext(this.getApplicationContext());</span>
+<span class="nc" id="L142">        initializeLoginFields();</span>
+<span class="nc" id="L143">        initializeBuildDetails();</span>
+<span class="nc" id="L144">        setDoneActionHandlerOnPasswordField();</span>
+<span class="nc" id="L145">        initializeProgressDialog();</span>
+
+
+<span class="nc" id="L148">    }</span>
+
+    private void initializeBuildDetails() {
+<span class="nc" id="L151">        TextView buildDetailsTextView = (TextView) findViewById(R.id.login_build);</span>
+        try {
+<span class="nc" id="L153">            buildDetailsTextView.setText(&quot;Version &quot; + getVersion() + &quot;, Built on: &quot; + getBuildDate());</span>
+<span class="nc" id="L154">        } catch (Exception e) {</span>
+<span class="nc" id="L155">            logError(&quot;Error fetching build details: &quot; + e);</span>
+<span class="nc" id="L156">        }</span>
+<span class="nc" id="L157">    }</span>
+
+    @Override
+    protected void onResume() {
+<span class="nc" id="L161">        super.onResume();</span>
+
+<span class="nc bnc" id="L163" title="All 2 branches missed.">        if (!context.IsUserLoggedOut()) {</span>
+<span class="nc" id="L164">            goToHome(context.userService().getUserRole());</span>
+        }
+
+<span class="nc" id="L167">        fillUserIfExists();</span>
+<span class="nc" id="L168">    }</span>
+
+    public void login(final View view) {
+<span class="nc" id="L171">        hideKeyboard();</span>
+<span class="nc" id="L172">        view.setClickable(false);</span>
+
+<span class="nc" id="L174">        final String userName = userNameEditText.getText().toString().trim();</span>
+<span class="nc" id="L175">        final String password = passwordEditText.getText().toString();</span>
+
+<span class="nc bnc" id="L177" title="All 2 branches missed.">        if (context.userService().hasARegisteredUser()) {</span>
+<span class="nc" id="L178">            localLogin(view, userName, password);</span>
+        } else {
+<span class="nc" id="L180">            remoteLogin(view, userName, password);</span>
+        }
+<span class="nc" id="L182">    }</span>
+
+    private void initializeLoginFields() {
+<span class="nc" id="L185">        userNameEditText = ((EditText) findViewById(R.id.login_userNameText));</span>
+<span class="nc" id="L186">        passwordEditText = ((EditText) findViewById(R.id.login_passwordText));</span>
+<span class="nc" id="L187">    }</span>
+
+    private void setDoneActionHandlerOnPasswordField() {
+<span class="nc" id="L190">        passwordEditText.setOnEditorActionListener(new TextView.OnEditorActionListener() {</span>
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+<span class="nc bnc" id="L193" title="All 2 branches missed.">                if (actionId == EditorInfo.IME_ACTION_DONE) {</span>
+<span class="nc" id="L194">                    login(findViewById(R.id.login_loginButton));</span>
+                }
+<span class="nc" id="L196">                return false;</span>
+            }
+        });
+<span class="nc" id="L199">    }</span>
+
+    private void initializeProgressDialog() {
+<span class="nc" id="L202">        progressDialog = new ProgressDialog(this);</span>
+<span class="nc" id="L203">        progressDialog.setCancelable(false);</span>
+<span class="nc" id="L204">        progressDialog.setTitle(getString(R.string.loggin_in_dialog_title));</span>
+<span class="nc" id="L205">        progressDialog.setMessage(getString(R.string.loggin_in_dialog_message));</span>
+<span class="nc" id="L206">    }</span>
+
+    private void localLogin(View view, String userName, String password) {
+<span class="nc bnc" id="L209" title="All 2 branches missed.">        if (context.userService().isValidLocalLogin(userName, password)) {</span>
+<span class="nc" id="L210">            localLoginWith(userName, password);</span>
+
+        } else {
+<span class="nc" id="L213">            showErrorDialog(getString(R.string.login_failed_dialog_message));</span>
+<span class="nc" id="L214">            view.setClickable(true);</span>
+        }
+<span class="nc" id="L216">    }</span>
+
+    private void remoteLogin(final View view, final String userName, final String password) {
+<span class="nc" id="L219">        tryRemoteLogin(userName, password, new Listener&lt;LoginResponse&gt;() {</span>
+            public void onEvent(LoginResponse loginResponse) {
+<span class="nc bnc" id="L221" title="All 2 branches missed.">                if (loginResponse == SUCCESS) {</span>
+<span class="nc" id="L222">                    remoteLoginWith(userName, password, loginResponse.payload());</span>
+
+                } else {
+<span class="nc bnc" id="L225" title="All 2 branches missed.">                    if (loginResponse == null) {</span>
+<span class="nc" id="L226">                        showErrorDialog(&quot;Login failed. Unknown reason. Try Again&quot;);</span>
+                    } else {
+<span class="nc" id="L228">                        showErrorDialog(loginResponse.message());</span>
+                    }
+<span class="nc" id="L230">                    view.setClickable(true);</span>
+                }
+<span class="nc" id="L232">            }</span>
+        });
+<span class="nc" id="L234">    }</span>
+
+    private void showErrorDialog(String message) {
+<span class="nc" id="L237">        AlertDialog dialog = new AlertDialog.Builder(this)</span>
+                .setTitle(getString(R.string.login_failed_dialog_title))
+                .setMessage(message)
+<span class="nc" id="L240">                .setPositiveButton(&quot;OK&quot;, new DialogInterface.OnClickListener() {</span>
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+<span class="nc" id="L243">                    }</span>
+                })
+                .create();
+<span class="nc" id="L246">        dialog.show();</span>
+<span class="nc" id="L247">    }</span>
+
+    private void tryRemoteLogin(final String userName, final String password, final Listener&lt;LoginResponse&gt; afterLoginCheck) {
+<span class="nc" id="L250">        LockingBackgroundTask task = new LockingBackgroundTask(new ProgressIndicator() {</span>
+            @Override
+            public void setVisible() {
+<span class="nc bnc" id="L253" title="All 2 branches missed.">                if (progressDialog != null)</span>
+<span class="nc" id="L254">                    progressDialog.show();</span>
+<span class="nc" id="L255">            }</span>
+
+            @Override
+            public void setInvisible() {
+<span class="nc" id="L259">                progressDialog.dismiss();</span>
+<span class="nc" id="L260">            }</span>
+        });
+
+<span class="nc" id="L263">        task.doActionInBackground(new BackgroundAction&lt;LoginResponse&gt;() {</span>
+            public LoginResponse actionToDoInBackgroundThread() {
+<span class="nc" id="L265">                LoginResponse loginResponse = context.userService().isValidRemoteLogin(userName, password);</span>
+//                Log.e(TAG, &quot;Payload Data on Login Activity&quot; + loginResponse.payload() != null ? loginResponse.payload() : &quot;No Response&quot;);
+<span class="nc" id="L267">                return loginResponse;</span>
+            }
+
+            public void postExecuteInUIThread(LoginResponse result) {
+<span class="nc" id="L271">                afterLoginCheck.onEvent(result);</span>
+<span class="nc" id="L272">            }</span>
+        });
+<span class="nc" id="L274">    }</span>
+
+
+    private void fillUserIfExists() {
+<span class="nc bnc" id="L278" title="All 2 branches missed.">        if (context.userService().hasARegisteredUser()) {</span>
+<span class="nc" id="L279">            userNameEditText.setText(context.allSharedPreferences().fetchRegisteredANM());</span>
+<span class="nc" id="L280">            userNameEditText.setEnabled(false);</span>
+        }
+<span class="nc" id="L282">    }</span>
+
+    private void hideKeyboard() {
+<span class="nc" id="L285">        InputMethodManager inputManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);</span>
+<span class="nc" id="L286">        inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), HIDE_NOT_ALWAYS);</span>
+<span class="nc" id="L287">    }</span>
+
+    private void localLoginWith(String userName, String password) {
+<span class="nc" id="L290">        context.userService().localLogin(userName, password);</span>
+<span class="nc" id="L291">        context.allSharedPreferences().updateIsFirstLogin(false);</span>
+<span class="nc" id="L292">        String userRole = context.userService().getUserRole();</span>
+<span class="nc" id="L293">        goToHome(userRole);</span>
+<span class="nc" id="L294">        start();</span>
+<span class="nc" id="L295">        DrishtiSyncScheduler.startOnlyIfConnectedToNetwork(getApplicationContext(), userRole);</span>
+        //DrishtiCallScheduler.startOnlyIfConnectedToNetwork(getApplicationContext());
+<span class="nc" id="L297">    }</span>
+
+
+    private String getFromJson(String jsonStr, String keyValue) {
+        try {
+<span class="nc" id="L302">            JSONObject jsonData = new JSONObject(jsonStr);</span>
+<span class="nc bnc" id="L303" title="All 2 branches missed.">            if (jsonData != null) {</span>
+<span class="nc bnc" id="L304" title="All 2 branches missed.">                return jsonData.has(keyValue) ? jsonData.getString(keyValue) : &quot;&quot;;</span>
+            }
+<span class="nc" id="L306">        } catch (JSONException e) {</span>
+<span class="nc" id="L307">            e.printStackTrace();</span>
+<span class="nc" id="L308">        }</span>
+<span class="nc" id="L309">        return &quot;&quot;;</span>
+    }
+
+
+    private void remoteLoginWith(String userName, String password, String loginResponse) {
+<span class="nc" id="L314">        String userRole = null, personalInfo = null, location = null, drugs = null, configuration = null, countryCode = null, formFields = null;</span>
+<span class="nc bnc" id="L315" title="All 2 branches missed.">        if (loginResponse != null) {</span>
+<span class="nc" id="L316">            context.allSharedPreferences().updateIsFirstLogin(true);</span>
+<span class="nc" id="L317">            userRole = getFromJson(loginResponse, AllConstants.ROLE);</span>
+<span class="nc" id="L318">            personalInfo = getFromJson(loginResponse, AllConstants.PERSONAL_INFO);</span>
+<span class="nc" id="L319">            location = getFromJson(personalInfo, &quot;location&quot;);</span>
+<span class="nc" id="L320">            drugs = getFromJson(personalInfo, &quot;drugs&quot;);</span>
+<span class="nc" id="L321">            configuration = getFromJson(personalInfo, &quot;configuration&quot;);</span>
+<span class="nc" id="L322">            countryCode = getFromJson(personalInfo, &quot;countryCode&quot;);</span>
+<span class="nc" id="L323">            formFields = getFromJson(personalInfo, &quot;formLabels&quot;);</span>
+<span class="nc" id="L324">            context.userService()</span>
+                    .remoteLogin(userName, password, userRole, location, drugs, configuration, countryCode, formFields);
+        }
+<span class="nc bnc" id="L327" title="All 4 branches missed.">        if (userRole != null &amp;&amp; userRole.equals(AllConstants.DOCTOR_ROLE)) {</span>
+<span class="nc" id="L328">            context.allSharedPreferences().savePwd(password);</span>
+        }
+<span class="nc" id="L330">        goToHome(userRole);</span>
+<span class="nc" id="L331">        start();</span>
+<span class="nc" id="L332">        DrishtiSyncScheduler.startOnlyIfConnectedToNetwork(getApplicationContext(), userRole);</span>
+
+        //DrishtiCallScheduler.startOnlyIfConnectedToNetwork(getApplicationContext());
+<span class="nc" id="L335">    }</span>
+
+    private void goToHome(String userRole) {
+<span class="nc bnc" id="L338" title="All 2 branches missed.">        Intent intent = new Intent(this, (userRole.equals(AllConstants.ANM_ROLE)) ? NativeHomeActivity.class : NativeDoctorActivity.class);</span>
+<span class="nc" id="L339">        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);</span>
+<span class="nc" id="L340">        startActivity(intent);</span>
+<span class="nc" id="L341">        finish();</span>
+<span class="nc" id="L342">    }</span>
+
+    private String getVersion() throws PackageManager.NameNotFoundException {
+<span class="nc" id="L345">        PackageInfo packageInfo = getPackageManager().getPackageInfo(getPackageName(), 0);</span>
+<span class="nc" id="L346">        return packageInfo.versionName;</span>
+    }
+
+    private String getBuildDate() throws PackageManager.NameNotFoundException, IOException {
+<span class="nc" id="L350">        ApplicationInfo applicationInfo = getPackageManager().getApplicationInfo(getPackageName(), 0);</span>
+<span class="nc" id="L351">        ZipFile zf = new ZipFile(applicationInfo.sourceDir);</span>
+<span class="nc" id="L352">        ZipEntry ze = zf.getEntry(&quot;classes.dex&quot;);</span>
+<span class="nc" id="L353">        return new SimpleDateFormat(&quot;dd MMM yyyy&quot;, Locale.getDefault()).format(new java.util.Date(ze.getTime()));</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.1.201405082137</span></div></body></html>

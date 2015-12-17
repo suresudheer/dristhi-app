@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>SaveANMLocationTask.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">org.ei.telemedicine.sync</a> &gt; <span class="el_source">SaveANMLocationTask.java</span></div><h1>SaveANMLocationTask.java</h1><pre class="source lang-java linenums">package org.ei.telemedicine.sync;
+
+import org.ei.telemedicine.repository.AllSettings;
+import org.ei.telemedicine.util.Log;
+import org.ei.telemedicine.view.BackgroundAction;
+import org.ei.telemedicine.view.LockingBackgroundTask;
+import org.ei.telemedicine.view.ProgressIndicator;
+
+public class SaveANMLocationTask {
+    private final LockingBackgroundTask task;
+    private AllSettings allSettings;
+
+<span class="nc" id="L13">    public SaveANMLocationTask(AllSettings allSettings) {</span>
+<span class="nc" id="L14">        this.allSettings = allSettings;</span>
+<span class="nc" id="L15">        task = new LockingBackgroundTask(new ProgressIndicator() {</span>
+            @Override
+            public void setVisible() {
+<span class="nc" id="L18">            }</span>
+
+            @Override
+            public void setInvisible() {
+<span class="nc" id="L22">                Log.logInfo(&quot;Successfully saved ANM Location information&quot;);</span>
+<span class="nc" id="L23">            }</span>
+        });
+<span class="nc" id="L25">    }</span>
+
+    public void save(final String anmLocation, final String anmDrugs, final String anmConfig, final String anmCountryCode, final String formFields) {
+<span class="nc" id="L28">        task.doActionInBackground(new BackgroundAction&lt;String&gt;() {</span>
+            @Override
+            public String actionToDoInBackgroundThread() {
+<span class="nc" id="L31">                allSettings.saveANMInfo(anmLocation, anmDrugs, anmConfig, anmCountryCode, formFields);</span>
+<span class="nc" id="L32">                return anmLocation;</span>
+            }
+
+            @Override
+            public void postExecuteInUIThread(String result) {
+<span class="nc" id="L37">            }</span>
+        });
+<span class="nc" id="L39">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.1.201405082137</span></div></body></html>

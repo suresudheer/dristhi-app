@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="org.ei.telemedicine.test.view.controller.ChildSmartRegisterControllerTest" tests="4" skipped="0" failures="0" errors="0" timestamp="2015-12-17T05:22:16" hostname="DIPL-PC0206" time="0.046">
+  <properties/>
+  <testcase name="shouldSortChildrenByMotherName" classname="org.ei.telemedicine.test.view.controller.ChildSmartRegisterControllerTest" time="0.026"/>
+  <testcase name="shouldCreateChildClientsWithServicesProvided" classname="org.ei.telemedicine.test.view.controller.ChildSmartRegisterControllerTest" time="0.006"/>
+  <testcase name="shouldMapPNCToPNCClient" classname="org.ei.telemedicine.test.view.controller.ChildSmartRegisterControllerTest" time="0.006"/>
+  <testcase name="shouldCreateChildClientsWithAlerts" classname="org.ei.telemedicine.test.view.controller.ChildSmartRegisterControllerTest" time="0.006"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="org.ei.telemedicine.test.service.formSubmissionHandler.FormSubmissionRouterTest" tests="30" skipped="0" failures="0" errors="0" timestamp="2015-12-17T05:22:15" hostname="DIPL-PC0206" time="0.334">
+  <properties/>
+  <testcase name="testShouldDelegatePNCVisitFormSubmissionHandlingToPNCVisitHandler" classname="org.ei.telemedicine.test.service.formSubmissionHandler.FormSubmissionRouterTest" time="0.009"/>
+  <testcase name="testShouldDelegateHBTestFormSubmissionHandlingToHBTestHandler" classname="org.ei.telemedicine.test.service.formSubmissionHandler.FormSubmissionRouterTest" time="0.008"/>
+  <testcase name="testShouldDelegateChildImmunizationsFormSubmissionHandlingToChildImmunizationsHandler" classname="org.ei.telemedicine.test.service.formSubmissionHandler.FormSubmissionRouterTest" time="0.007"/>
+  <testcase name="testShouldDelegateTTFormSubmissionHandlingToTTHandler" classname="org.ei.telemedicine.test.service.formSubmissionHandler.FormSubmissionRouterTest" time="0.007"/>
+  <testcase name="testShouldDelegateChildCloseFormSubmissionHandlingToChildCloseHandler" classname="org.ei.telemedicine.test.service.formSubmissionHandler.FormSubmissionRouterTest" time="0.007"/>
+  <testcase name="testShouldDelegatePNCRegistrationFormSubmissionHandlingToPNCRegistrationHandler" classname="org.ei.telemedicine.test.service.formSubmissionHandler.FormSubmissionRouterTest" time="0.007"/>
+  <testcase name="testShouldDelegateANCRegistrationOAFormSubmissionHandlingToANCRegistrationOAHandler" classname="org.ei.telemedicine.test.service.formSubmissionHandler.FormSubmissionRouterTest" time="0.006"/>
+  <testcase name="testShouldDelegateANCInvestigationsFormSubmissionHandlingToANCInvestigationsHandler" classname="org.ei.telemedicine.test.service.formSubmissionHandler.FormSubmissionRouterTest" time="0.007"/>
+  <testcase name="testShouldDelegateANCRegistrationFormSubmissionHandlingToANCRegistrationHandler" classname="org.ei.telemedicine.test.service.formSubmissionHandler.FormSubmissionRouterTest" time="0.008"/>
+  <testcase name="testShouldDelegateANCCloseFormSubmissionHandlingToANCCloseHandler" classname="org.ei.telemedicine.test.service.formSubmissionHandler.FormSubmissionRouterTest" time="0.007"/>
+  <testcase name="testShouldDelegateChildIllnessFormSubmissionHandlingToChildIllnessHandler" classname="org.ei.telemedicine.test.service.formSubmissionHandler.FormSubmissionRouterTest" time="0.005"/>
+  <testcase name="testShouldDelegateIFAFormSubmissionHandlingToIFAHandler" classname="org.ei.telemedicine.test.service.formSubmissionHandler.FormSubmissionRouterTest" time="0.006"/>
+  <testcase name="testShouldDelegatePNCCloseFormSubmissionHandlingToPNCCloseHandler" classname="org.ei.telemedicine.test.service.formSubmissionHandler.FormSubmissionRouterTest" time="0.006"/>
+  <testcase name="testShouldNotifyFormSubmittedListenersWhenThereIsNoHandlerForForm" classname="org.ei.telemedicine.test.service.formSubmissionHandler.FormSubmissionRouterTest" time="0.006"/>
+  <testcase name="testShouldDelegateFPComplicationsFormSubmissionHandlingToFPComplicationsHandler" classname="org.ei.telemedicine.test.service.formSubmissionHandler.FormSubmissionRouterTest" time="0.006"/>
+  <testcase name="testShouldDelegateRenewFPProductFormSubmissionHandlingToRenewFPProductHandler" classname="org.ei.telemedicine.test.service.formSubmissionHandler.FormSubmissionRouterTest" time="0.006"/>
+  <testcase name="testShouldDelegateChildRegistrationECFormSubmissionHandlingToChildRegistrationECHandler" classname="org.ei.telemedicine.test.service.formSubmissionHandler.FormSubmissionRouterTest" time="0.005"/>
+  <testcase name="testShouldDelegateDeliveryPlanFormSubmissionHandlingToDeliveryPlanHandler" classname="org.ei.telemedicine.test.service.formSubmissionHandler.FormSubmissionRouterTest" time="0.005"/>
+  <testcase name="testShouldDelegateTT1FormSubmissionHandlingToTTHandler" classname="org.ei.telemedicine.test.service.formSubmissionHandler.FormSubmissionRouterTest" time="0.005"/>
+  <testcase name="testShouldDelegateECEditFormSubmissionHandlingToTestSubmissionHanler" classname="org.ei.telemedicine.test.service.formSubmissionHandler.FormSubmissionRouterTest" time="0.006"/>
+  <testcase name="testShouldDelegateECEditFormSubmissionHandlingToECEditHandler" classname="org.ei.telemedicine.test.service.formSubmissionHandler.FormSubmissionRouterTest" time="0.005"/>
+  <testcase name="testShouldDelegateTTBoosterFormSubmissionHandlingToTTHandler" classname="org.ei.telemedicine.test.service.formSubmissionHandler.FormSubmissionRouterTest" time="0.006"/>
+  <testcase name="testShouldDelegateECRegistrationFormSubmissionHandlingToECRegistrationHandler" classname="org.ei.telemedicine.test.service.formSubmissionHandler.FormSubmissionRouterTest" time="0.006"/>
+  <testcase name="testShouldDelegateECCloseFormSubmissionHandlingToECCloseHandler" classname="org.ei.telemedicine.test.service.formSubmissionHandler.FormSubmissionRouterTest" time="0.005"/>
+  <testcase name="testShouldDelegateANCVisitFormSubmissionHandlingToANCVisitHandler" classname="org.ei.telemedicine.test.service.formSubmissionHandler.FormSubmissionRouterTest" time="0.006"/>
+  <testcase name="testShouldDelegateVitaminAFormSubmissionHandlingToVitaminAHandler" classname="org.ei.telemedicine.test.service.formSubmissionHandler.FormSubmissionRouterTest" time="0.006"/>
+  <testcase name="testShouldNotifyFormSubmittedListenersWhenFormIsHandled" classname="org.ei.telemedicine.test.service.formSubmissionHandler.FormSubmissionRouterTest" time="0.005"/>
+  <testcase name="testShouldDelegateChildRegistrationOAFormSubmissionHandlingToChildRegistrationOAHandler" classname="org.ei.telemedicine.test.service.formSubmissionHandler.FormSubmissionRouterTest" time="0.005"/>
+  <testcase name="testShouldDelegateTT2FormSubmissionHandlingToTTHandler" classname="org.ei.telemedicine.test.service.formSubmissionHandler.FormSubmissionRouterTest" time="0.006"/>
+  <testcase name="testShouldDelegateDeliveryOutcomeFormSubmissionHandlingToDeliveryOutcomeHandler" classname="org.ei.telemedicine.test.service.formSubmissionHandler.FormSubmissionRouterTest" time="0.007"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

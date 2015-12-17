@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>FPAlertStatus.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">org.ei.telemedicine.view.contract</a> &gt; <span class="el_source">FPAlertStatus.java</span></div><h1>FPAlertStatus.java</h1><pre class="source lang-java linenums">package org.ei.telemedicine.view.contract;
+
+import org.ei.telemedicine.R;
+
+import android.graphics.Color;
+
+<span class="nc" id="L7">public enum FPAlertStatus {</span>
+<span class="nc" id="L8">    EMPTY {</span>
+        public int backgroundColorResourceId() {
+<span class="nc" id="L10">            return android.R.color.transparent;</span>
+        }
+
+        public int fontColor() {
+<span class="nc" id="L14">            return Color.BLACK;</span>
+        }
+    },
+<span class="nc" id="L17">    UPCOMING {</span>
+        public int backgroundColorResourceId() {
+<span class="nc" id="L19">            return R.color.alert_upcoming_light_blue;</span>
+        }
+
+        public int fontColor() {
+<span class="nc" id="L23">            return Color.BLACK;</span>
+        }
+    },
+<span class="nc" id="L26">    NORMAL {</span>
+        public int backgroundColorResourceId() {
+<span class="nc" id="L28">            return R.color.alert_in_progress_blue;</span>
+        }
+
+        public int fontColor() {
+<span class="nc" id="L32">            return Color.WHITE;</span>
+        }
+    },
+<span class="nc" id="L35">    URGENT {</span>
+        public int backgroundColorResourceId() {
+<span class="nc" id="L37">            return R.color.alert_urgent_red;</span>
+        }
+
+        public int fontColor() {
+<span class="nc" id="L41">            return Color.WHITE;</span>
+        }
+    },
+<span class="nc" id="L44">    COMPLETE {</span>
+        public int backgroundColorResourceId() {
+<span class="nc" id="L46">            return R.color.alert_complete_green;</span>
+        }
+
+        public int fontColor() {
+<span class="nc" id="L50">            return Color.WHITE;</span>
+        }
+    };
+
+
+    public abstract int backgroundColorResourceId();
+
+    public abstract int fontColor();
+
+    public static FPAlertStatus from(String value) {
+<span class="nc" id="L60">        return valueOf(value.toUpperCase());</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.1.201405082137</span></div></body></html>

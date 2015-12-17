@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>SettingsRepository.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">org.ei.telemedicine.repository</a> &gt; <span class="el_source">SettingsRepository.java</span></div><h1>SettingsRepository.java</h1><pre class="source lang-java linenums">package org.ei.telemedicine.repository;
+
+import android.content.ContentValues;
+import android.database.Cursor;
+import net.sqlcipher.database.SQLiteDatabase;
+
+<span class="nc" id="L7">public class SettingsRepository extends DrishtiRepository {</span>
+    static final String SETTINGS_SQL = &quot;CREATE TABLE settings(key VARCHAR PRIMARY KEY, value BLOB)&quot;;
+    public static final String SETTINGS_TABLE_NAME = &quot;settings&quot;;
+    public static final String SETTINGS_KEY_COLUMN = &quot;key&quot;;
+    public static final String SETTINGS_VALUE_COLUMN = &quot;value&quot;;
+
+    @Override
+    protected void onCreate(SQLiteDatabase database) {
+<span class="nc" id="L15">        database.execSQL(SETTINGS_SQL);</span>
+<span class="nc" id="L16">    }</span>
+
+    public void updateSetting(String key, String value) {
+<span class="nc" id="L19">        ContentValues values = new ContentValues();</span>
+<span class="nc" id="L20">        values.put(SETTINGS_KEY_COLUMN, key);</span>
+<span class="nc" id="L21">        values.put(SETTINGS_VALUE_COLUMN, value);</span>
+
+<span class="nc" id="L23">        replace(values);</span>
+<span class="nc" id="L24">    }</span>
+
+    public void updateBLOB(String key, byte[] value) {
+<span class="nc" id="L27">        ContentValues values = new ContentValues();</span>
+<span class="nc" id="L28">        values.put(SETTINGS_KEY_COLUMN, key);</span>
+<span class="nc" id="L29">        values.put(SETTINGS_VALUE_COLUMN, value);</span>
+
+<span class="nc" id="L31">        replace(values);</span>
+<span class="nc" id="L32">    }</span>
+
+    public String querySetting(String key, String defaultValue) {
+<span class="nc" id="L35">        Cursor cursor = getCursor(key);</span>
+<span class="nc bnc" id="L36" title="All 2 branches missed.">        if (cursor == null) {</span>
+<span class="nc" id="L37">            return defaultValue;</span>
+        }
+
+<span class="nc" id="L40">        String value = cursor.getString(0);</span>
+<span class="nc" id="L41">        cursor.close();</span>
+<span class="nc" id="L42">        return value;</span>
+    }
+
+    public byte[] queryBLOB(String key) {
+<span class="nc" id="L46">        Cursor cursor = getCursor(key);</span>
+<span class="nc bnc" id="L47" title="All 2 branches missed.">        if (cursor == null) {</span>
+<span class="nc" id="L48">            return null;</span>
+        }
+
+<span class="nc" id="L51">        byte[] value = cursor.getBlob(0);</span>
+<span class="nc" id="L52">        cursor.close();</span>
+<span class="nc" id="L53">        return value;</span>
+    }
+
+    private void replace(ContentValues values) {
+<span class="nc" id="L57">        SQLiteDatabase database = masterRepository.getWritableDatabase();</span>
+<span class="nc" id="L58">        database.replace(SETTINGS_TABLE_NAME, null, values);</span>
+<span class="nc" id="L59">    }</span>
+
+    private Cursor getCursor(String key) {
+<span class="nc" id="L62">        SQLiteDatabase database = masterRepository.getReadableDatabase();</span>
+<span class="nc" id="L63">        Cursor cursor = database.query(SETTINGS_TABLE_NAME, new String[]{SETTINGS_VALUE_COLUMN}, SETTINGS_KEY_COLUMN + &quot; = ?&quot;, new String[]{key}, null, null, null, &quot;1&quot;);</span>
+<span class="nc" id="L64">        cursor.moveToFirst();</span>
+<span class="nc bnc" id="L65" title="All 2 branches missed.">        if (cursor.isAfterLast()) {</span>
+<span class="nc" id="L66">            cursor.close();</span>
+<span class="nc" id="L67">            return null;</span>
+        }
+<span class="nc" id="L69">        return cursor;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.1.201405082137</span></div></body></html>

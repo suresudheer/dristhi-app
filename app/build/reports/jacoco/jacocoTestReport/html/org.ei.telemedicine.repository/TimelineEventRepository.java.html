@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>TimelineEventRepository.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">org.ei.telemedicine.repository</a> &gt; <span class="el_source">TimelineEventRepository.java</span></div><h1>TimelineEventRepository.java</h1><pre class="source lang-java linenums">package org.ei.telemedicine.repository;
+
+import android.content.ContentValues;
+import android.database.Cursor;
+import android.util.Log;
+
+import net.sqlcipher.database.SQLiteDatabase;
+
+import org.ei.telemedicine.domain.TimelineEvent;
+import org.joda.time.LocalDate;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+<span class="nc" id="L17">public class TimelineEventRepository extends DrishtiRepository {</span>
+    private static final String TIMELINEEVENT_SQL = &quot;CREATE TABLE timelineEvent(caseID VARCHAR, type VARCHAR, referenceDate VARCHAR, title VARCHAR, detail1 VARCHAR, detail2 VARCHAR)&quot;;
+    private static final String TIMELINEVENT_CASEID_INDEX_SQL = &quot;CREATE INDEX timelineEvent_caseID_index ON timelineEvent(caseID);&quot;;
+    private static final String TIMELINEEVENT_TABLE_NAME = &quot;timelineEvent&quot;;
+    private static final String CASEID_COLUMN = &quot;caseId&quot;;
+    private static final String TYPE_COLUMN = &quot;type&quot;;
+    private static final String REF_DATE_COLUMN = &quot;referenceDate&quot;;
+    private static final String TITLE_COLUMN = &quot;title&quot;;
+    private static final String DETAIL1_COLUMN = &quot;detail1&quot;;
+    private static final String DETAIL2_COLUMN = &quot;detail2&quot;;
+<span class="fc" id="L27">    private static final String[] TIMELINEEVENT_TABLE_COLUMNS = {CASEID_COLUMN, TYPE_COLUMN, REF_DATE_COLUMN, TITLE_COLUMN, DETAIL1_COLUMN, DETAIL2_COLUMN};</span>
+
+    @Override
+    protected void onCreate(SQLiteDatabase database) {
+<span class="nc" id="L31">        database.execSQL(TIMELINEEVENT_SQL);</span>
+<span class="nc" id="L32">        database.execSQL(TIMELINEVENT_CASEID_INDEX_SQL);</span>
+<span class="nc" id="L33">    }</span>
+
+    public void add(TimelineEvent timelineEvent) {
+<span class="nc" id="L36">        Log.e(&quot;Timeline&quot;, &quot; Created &quot; + timelineEvent.caseId() + &quot;--&quot; + timelineEvent.title());</span>
+<span class="nc" id="L37">        SQLiteDatabase database = masterRepository.getWritableDatabase();</span>
+<span class="nc" id="L38">        database.insert(TIMELINEEVENT_TABLE_NAME, null, createValuesFor(timelineEvent));</span>
+<span class="nc" id="L39">    }</span>
+
+    public List&lt;TimelineEvent&gt; allFor(String caseId) {
+<span class="nc" id="L42">        SQLiteDatabase database = masterRepository.getReadableDatabase();</span>
+<span class="nc" id="L43">        Cursor cursor = database.query(TIMELINEEVENT_TABLE_NAME, TIMELINEEVENT_TABLE_COLUMNS, CASEID_COLUMN + &quot; = ?&quot;, new String[]{caseId}, null, null, null);</span>
+<span class="nc" id="L44">        return readAllTimelineEvents(cursor);</span>
+    }
+
+    public void deleteAllTimelineEventsForEntity(String caseId) {
+<span class="nc" id="L48">        SQLiteDatabase database = masterRepository.getWritableDatabase();</span>
+<span class="nc" id="L49">        database.delete(TIMELINEEVENT_TABLE_NAME, CASEID_COLUMN + &quot; = ?&quot;, new String[]{caseId});</span>
+<span class="nc" id="L50">    }</span>
+
+    private List&lt;TimelineEvent&gt; readAllTimelineEvents(Cursor cursor) {
+<span class="nc" id="L53">        cursor.moveToFirst();</span>
+<span class="nc" id="L54">        List&lt;TimelineEvent&gt; timelineEvents = new ArrayList&lt;TimelineEvent&gt;();</span>
+<span class="nc bnc" id="L55" title="All 2 branches missed.">        while (!cursor.isAfterLast()) {</span>
+<span class="nc" id="L56">            Log.e(cursor.getString(0), cursor.getString(1) + &quot;====&quot; + cursor.getString(3));</span>
+<span class="nc" id="L57">            timelineEvents.add(new TimelineEvent(cursor.getString(0), cursor.getString(1), LocalDate.parse(cursor.getString(2)), cursor.getString(3), cursor.getString(4), cursor.getString(5)));</span>
+<span class="nc" id="L58">            cursor.moveToNext();</span>
+        }
+<span class="nc" id="L60">        cursor.close();</span>
+<span class="nc" id="L61">        return timelineEvents;</span>
+    }
+
+    private ContentValues createValuesFor(TimelineEvent timelineEvent) {
+<span class="nc" id="L65">        ContentValues values = new ContentValues();</span>
+<span class="nc" id="L66">        values.put(CASEID_COLUMN, timelineEvent.caseId());</span>
+<span class="nc" id="L67">        values.put(TYPE_COLUMN, timelineEvent.type());</span>
+<span class="nc" id="L68">        values.put(REF_DATE_COLUMN, timelineEvent.referenceDate().toString());</span>
+<span class="nc" id="L69">        values.put(TITLE_COLUMN, timelineEvent.title());</span>
+<span class="nc" id="L70">        values.put(DETAIL1_COLUMN, timelineEvent.detail1());</span>
+<span class="nc" id="L71">        values.put(DETAIL2_COLUMN, timelineEvent.detail2());</span>
+<span class="nc" id="L72">        return values;</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.1.201405082137</span></div></body></html>

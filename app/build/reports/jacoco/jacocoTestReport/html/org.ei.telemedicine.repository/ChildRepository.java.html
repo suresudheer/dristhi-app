@@ -1,0 +1,257 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>ChildRepository.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">org.ei.telemedicine.repository</a> &gt; <span class="el_source">ChildRepository.java</span></div><h1>ChildRepository.java</h1><pre class="source lang-java linenums">package org.ei.telemedicine.repository;
+
+import android.content.ContentValues;
+import android.database.Cursor;
+
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
+import net.sqlcipher.database.SQLiteDatabase;
+
+import org.apache.commons.lang3.StringUtils;
+import org.ei.telemedicine.domain.Child;
+import org.ei.telemedicine.domain.EligibleCouple;
+import org.ei.telemedicine.domain.Mother;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import static java.lang.Boolean.TRUE;
+import static net.sqlcipher.DatabaseUtils.longForQuery;
+import static org.apache.commons.lang3.StringUtils.repeat;
+import static org.ei.telemedicine.repository.EligibleCoupleRepository.EC_TABLE_COLUMNS;
+import static org.ei.telemedicine.repository.EligibleCoupleRepository.EC_TABLE_NAME;
+import static org.ei.telemedicine.repository.MotherRepository.MOTHER_TABLE_COLUMNS;
+import static org.ei.telemedicine.repository.MotherRepository.MOTHER_TABLE_NAME;
+
+<span class="nc" id="L28">public class ChildRepository extends DrishtiRepository {</span>
+    private static final String CHILD_SQL = &quot;CREATE TABLE child(id VARCHAR PRIMARY KEY, motherCaseId VARCHAR, thayiCardNumber VARCHAR, dateOfBirth VARCHAR, gender VARCHAR, details VARCHAR, isClosed VARCHAR, photoPath VARCHAR)&quot;;
+    public static final String CHILD_TABLE_NAME = &quot;child&quot;;
+    private static final String ID_COLUMN = &quot;id&quot;;
+    private static final String MOTHER_ID_COLUMN = &quot;motherCaseId&quot;;
+    private static final String THAYI_CARD_COLUMN = &quot;thayiCardNumber&quot;;
+    private static final String DATE_OF_BIRTH_COLUMN = &quot;dateOfBirth&quot;;
+    private static final String GENDER_COLUMN = &quot;gender&quot;;
+    private static final String DETAILS_COLUMN = &quot;details&quot;;
+    private static final String IS_CLOSED_COLUMN = &quot;isClosed&quot;;
+    public static final String PHOTO_PATH_COLUMN = &quot;photoPath&quot;;
+<span class="fc" id="L39">    public static final String[] CHILD_TABLE_COLUMNS = {ID_COLUMN, MOTHER_ID_COLUMN, THAYI_CARD_COLUMN, DATE_OF_BIRTH_COLUMN, GENDER_COLUMN, DETAILS_COLUMN, IS_CLOSED_COLUMN, PHOTO_PATH_COLUMN};</span>
+    public static final String NOT_CLOSED = &quot;false&quot;;
+
+    @Override
+    protected void onCreate(SQLiteDatabase database) {
+<span class="nc" id="L44">        database.execSQL(CHILD_SQL);</span>
+<span class="nc" id="L45">    }</span>
+
+    public void add(Child child) {
+<span class="nc" id="L48">        SQLiteDatabase database = masterRepository.getWritableDatabase();</span>
+<span class="nc" id="L49">        database.insert(CHILD_TABLE_NAME, null, createValuesFor(child));</span>
+<span class="nc" id="L50">    }</span>
+
+    public void update(Child child) {
+<span class="nc" id="L53">        SQLiteDatabase database = masterRepository.getWritableDatabase();</span>
+<span class="nc" id="L54">        database.update(CHILD_TABLE_NAME, createValuesFor(child), ID_COLUMN + &quot; = ?&quot;, new String[]{child.caseId()});</span>
+<span class="nc" id="L55">    }</span>
+
+    public List&lt;Child&gt; all() {
+<span class="nc" id="L58">        SQLiteDatabase database = masterRepository.getReadableDatabase();</span>
+<span class="nc" id="L59">        Cursor cursor = database.query(CHILD_TABLE_NAME, CHILD_TABLE_COLUMNS, IS_CLOSED_COLUMN + &quot; = ?&quot;, new String[]{NOT_CLOSED}, null, null, null, null);</span>
+<span class="nc" id="L60">        return readAll(cursor);</span>
+    }
+
+    public Child find(String caseId) {
+<span class="nc" id="L64">        SQLiteDatabase database = masterRepository.getReadableDatabase();</span>
+<span class="nc" id="L65">        Cursor cursor = database.query(CHILD_TABLE_NAME, CHILD_TABLE_COLUMNS, ID_COLUMN + &quot; = ?&quot;, new String[]{caseId}, null, null, null, null);</span>
+<span class="nc" id="L66">        List&lt;Child&gt; children = readAll(cursor);</span>
+
+<span class="nc bnc" id="L68" title="All 2 branches missed.">        if (children.isEmpty()) {</span>
+<span class="nc" id="L69">            return null;</span>
+        }
+<span class="nc" id="L71">        return children.get(0);</span>
+    }
+
+    public List&lt;Child&gt; findChildrenByCaseIds(String... caseIds) {
+<span class="nc" id="L75">        SQLiteDatabase database = masterRepository.getReadableDatabase();</span>
+<span class="nc" id="L76">        Cursor cursor = database.rawQuery(String.format(&quot;SELECT * FROM %s WHERE %s IN (%s)&quot;, CHILD_TABLE_NAME, ID_COLUMN, insertPlaceholdersForInClause(caseIds.length)), caseIds);</span>
+<span class="nc" id="L77">        return readAll(cursor);</span>
+    }
+
+    public void updateDetails(String caseId, Map&lt;String, String&gt; details) {
+<span class="nc" id="L81">        SQLiteDatabase database = masterRepository.getWritableDatabase();</span>
+<span class="nc" id="L82">        ContentValues values = new ContentValues();</span>
+<span class="nc" id="L83">        values.put(DETAILS_COLUMN, new Gson().toJson(details));</span>
+<span class="nc" id="L84">        database.update(CHILD_TABLE_NAME, values, ID_COLUMN + &quot; = ?&quot;, new String[]{caseId});</span>
+<span class="nc" id="L85">    }</span>
+
+    public List&lt;Child&gt; findByMotherCaseId(String caseId) {
+<span class="nc" id="L88">        SQLiteDatabase database = masterRepository.getReadableDatabase();</span>
+<span class="nc" id="L89">        Cursor cursor = database.query(CHILD_TABLE_NAME, CHILD_TABLE_COLUMNS, MOTHER_ID_COLUMN + &quot; = ?&quot;, new String[]{caseId}, null, null, null, null);</span>
+<span class="nc" id="L90">        return readAll(cursor);</span>
+    }
+
+    public long count() {
+<span class="nc" id="L94">        return longForQuery(masterRepository.getReadableDatabase(), &quot;SELECT COUNT(1) FROM &quot; + CHILD_TABLE_NAME + &quot; WHERE &quot; + IS_CLOSED_COLUMN + &quot; = '&quot; + NOT_CLOSED + &quot;'&quot;, new String[0]);</span>
+    }
+
+    public void close(String caseId) {
+<span class="nc" id="L98">        markAsClosed(caseId);</span>
+<span class="nc" id="L99">    }</span>
+
+    public List&lt;Child&gt; allChildrenWithMotherAndEC() {
+<span class="nc" id="L102">        SQLiteDatabase database = masterRepository.getReadableDatabase();</span>
+<span class="nc" id="L103">        Cursor cursor = database.rawQuery(&quot;SELECT &quot; +</span>
+                tableColumnsForQuery(CHILD_TABLE_NAME, CHILD_TABLE_COLUMNS) + &quot;, &quot; +
+                tableColumnsForQuery(MOTHER_TABLE_NAME, MOTHER_TABLE_COLUMNS) + &quot;, &quot; +
+                tableColumnsForQuery(EC_TABLE_NAME, EC_TABLE_COLUMNS) +
+                &quot; FROM &quot; + CHILD_TABLE_NAME + &quot;, &quot; + MOTHER_TABLE_NAME + &quot;, &quot; + EC_TABLE_NAME +
+                &quot; WHERE &quot; + CHILD_TABLE_NAME + &quot;.&quot; + IS_CLOSED_COLUMN + &quot;= '&quot; + NOT_CLOSED + &quot;' AND &quot; +
+                CHILD_TABLE_NAME + &quot;.&quot; + MOTHER_ID_COLUMN + &quot; = &quot; + MOTHER_TABLE_NAME + &quot;.&quot; + MotherRepository.ID_COLUMN
+                + &quot; AND &quot; + MOTHER_TABLE_NAME + &quot;.&quot; + MotherRepository.EC_CASEID_COLUMN + &quot; = &quot; + EC_TABLE_NAME + &quot;.&quot; + EligibleCoupleRepository.ID_COLUMN,
+                null);
+<span class="nc" id="L112">        return readAllChildrenWithMotherAndEC(cursor);</span>
+    }
+
+    private String tableColumnsForQuery(String tableName, String[] tableColumns) {
+<span class="nc" id="L116">        return StringUtils.join(prepend(tableColumns, tableName), &quot;, &quot;);</span>
+    }
+
+    private String[] prepend(String[] input, String tableName) {
+<span class="nc" id="L120">        int length = input.length;</span>
+<span class="nc" id="L121">        String[] output = new String[length];</span>
+<span class="nc bnc" id="L122" title="All 2 branches missed.">        for (int index = 0; index &lt; length; index++) {</span>
+<span class="nc" id="L123">            output[index] = tableName + &quot;.&quot; + input[index] + &quot; as &quot; + tableName + input[index];</span>
+        }
+<span class="nc" id="L125">        return output;</span>
+    }
+
+    private void markAsClosed(String caseId) {
+<span class="nc" id="L129">        ContentValues values = new ContentValues();</span>
+<span class="nc" id="L130">        values.put(IS_CLOSED_COLUMN, TRUE.toString());</span>
+<span class="nc" id="L131">        masterRepository.getWritableDatabase().update(CHILD_TABLE_NAME, values, ID_COLUMN + &quot; = ?&quot;, new String[]{caseId});</span>
+<span class="nc" id="L132">    }</span>
+
+    private ContentValues createValuesFor(Child child) {
+<span class="nc" id="L135">        ContentValues values = new ContentValues();</span>
+<span class="nc" id="L136">        values.put(ID_COLUMN, child.caseId());</span>
+<span class="nc" id="L137">        values.put(MOTHER_ID_COLUMN, child.motherCaseId());</span>
+<span class="nc" id="L138">        values.put(THAYI_CARD_COLUMN, child.thayiCardNumber());</span>
+<span class="nc" id="L139">        values.put(DATE_OF_BIRTH_COLUMN, child.dateOfBirth());</span>
+<span class="nc" id="L140">        values.put(GENDER_COLUMN, child.gender());</span>
+<span class="nc" id="L141">        values.put(DETAILS_COLUMN, new Gson().toJson(child.details()));</span>
+<span class="nc" id="L142">        values.put(IS_CLOSED_COLUMN, Boolean.toString(child.isClosed()));</span>
+<span class="nc" id="L143">        values.put(PHOTO_PATH_COLUMN, child.photoPath());</span>
+<span class="nc" id="L144">        return values;</span>
+    }
+
+    private List&lt;Child&gt; readAll(Cursor cursor) {
+<span class="nc" id="L148">        cursor.moveToFirst();</span>
+<span class="nc" id="L149">        List&lt;Child&gt; children = new ArrayList&lt;Child&gt;();</span>
+<span class="nc bnc" id="L150" title="All 2 branches missed.">        while (!cursor.isAfterLast()) {</span>
+<span class="nc" id="L151">            children.add(new Child(cursor.getString(0), cursor.getString(1), cursor.getString(2), cursor.getString(3), cursor.getString(4),</span>
+<span class="nc" id="L152">                    new Gson().&lt;Map&lt;String, String&gt;&gt;fromJson(cursor.getString(5), new TypeToken&lt;Map&lt;String, String&gt;&gt;() {</span>
+                    }.getType()))
+                    .setIsClosed(Boolean.valueOf(cursor.getString(6)))
+                    .withPhotoPath(cursor.getString(cursor.getColumnIndex(PHOTO_PATH_COLUMN)))
+            );
+<span class="nc" id="L157">            cursor.moveToNext();</span>
+        }
+<span class="nc" id="L159">        cursor.close();</span>
+<span class="nc" id="L160">        return children;</span>
+    }
+
+    private List&lt;Child&gt; readAllChildrenWithMotherAndEC(Cursor cursor) {
+<span class="nc" id="L164">        cursor.moveToFirst();</span>
+<span class="nc" id="L165">        List&lt;Child&gt; children = new ArrayList&lt;Child&gt;();</span>
+<span class="nc bnc" id="L166" title="All 2 branches missed.">        while (!cursor.isAfterLast()) {</span>
+<span class="nc" id="L167">            children.add(childFromCursor(cursor)</span>
+                    .withMother(motherFromCursor(cursor))
+                    .withEC(ecFromCursor(cursor)));
+<span class="nc" id="L170">            cursor.moveToNext();</span>
+        }
+<span class="nc" id="L172">        cursor.close();</span>
+<span class="nc" id="L173">        return children;</span>
+    }
+
+    private EligibleCouple ecFromCursor(Cursor cursor) {
+<span class="nc" id="L177">        return new EligibleCouple(</span>
+                getColumnValueByAlias(cursor, EC_TABLE_NAME, EligibleCoupleRepository.ID_COLUMN),
+                getColumnValueByAlias(cursor, EC_TABLE_NAME, EligibleCoupleRepository.WIFE_NAME_COLUMN),
+                getColumnValueByAlias(cursor, EC_TABLE_NAME, EligibleCoupleRepository.HUSBAND_NAME_COLUMN),
+                getColumnValueByAlias(cursor, EC_TABLE_NAME, EligibleCoupleRepository.EC_NUMBER_COLUMN),
+                getColumnValueByAlias(cursor, EC_TABLE_NAME, EligibleCoupleRepository.VILLAGE_NAME_COLUMN),
+                getColumnValueByAlias(cursor, EC_TABLE_NAME, EligibleCoupleRepository.SUBCENTER_NAME_COLUMN),
+<span class="nc" id="L184">                new Gson().&lt;Map&lt;String, String&gt;&gt;fromJson(getColumnValueByAlias(cursor, EC_TABLE_NAME, EligibleCoupleRepository.DETAILS_COLUMN), new TypeToken&lt;Map&lt;String, String&gt;&gt;() {</span>
+                }.getType()))
+                .withPhotoPath(getColumnValueByAlias(cursor, EC_TABLE_NAME, EligibleCoupleRepository.PHOTO_PATH_COLUMN))
+                .withOutOfArea(getColumnValueByAlias(cursor, EC_TABLE_NAME, EligibleCoupleRepository.IS_OUT_OF_AREA_COLUMN));
+    }
+
+    private Mother motherFromCursor(Cursor cursor) {
+<span class="nc" id="L191">        return new Mother(</span>
+                getColumnValueByAlias(cursor, MOTHER_TABLE_NAME, MotherRepository.ID_COLUMN),
+                getColumnValueByAlias(cursor, MOTHER_TABLE_NAME, MotherRepository.EC_CASEID_COLUMN),
+                getColumnValueByAlias(cursor, MOTHER_TABLE_NAME, MotherRepository.THAYI_CARD_NUMBER_COLUMN),
+                getColumnValueByAlias(cursor, MOTHER_TABLE_NAME, MotherRepository.REF_DATE_COLUMN))
+<span class="nc" id="L196">                .withDetails(new Gson().&lt;Map&lt;String, String&gt;&gt;fromJson(getColumnValueByAlias(cursor, MOTHER_TABLE_NAME, MotherRepository.DETAILS_COLUMN), new TypeToken&lt;Map&lt;String, String&gt;&gt;() {</span>
+                }.getType()));
+    }
+
+    private List&lt;Child&gt; readAllChildren(Cursor cursor) {
+<span class="nc" id="L201">        cursor.moveToFirst();</span>
+<span class="nc" id="L202">        List&lt;Child&gt; children = new ArrayList&lt;Child&gt;();</span>
+<span class="nc bnc" id="L203" title="All 2 branches missed.">        while (!cursor.isAfterLast()) {</span>
+<span class="nc" id="L204">            children.add(childFromCursor(cursor));</span>
+<span class="nc" id="L205">            cursor.moveToNext();</span>
+        }
+<span class="nc" id="L207">        cursor.close();</span>
+<span class="nc" id="L208">        return children;</span>
+    }
+
+    private Child childFromCursor(Cursor cursor) {
+<span class="nc" id="L212">        return new Child(</span>
+                getColumnValueByAlias(cursor, CHILD_TABLE_NAME, ID_COLUMN),
+                getColumnValueByAlias(cursor, CHILD_TABLE_NAME, MOTHER_ID_COLUMN),
+                getColumnValueByAlias(cursor, CHILD_TABLE_NAME, THAYI_CARD_COLUMN),
+                getColumnValueByAlias(cursor, CHILD_TABLE_NAME, DATE_OF_BIRTH_COLUMN),
+                getColumnValueByAlias(cursor, CHILD_TABLE_NAME, GENDER_COLUMN),
+<span class="nc" id="L218">                new Gson().&lt;Map&lt;String, String&gt;&gt;fromJson(getColumnValueByAlias(cursor, CHILD_TABLE_NAME, DETAILS_COLUMN), new TypeToken&lt;Map&lt;String, String&gt;&gt;() {</span>
+                }.getType()))
+                .setIsClosed(Boolean.valueOf(getColumnValueByAlias(cursor, CHILD_TABLE_NAME, IS_CLOSED_COLUMN)))
+                .withPhotoPath(getColumnValueByAlias(cursor, CHILD_TABLE_NAME, PHOTO_PATH_COLUMN));
+    }
+
+    private String getColumnValueByAlias(Cursor cursor, String table, String column) {
+<span class="nc" id="L225">        return cursor.getString(cursor.getColumnIndex(table + column));</span>
+    }
+
+    private String insertPlaceholdersForInClause(int length) {
+<span class="nc" id="L229">        return repeat(&quot;?&quot;, &quot;,&quot;, length);</span>
+    }
+
+    public void updatePhotoPath(String caseId, String imagePath) {
+<span class="nc" id="L233">        SQLiteDatabase database = masterRepository.getWritableDatabase();</span>
+<span class="nc" id="L234">        ContentValues values = new ContentValues();</span>
+<span class="nc" id="L235">        values.put(PHOTO_PATH_COLUMN, imagePath);</span>
+<span class="nc" id="L236">        database.update(CHILD_TABLE_NAME, values, ID_COLUMN + &quot; = ?&quot;, new String[]{caseId});</span>
+<span class="nc" id="L237">    }</span>
+
+    public List&lt;Child&gt; findAllChildrenByECId(String ecId) {
+<span class="nc" id="L240">        SQLiteDatabase database = masterRepository.getReadableDatabase();</span>
+<span class="nc" id="L241">        Cursor cursor = database.rawQuery(&quot;SELECT &quot; +</span>
+                tableColumnsForQuery(CHILD_TABLE_NAME, CHILD_TABLE_COLUMNS) +
+                &quot; FROM &quot; + CHILD_TABLE_NAME + &quot;, &quot; + MOTHER_TABLE_NAME + &quot;, &quot; + EC_TABLE_NAME +
+                &quot; WHERE &quot; + CHILD_TABLE_NAME + &quot;.&quot; + IS_CLOSED_COLUMN + &quot;= '&quot; + NOT_CLOSED + &quot;' AND &quot; +
+                CHILD_TABLE_NAME + &quot;.&quot; + MOTHER_ID_COLUMN + &quot; = &quot; + MOTHER_TABLE_NAME + &quot;.&quot; + MotherRepository.ID_COLUMN
+                + &quot; AND &quot; + MOTHER_TABLE_NAME + &quot;.&quot; + MotherRepository.EC_CASEID_COLUMN + &quot; = &quot; + EC_TABLE_NAME + &quot;.&quot; +
+                EligibleCoupleRepository.ID_COLUMN + &quot; AND &quot; + EC_TABLE_NAME + &quot;.&quot; + EligibleCoupleRepository.ID_COLUMN +
+                &quot;= ? &quot;, new String[]{ecId});
+<span class="nc" id="L249">        return readAllChildren(cursor);</span>
+    }
+
+    public void delete(String childId) {
+<span class="nc" id="L253">        SQLiteDatabase database = masterRepository.getWritableDatabase();</span>
+<span class="nc" id="L254">        database.delete(CHILD_TABLE_NAME, ID_COLUMN + &quot;= ?&quot;, new String[]{childId});</span>
+<span class="nc" id="L255">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.1.201405082137</span></div></body></html>

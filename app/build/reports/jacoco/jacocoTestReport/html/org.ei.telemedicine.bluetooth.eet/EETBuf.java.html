@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>EETBuf.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">org.ei.telemedicine.bluetooth.eet</a> &gt; <span class="el_source">EETBuf.java</span></div><h1>EETBuf.java</h1><pre class="source lang-java linenums">package org.ei.telemedicine.bluetooth.eet;
+
+import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.Vector;
+
+import android.content.Context;
+import android.util.Log;
+
+import org.ei.telemedicine.bluetooth.Constants;
+import org.ei.telemedicine.bluetooth.OnBluetoothResult;
+
+import cn.com.contec.jar.eartemperture.DeviceCommand;
+import cn.com.contec.jar.eartemperture.DevicePackManager;
+import cn.com.contec.jar.eartemperture.EarTempertureDataJar;
+
+
+public class EETBuf {
+    private static final String TAG = &quot;EETBuf&quot;;
+<span class="nc" id="L20">    public static Vector&lt;Integer&gt; m_buf = null;</span>
+<span class="nc" id="L21">    private DevicePackManager m_DevicePackManager = new DevicePackManager();</span>
+    OnBluetoothResult onResult;
+
+<span class="nc" id="L24">    public EETBuf() {</span>
+<span class="nc" id="L25">        m_buf = new Vector&lt;Integer&gt;();</span>
+<span class="nc" id="L26">    }</span>
+
+    public synchronized int Count() {
+<span class="nc" id="L29">        return m_buf.size();</span>
+    }
+
+<span class="nc" id="L32">    int mSettimeCount = 0;</span>
+
+    public synchronized void write(byte[] buf, int count,
+                                   final OutputStream pOutputStream, Context context,
+                                   final int deviceNum) throws Exception {
+<span class="nc bnc" id="L37" title="All 2 branches missed.">        if (context instanceof OnBluetoothResult) {</span>
+<span class="nc" id="L38">            onResult = (OnBluetoothResult) context;</span>
+        }
+
+<span class="nc" id="L41">        int _receiveNum = m_DevicePackManager.arrangeMessage(buf, count);</span>
+<span class="nc" id="L42">        Log.e(TAG, &quot;Receive Num&quot; + _receiveNum + &quot;&quot;);</span>
+
+<span class="nc bnc" id="L44" title="All 9 branches missed.">        switch (_receiveNum) {</span>
+            case 1:
+<span class="nc" id="L46">                Log.i(TAG + &quot;1&quot;,</span>
+                        &quot;New Data&quot; + m_DevicePackManager.m_DeviceDatas.size());
+                // for (int i = 0; i &lt; m_DevicePackManager.m_DeviceDatas.size();
+                // i++) {
+                // Log.e(m_DevicePackManager.m_DeviceDatas.toString() + &quot;\n&quot;, &quot;&quot;);
+                // }
+<span class="nc" id="L52">                break;</span>
+            case 2:
+<span class="nc" id="L54">                Log.i(TAG + &quot;2&quot;, &quot;Coming to 2*************&quot;</span>
+                        + m_DevicePackManager.m_DeviceDatas.size());
+<span class="nc" id="L56">                String data = null;</span>
+<span class="nc bnc" id="L57" title="All 2 branches missed.">                for (int i = 0; i &lt; m_DevicePackManager.m_DeviceDatas.size(); i++) {</span>
+<span class="nc" id="L58">                    Log.e(TAG, &quot;Data&quot; + m_DevicePackManager.m_DeviceDatas.toString()</span>
+                            + &quot;\n&quot;);
+<span class="nc" id="L60">                    ArrayList&lt;EarTempertureDataJar&gt; earTempertureDataJar = m_DevicePackManager.m_DeviceDatas;</span>
+<span class="nc" id="L61">                    EarTempertureDataJar earTempertureDataJar2 = earTempertureDataJar</span>
+                            .get(i);
+<span class="nc" id="L63">                    data = earTempertureDataJar2.m_data+ &quot;&quot;;</span>
+                }
+
+<span class="nc" id="L66">                Log.e(TAG, &quot;Data ------&quot; + data);</span>
+<span class="nc" id="L67">                byte[] byteData = data.getBytes();</span>
+
+<span class="nc" id="L69">                m_DevicePackManager.m_DeviceDatas.clear();</span>
+<span class="nc" id="L70">                pOutputStream.write(DeviceCommand.command_delData());</span>
+
+<span class="nc" id="L72">                onResult.onResult(byteData, Constants.EET_DEVICE_NUM);</span>
+
+<span class="nc" id="L74">                break;</span>
+            case 5:
+<span class="nc" id="L76">                Log.i(TAG, &quot;Comintg 5&quot;);</span>
+<span class="nc" id="L77">                pOutputStream.write(DeviceCommand.command_closeBluetooth());</span>
+<span class="nc" id="L78">                break;</span>
+            case 7:
+<span class="nc" id="L80">                Log.i(TAG + &quot;7&quot;, &quot;No New Data&quot;);</span>
+<span class="nc" id="L81">                break;</span>
+            case 13:
+<span class="nc" id="L83">                Log.i(TAG + &quot;13&quot;, &quot;Stop&quot;);</span>
+<span class="nc" id="L84">                break;</span>
+            case 3:
+<span class="nc" id="L86">                Log.i(TAG + &quot;3&quot;, &quot;Coming to 3&quot;);</span>
+<span class="nc" id="L87">                byte[] command_requestOneData = DeviceCommand</span>
+                        .command_requestDataOlnyOne();
+<span class="nc" id="L89">                pOutputStream.write(command_requestOneData);</span>
+                // try {
+                // Thread.sleep(300);
+                // } catch (InterruptedException e) {// The last command to prevent
+                // // blood pressure device can not
+                // // receive
+                // e.printStackTrace();
+                // }
+                // ArrayList&lt;EarTempertureDataJar&gt; m_DeviceDatas1 =
+                // m_DevicePackManager.m_DeviceDatas;
+                // for (int i = 0; i &lt; m_DeviceDatas1.size(); i++) {
+                // Log.e(&quot;Device Data&quot;, m_DeviceDatas1.toString());
+                // }
+                //
+<span class="nc" id="L103">                break;</span>
+            case 4:
+<span class="nc" id="L105">                Log.i(TAG + &quot;4&quot;, &quot;failure&quot;);</span>
+
+<span class="nc" id="L107">                break;</span>
+
+            case 8:
+<span class="nc" id="L110">                Log.i(TAG + &quot;8&quot;, &quot;8&quot;);</span>
+
+<span class="nc" id="L112">                new Thread() {</span>
+                    public void run() {
+                        try {
+<span class="nc" id="L115">                            Thread.sleep(100);</span>
+<span class="nc" id="L116">                            byte[] verifyTime = DeviceCommand.command_VerifyTime();</span>
+<span class="nc" id="L117">                            pOutputStream.write(verifyTime);</span>
+<span class="nc" id="L118">                        } catch (Exception e) {</span>
+<span class="nc" id="L119">                            e.printStackTrace();</span>
+<span class="nc" id="L120">                        }</span>
+<span class="nc" id="L121">                    }</span>
+
+                    ;
+                }.start();
+<span class="nc" id="L125">                break;</span>
+
+            default:
+<span class="nc" id="L128">                onResult.onResult(null, Constants.NO_DEVICE);</span>
+                break;
+
+        }
+<span class="nc" id="L132">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.1.201405082137</span></div></body></html>

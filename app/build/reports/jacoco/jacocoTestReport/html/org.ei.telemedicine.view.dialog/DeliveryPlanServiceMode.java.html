@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>DeliveryPlanServiceMode.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">org.ei.telemedicine.view.dialog</a> &gt; <span class="el_source">DeliveryPlanServiceMode.java</span></div><h1>DeliveryPlanServiceMode.java</h1><pre class="source lang-java linenums">package org.ei.telemedicine.view.dialog;
+
+import static android.view.View.VISIBLE;
+import static org.ei.telemedicine.AllConstants.BOOLEAN_TRUE;
+import static org.ei.telemedicine.AllConstants.DeliveryPlanFields.BIRTH_COMPANION;
+import static org.ei.telemedicine.AllConstants.DeliveryPlanFields.DELIVERY_FACILITY_DH_VALUE;
+import static org.ei.telemedicine.AllConstants.DeliveryPlanFields.DELIVERY_FACILITY_HOME_VALUE;
+import static org.ei.telemedicine.AllConstants.DeliveryPlanFields.DELIVERY_FACILITY_NAME;
+import static org.ei.telemedicine.AllConstants.DeliveryPlanFields.DELIVERY_FACILITY_SDH_VALUE;
+import static org.ei.telemedicine.AllConstants.DeliveryPlanFields.PHONE_NUMBER;
+import static org.ei.telemedicine.AllConstants.DeliveryPlanFields.REVIEWED_HRP_STATUS;
+import static org.ei.telemedicine.AllConstants.DeliveryPlanFields.TRANSPORTATION_PLAN;
+import static org.ei.telemedicine.Context.getInstance;
+import static org.ei.telemedicine.domain.ANCServiceType.DELIVERY_PLAN;
+import static org.ei.telemedicine.util.StringUtil.humanize;
+import static org.ei.telemedicine.view.contract.AlertDTO.emptyAlert;
+
+import org.ei.telemedicine.AllConstants;
+import org.ei.telemedicine.R;
+import org.ei.telemedicine.domain.ANCServiceType;
+import org.ei.telemedicine.provider.SmartRegisterClientsProvider;
+import org.ei.telemedicine.view.activity.SecuredNativeSmartRegisterActivity.ClientsHeaderProvider;
+import org.ei.telemedicine.view.contract.ANCSmartRegisterClient;
+import org.ei.telemedicine.view.contract.AlertDTO;
+import org.ei.telemedicine.view.contract.AlertStatus;
+import org.ei.telemedicine.view.contract.ChildSmartRegisterClient;
+import org.ei.telemedicine.view.contract.FPSmartRegisterClient;
+import org.ei.telemedicine.view.contract.ServiceProvidedDTO;
+import org.ei.telemedicine.view.contract.pnc.PNCSmartRegisterClient;
+import org.ei.telemedicine.view.viewHolder.NativeANCSmartRegisterViewHolder;
+import org.ei.telemedicine.view.viewHolder.NativeChildSmartRegisterViewHolder;
+import org.ei.telemedicine.view.viewHolder.NativeFPSmartRegisterViewHolder;
+import org.ei.telemedicine.view.viewHolder.NativePNCSmartRegisterViewHolder;
+import org.ei.telemedicine.view.viewHolder.OnClickFormLauncher;
+
+import android.graphics.drawable.Drawable;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+public class DeliveryPlanServiceMode extends ServiceModeOption {
+
+    public DeliveryPlanServiceMode(SmartRegisterClientsProvider provider) {
+<span class="nc" id="L44">        super(provider);</span>
+<span class="nc" id="L45">    }</span>
+
+    @Override
+    public String name() {
+<span class="nc" id="L49">        return getInstance().getStringResource(R.string.anc_service_mode_delivery_plan);</span>
+    }
+
+    @Override
+    public ClientsHeaderProvider getHeaderProvider() {
+<span class="nc" id="L54">        return new ClientsHeaderProvider() {</span>
+            @Override
+            public int count() {
+<span class="nc" id="L57">                return 4;</span>
+            }
+
+            @Override
+            public int weightSum() {
+<span class="nc" id="L62">                return 100;</span>
+            }
+
+            @Override
+            public int[] weights() {
+<span class="nc" id="L67">                return new int[]{21, 9, 12, 58};</span>
+            }
+
+            @Override
+            public int[] headerTextResourceIds() {
+<span class="nc" id="L72">                return new int[]{</span>
+                        R.string.header_name, R.string.header_id, R.string.header_anc_status, R.string.header_delivery_plan};
+            }
+        };
+    }
+
+    @Override
+    public void setupListView(ChildSmartRegisterClient client, NativeChildSmartRegisterViewHolder viewHolder, View.OnClickListener clientSectionClickListener) {
+
+<span class="nc" id="L81">    }</span>
+
+    @Override
+    public void setupListView(ANCSmartRegisterClient client,
+                              NativeANCSmartRegisterViewHolder viewHolder,
+                              View.OnClickListener clientSectionClickListener) {
+<span class="nc" id="L87">        viewHolder.serviceModeDeliveryPlanViewsHolder().setVisibility(VISIBLE);</span>
+
+<span class="nc" id="L89">        setupDeliveryPlanLayout(client, viewHolder);</span>
+<span class="nc" id="L90">    }</span>
+
+    @Override
+    public void setupListView(FPSmartRegisterClient client, NativeFPSmartRegisterViewHolder viewHolder, View.OnClickListener clientSectionClickListener) {
+
+<span class="nc" id="L95">    }</span>
+
+    @Override
+    public void setupListView(PNCSmartRegisterClient client, NativePNCSmartRegisterViewHolder viewHolder, View.OnClickListener clientSectionClickListener) {
+
+<span class="nc" id="L100">    }</span>
+
+    public void setupDeliveryPlanLayout(ANCSmartRegisterClient client,
+                                        NativeANCSmartRegisterViewHolder viewHolder) {
+<span class="nc" id="L104">        AlertDTO deliveryPlanAlert = client.getAlert(ANCServiceType.DELIVERY_PLAN);</span>
+<span class="nc" id="L105">        ServiceProvidedDTO deliveryPlanServiceProvided = client.getServiceProvidedDTO(ANCServiceType.DELIVERY_PLAN.serviceName());</span>
+<span class="nc" id="L106">        viewHolder.hideViewsInDeliveryPlanViews();</span>
+<span class="nc bnc" id="L107" title="All 2 branches missed.">        if (deliveryPlanServiceProvided != null) {</span>
+<span class="nc" id="L108">            viewHolder.layoutDeliveryPlanServiceProvided().setVisibility(VISIBLE);</span>
+
+<span class="nc" id="L110">            setDeliveryFacilityName(client, viewHolder, deliveryPlanServiceProvided);</span>
+<span class="nc" id="L111">            setTransportationPlan(viewHolder, deliveryPlanServiceProvided);</span>
+<span class="nc" id="L112">            setBirthCompanion(viewHolder, deliveryPlanServiceProvided);</span>
+<span class="nc" id="L113">            setAshaPhoneNumber(client, viewHolder);</span>
+<span class="nc" id="L114">            setContactPhoneNumber(viewHolder, deliveryPlanServiceProvided);</span>
+<span class="nc" id="L115">            setReviewedHRPStatus(client, viewHolder, deliveryPlanServiceProvided);</span>
+<span class="nc bnc" id="L116" title="All 4 branches missed.">        } else if (deliveryPlanAlert != emptyAlert &amp;&amp; deliveryPlanAlert.name().equalsIgnoreCase(DELIVERY_PLAN.serviceName())) {</span>
+<span class="nc" id="L117">            setAlertLayout(viewHolder.layoutDeliveryPlanAlert(),</span>
+                    viewHolder.txtDeliveryPlanDueType(),
+                    viewHolder.txtDeliveryPlanDueOn(), client,
+                    deliveryPlanAlert);
+        }
+<span class="nc" id="L122">    }</span>
+
+    private void setDeliveryFacilityName(ANCSmartRegisterClient client, NativeANCSmartRegisterViewHolder viewHolder, ServiceProvidedDTO deliveryPlanServiceProvided) {
+<span class="nc" id="L125">        viewHolder.lblDeliveryPlace().setVisibility(VISIBLE);</span>
+<span class="nc" id="L126">        viewHolder.txtDeliveryPlace().setVisibility(VISIBLE);</span>
+<span class="nc" id="L127">        String deliveryFacilityName = deliveryPlanServiceProvided.data().get(DELIVERY_FACILITY_NAME);</span>
+<span class="nc bnc" id="L128" title="All 2 branches missed.">        if (deliveryFacilityName != null) {</span>
+<span class="nc" id="L129">            viewHolder.txtDeliveryPlace().setText(humanize(deliveryFacilityName));</span>
+<span class="nc bnc" id="L130" title="All 2 branches missed.">            if (isDeliveryPlaceAppropriate(client, deliveryFacilityName))</span>
+<span class="nc" id="L131">                setStatus(viewHolder.imgDeliveryPlaceStatus(), getInstance().getDrawable(R.drawable.ic_yes_large));</span>
+            else
+<span class="nc" id="L133">                setStatus(viewHolder.imgDeliveryPlaceStatus(), getInstance().getDrawable(R.drawable.ic_remove));</span>
+        } else {
+<span class="nc" id="L135">            setStatus(viewHolder.imgDeliveryPlaceStatus(), getInstance().getDrawable(R.drawable.ic_remove));</span>
+        }
+<span class="nc" id="L137">    }</span>
+
+    private void setTransportationPlan(NativeANCSmartRegisterViewHolder viewHolder, ServiceProvidedDTO deliveryPlanServiceProvided) {
+<span class="nc" id="L140">        viewHolder.txtTransport().setVisibility(VISIBLE);</span>
+<span class="nc" id="L141">        viewHolder.lblTransport().setVisibility(VISIBLE);</span>
+<span class="nc" id="L142">        String transportationPlan = deliveryPlanServiceProvided.data().get(TRANSPORTATION_PLAN);</span>
+<span class="nc" id="L143">        setDeliveryPlanDetails(viewHolder.txtTransport(), viewHolder.imgTransportStatus(), transportationPlan);</span>
+<span class="nc" id="L144">    }</span>
+
+    private void setBirthCompanion(NativeANCSmartRegisterViewHolder viewHolder, ServiceProvidedDTO deliveryPlanServiceProvided) {
+<span class="nc" id="L147">        viewHolder.txtHasCompanion().setVisibility(VISIBLE);</span>
+<span class="nc" id="L148">        viewHolder.lblHasCompanion().setVisibility(VISIBLE);</span>
+<span class="nc" id="L149">        String birthCompanion = deliveryPlanServiceProvided.data().get(BIRTH_COMPANION);</span>
+<span class="nc bnc" id="L150" title="All 4 branches missed.">        if (birthCompanion != null &amp;&amp; birthCompanion.equalsIgnoreCase(BOOLEAN_TRUE)) {</span>
+<span class="nc" id="L151">            viewHolder.txtHasCompanion().setText(humanize(birthCompanion));</span>
+<span class="nc" id="L152">            setStatus(viewHolder.imgHasCompanionStatus(), getInstance().getDrawable(R.drawable.ic_yes_large));</span>
+        } else {
+<span class="nc" id="L154">            viewHolder.txtHasCompanion().setText(humanize(birthCompanion));</span>
+<span class="nc" id="L155">            setStatus(viewHolder.imgHasCompanionStatus(), getInstance().getDrawable(R.drawable.ic_remove));</span>
+        }
+<span class="nc" id="L157">    }</span>
+
+    private void setAshaPhoneNumber(ANCSmartRegisterClient client, NativeANCSmartRegisterViewHolder viewHolder) {
+<span class="nc" id="L160">        viewHolder.txtAshaPhoneNumber().setVisibility(VISIBLE);</span>
+<span class="nc" id="L161">        viewHolder.lblAshaPhoneNumber().setVisibility(VISIBLE);</span>
+<span class="nc" id="L162">        String ashaPhoneNumber = client.ashaPhoneNumber();</span>
+<span class="nc" id="L163">        setDeliveryPlanDetails(viewHolder.txtAshaPhoneNumber(), viewHolder.imgAshaPhoneNumberStatus(), ashaPhoneNumber);</span>
+<span class="nc" id="L164">    }</span>
+
+    private void setContactPhoneNumber(NativeANCSmartRegisterViewHolder viewHolder, ServiceProvidedDTO deliveryPlanServiceProvided) {
+<span class="nc" id="L167">        viewHolder.txtContactPhoneNumber().setVisibility(VISIBLE);</span>
+<span class="nc" id="L168">        viewHolder.lblContactPhoneNumber().setVisibility(VISIBLE);</span>
+<span class="nc" id="L169">        String phoneNumber = deliveryPlanServiceProvided.data().get(PHONE_NUMBER);</span>
+<span class="nc" id="L170">        setDeliveryPlanDetails(viewHolder.txtContactPhoneNumber(), viewHolder.imgContactPhoneNumberStatus(), phoneNumber);</span>
+<span class="nc" id="L171">    }</span>
+
+    private void setReviewedHRPStatus(ANCSmartRegisterClient client, NativeANCSmartRegisterViewHolder viewHolder, ServiceProvidedDTO deliveryPlanServiceProvided) {
+<span class="nc bnc" id="L174" title="All 2 branches missed.">        if (client.isHighRisk()) {</span>
+<span class="nc" id="L175">            viewHolder.txtRisksReviewed().setVisibility(VISIBLE);</span>
+<span class="nc" id="L176">            viewHolder.lblRisksReviewed().setVisibility(VISIBLE);</span>
+<span class="nc" id="L177">            String reviewedHRPStatus = deliveryPlanServiceProvided.data().get(REVIEWED_HRP_STATUS);</span>
+<span class="nc" id="L178">            setDeliveryPlanDetails(viewHolder.txtRisksReviewed(), viewHolder.imgRisksReviewedStatus(), reviewedHRPStatus);</span>
+        }
+<span class="nc" id="L180">    }</span>
+
+    private boolean isDeliveryPlaceAppropriate(ANCSmartRegisterClient client, String deliveryFacilityName) {
+<span class="nc bnc" id="L183" title="All 4 branches missed.">        return isClientHighRiskAndDeliveryPlaceIsSDHOrDH(client, deliveryFacilityName)</span>
+                || isClientNotHighRiskAndDeliveryPlaceIsHome(client, deliveryFacilityName);
+    }
+
+    private boolean isClientNotHighRiskAndDeliveryPlaceIsHome(ANCSmartRegisterClient client, String deliveryFacilityName) {
+<span class="nc bnc" id="L188" title="All 4 branches missed.">        return !client.isHighRisk() &amp;&amp; (deliveryFacilityName.equalsIgnoreCase(DELIVERY_FACILITY_HOME_VALUE));</span>
+    }
+
+    private boolean isClientHighRiskAndDeliveryPlaceIsSDHOrDH(ANCSmartRegisterClient client, String deliveryFacilityName) {
+<span class="nc bnc" id="L192" title="All 6 branches missed.">        return client.isHighRisk() &amp;&amp; (deliveryFacilityName.equalsIgnoreCase(DELIVERY_FACILITY_SDH_VALUE)</span>
+                || deliveryFacilityName.equalsIgnoreCase(DELIVERY_FACILITY_DH_VALUE));
+    }
+
+    private void setStatus(ImageView imageView, Drawable drawable) {
+<span class="nc" id="L197">        imageView.setVisibility(VISIBLE);</span>
+<span class="nc" id="L198">        imageView.setBackground(drawable);</span>
+<span class="nc" id="L199">    }</span>
+
+    private void setDeliveryPlanDetails(TextView txtDetails, ImageView transportStatus, String detail) {
+<span class="nc bnc" id="L202" title="All 2 branches missed.">        if (detail != null) {</span>
+<span class="nc" id="L203">            txtDetails.setText(humanize(detail));</span>
+<span class="nc" id="L204">            setStatus(transportStatus, getInstance().getDrawable(R.drawable.ic_yes_large));</span>
+        } else
+<span class="nc" id="L206">            setStatus(transportStatus, getInstance().getDrawable(R.drawable.ic_remove));</span>
+<span class="nc" id="L207">    }</span>
+
+    private OnClickFormLauncher launchForm(String formName, ANCSmartRegisterClient client, AlertDTO alert) {
+<span class="nc" id="L210">        return provider().newFormLauncher(formName, client.entityId(), &quot;{\&quot;entityId\&quot;:\&quot;&quot; + client.entityId() + &quot;\&quot;,\&quot;alertName\&quot;:\&quot;&quot; + alert.name() + &quot;\&quot;}&quot;);</span>
+    }
+
+    private void setAlertLayout(View layout, TextView typeView,
+                                TextView dateView, ANCSmartRegisterClient client, AlertDTO alert) {
+<span class="nc" id="L215">        layout.setVisibility(View.VISIBLE);</span>
+<span class="nc" id="L216">        layout.setOnClickListener(launchForm(AllConstants.FormNames.DELIVERY_PLAN, client, alert));</span>
+<span class="nc" id="L217">        typeView.setVisibility(View.VISIBLE);</span>
+<span class="nc" id="L218">        dateView.setVisibility(View.VISIBLE);</span>
+<span class="nc" id="L219">        typeView.setText(alert.name());</span>
+<span class="nc" id="L220">        dateView.setText(&quot;Due &quot; + alert.shortDate());</span>
+
+<span class="nc" id="L222">        final AlertStatus alertStatus = alert.alertStatus();</span>
+<span class="nc" id="L223">        layout.setBackgroundResource(alertStatus.backgroundColorResourceId());</span>
+<span class="nc" id="L224">        typeView.setTextColor(alertStatus.fontColor());</span>
+<span class="nc" id="L225">        dateView.setTextColor(alertStatus.fontColor());</span>
+<span class="nc" id="L226">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.1.201405082137</span></div></body></html>

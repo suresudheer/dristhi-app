@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>MonthSummaryDatum.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">org.ei.telemedicine.dto</a> &gt; <span class="el_source">MonthSummaryDatum.java</span></div><h1>MonthSummaryDatum.java</h1><pre class="source lang-java linenums">package org.ei.telemedicine.dto;
+
+import java.util.List;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+
+public class MonthSummaryDatum
+{
+  private String aggregatedProgress;
+  private String currentProgress;
+  private List&lt;String&gt; externalIDs;
+  private String month;
+  private String year;
+  
+<span class="fc" id="L16">  public MonthSummaryDatum() {}</span>
+  
+  public MonthSummaryDatum(String paramString1, String paramString2, String paramString3, String paramString4, List&lt;String&gt; paramList)
+<span class="fc" id="L19">  {</span>
+<span class="fc" id="L20">    this.month = paramString1;</span>
+<span class="fc" id="L21">    this.year = paramString2;</span>
+<span class="fc" id="L22">    this.currentProgress = paramString3;</span>
+<span class="fc" id="L23">    this.aggregatedProgress = paramString4;</span>
+<span class="fc" id="L24">    this.externalIDs = paramList;</span>
+<span class="fc" id="L25">  }</span>
+  
+  public String aggregatedProgress()
+  {
+<span class="fc" id="L29">    return this.aggregatedProgress;</span>
+  }
+  
+  public String currentProgress()
+  {
+<span class="fc" id="L34">    return this.currentProgress;</span>
+  }
+  
+  public boolean equals(Object paramObject)
+  {
+<span class="nc" id="L39">    return EqualsBuilder.reflectionEquals(this, paramObject, new String[0]);</span>
+  }
+  
+  public List&lt;String&gt; externalIDs()
+  {
+<span class="nc" id="L44">    return this.externalIDs;</span>
+  }
+  
+  public int hashCode()
+  {
+<span class="nc" id="L49">    return HashCodeBuilder.reflectionHashCode(this, new String[0]);</span>
+  }
+  
+  public String month()
+  {
+<span class="fc" id="L54">    return this.month;</span>
+  }
+  
+  public String toString()
+  {
+<span class="nc" id="L59">    return ToStringBuilder.reflectionToString(this);</span>
+  }
+  
+  public String year()
+  {
+<span class="fc" id="L64">    return this.year;</span>
+  }
+}
+
+
+
+/* Location:           C:\Users\appaji.r\Downloads\classes-dex2.jar
+
+ * Qualified Name:     org.ei.drishti.dto.MonthSummaryDatum
+
+ * JD-Core Version:    0.7.0.1
+
+ */
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.1.201405082137</span></div></body></html>

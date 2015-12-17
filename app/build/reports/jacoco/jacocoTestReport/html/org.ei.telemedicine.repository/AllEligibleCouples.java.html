@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>AllEligibleCouples.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">org.ei.telemedicine.repository</a> &gt; <span class="el_source">AllEligibleCouples.java</span></div><h1>AllEligibleCouples.java</h1><pre class="source lang-java linenums">package org.ei.telemedicine.repository;
+
+import org.ei.telemedicine.domain.EligibleCouple;
+
+import java.util.List;
+import java.util.Map;
+
+public class AllEligibleCouples {
+    private EligibleCoupleRepository eligibleCoupleRepository;
+    private final TimelineEventRepository timelineEventRepository;
+    private final AlertRepository alertRepository;
+
+<span class="nc" id="L13">    public AllEligibleCouples(EligibleCoupleRepository eligibleCoupleRepository, AlertRepository alertRepository, TimelineEventRepository timelineEventRepository) {</span>
+<span class="nc" id="L14">        this.eligibleCoupleRepository = eligibleCoupleRepository;</span>
+<span class="nc" id="L15">        this.timelineEventRepository = timelineEventRepository;</span>
+<span class="nc" id="L16">        this.alertRepository = alertRepository;</span>
+<span class="nc" id="L17">    }</span>
+
+    public List&lt;EligibleCouple&gt; all() {
+<span class="nc" id="L20">        return eligibleCoupleRepository.allEligibleCouples();</span>
+    }
+
+    public EligibleCouple findByCaseID(String caseId) {
+<span class="nc" id="L24">        return eligibleCoupleRepository.findByCaseID(caseId);</span>
+    }
+
+    public long count() {
+<span class="nc" id="L28">        return eligibleCoupleRepository.count();</span>
+    }
+
+    public long fpCount() {
+<span class="nc" id="L32">        return eligibleCoupleRepository.fpCount();</span>
+    }
+
+    public List&lt;String&gt; villages() {
+<span class="nc" id="L36">        return eligibleCoupleRepository.villages();</span>
+    }
+
+    public List&lt;EligibleCouple&gt; findByCaseIDs(List&lt;String&gt; caseIds) {
+<span class="nc" id="L40">        return eligibleCoupleRepository.findByCaseIDs(caseIds.toArray(new String[caseIds.size()]));</span>
+    }
+
+    public void updatePhotoPath(String caseId, String imagePath) {
+<span class="nc" id="L44">        eligibleCoupleRepository.updatePhotoPath(caseId, imagePath);</span>
+<span class="nc" id="L45">    }</span>
+
+    public void close(String entityId) {
+<span class="nc" id="L48">        alertRepository.deleteAllAlertsForEntity(entityId);</span>
+<span class="nc" id="L49">        timelineEventRepository.deleteAllTimelineEventsForEntity(entityId);</span>
+<span class="nc" id="L50">        eligibleCoupleRepository.close(entityId);</span>
+<span class="nc" id="L51">    }</span>
+
+    public void mergeDetails(String entityId, Map&lt;String, String&gt; details) {
+<span class="nc" id="L54">        eligibleCoupleRepository.mergeDetails(entityId, details);</span>
+<span class="nc" id="L55">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.1.201405082137</span></div></body></html>

@@ -1,0 +1,289 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>ChildServiceType.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">org.ei.telemedicine.domain</a> &gt; <span class="el_source">ChildServiceType.java</span></div><h1>ChildServiceType.java</h1><pre class="source lang-java linenums">package org.ei.telemedicine.domain;
+
+import org.apache.commons.lang3.StringUtils;
+import org.ei.telemedicine.R;
+import org.ei.telemedicine.Context;
+import org.ei.telemedicine.view.contract.ChildClient;
+import static org.ei.telemedicine.util.Log.logWarn;
+
+import java.util.Locale;
+
+<span class="pc" id="L11">public enum ChildServiceType {</span>
+<span class="fc" id="L12">    MEASLES {</span>
+        @Override
+        public String displayName() {
+<span class="nc" id="L15">            return Context.getInstance().applicationContext().getString(R.string.service_type_measles);</span>
+        }
+
+        @Override
+        public String category() {
+<span class="nc" id="L20">            return ChildClient.CATEGORY_MEASLES;</span>
+        }
+    },
+<span class="fc" id="L23">    MEASLESBOOSTER {</span>
+        @Override
+        public String displayName() {
+<span class="nc" id="L26">            return Context.getInstance().applicationContext().getString(R.string.service_type_measles_booster);</span>
+        }
+
+        @Override
+        public String shortName() {
+<span class="nc" id="L31">            return Context.getInstance().applicationContext().getString(R.string.service_type_measles_booster_short);</span>
+        }
+
+        @Override
+        public String category() {
+<span class="nc" id="L36">            return ChildClient.CATEGORY_MEASLES;</span>
+        }
+    },
+<span class="fc" id="L39">    OPV_BOOSTER {</span>
+        @Override
+        public String displayName() {
+<span class="nc" id="L42">            return Context.getInstance().applicationContext().getString(R.string.service_type_opv_booster);</span>
+        }
+
+        @Override
+        public String category() {
+<span class="nc" id="L47">            return ChildClient.CATEGORY_OPVBOOSTER;</span>
+        }
+    },
+
+<span class="fc" id="L51">    DPTBOOSTER_1 {</span>
+        @Override
+        public String displayName() {
+<span class="nc" id="L54">            return Context.getInstance().applicationContext().getString(R.string.service_type_dpt_booster_1);</span>
+        }
+
+        @Override
+        public String shortName() {
+<span class="nc" id="L59">            return Context.getInstance().applicationContext().getString(R.string.service_type_dpt_booster_1_short);</span>
+        }
+
+        @Override
+        public String category() {
+<span class="nc" id="L64">            return ChildClient.CATEGORY_DPT;</span>
+        }
+    },
+<span class="fc" id="L67">    DPTBOOSTER_2 {</span>
+        @Override
+        public String displayName() {
+<span class="nc" id="L70">            return Context.getInstance().applicationContext().getString(R.string.service_type_dpt_booster_2);</span>
+        }
+
+        @Override
+        public String shortName() {
+<span class="nc" id="L75">            return Context.getInstance().applicationContext().getString(R.string.service_type_dpt_booster_2_short);</span>
+        }
+
+        @Override
+        public String category() {
+<span class="nc" id="L80">            return ChildClient.CATEGORY_DPT;</span>
+        }
+    },
+<span class="fc" id="L83">    OPV_0 {</span>
+        @Override
+        public String displayName() {
+<span class="nc" id="L86">            return Context.getInstance().applicationContext().getString(R.string.service_type_opv_0);</span>
+        }
+
+        @Override
+        public String category() {
+<span class="nc" id="L91">            return ChildClient.CATEGORY_OPV;</span>
+        }
+    },
+<span class="fc" id="L94">    OPV_1 {</span>
+        @Override
+        public String displayName() {
+<span class="nc" id="L97">            return Context.getInstance().applicationContext().getString(R.string.service_type_opv_1);</span>
+        }
+
+        @Override
+        public String category() {
+<span class="nc" id="L102">            return ChildClient.CATEGORY_OPV;</span>
+        }
+    },
+<span class="fc" id="L105">    OPV_2 {</span>
+        @Override
+        public String displayName() {
+<span class="nc" id="L108">            return Context.getInstance().applicationContext().getString(R.string.service_type_opv_2);</span>
+        }
+
+        @Override
+        public String category() {
+<span class="nc" id="L113">            return ChildClient.CATEGORY_OPV;</span>
+        }
+    },
+<span class="fc" id="L116">    OPV_3 {</span>
+        @Override
+        public String displayName() {
+<span class="nc" id="L119">            return Context.getInstance().applicationContext().getString(R.string.service_type_opv_3);</span>
+        }
+
+        @Override
+        public String category() {
+<span class="nc" id="L124">            return ChildClient.CATEGORY_OPV;</span>
+        }
+    },
+
+<span class="fc" id="L128">    PENTAVALENT_1 {</span>
+        @Override
+        public String displayName() {
+<span class="nc" id="L131">            return Context.getInstance().applicationContext().getString(R.string.service_type_pentavalent_1);</span>
+        }
+
+        @Override
+        public String shortName() {
+<span class="nc" id="L136">            return Context.getInstance().applicationContext().getString(R.string.service_type_pentavalent_1_short);</span>
+        }
+
+        @Override
+        public String category() {
+<span class="nc" id="L141">            return ChildClient.CATEGORY_PENTAVALENT;</span>
+        }
+    },
+<span class="fc" id="L144">    PENTAVALENT_2 {</span>
+        @Override
+        public String displayName() {
+<span class="nc" id="L147">            return Context.getInstance().applicationContext().getString(R.string.service_type_pentavalent_2);</span>
+        }
+
+        @Override
+        public String shortName() {
+<span class="nc" id="L152">            return Context.getInstance().applicationContext().getString(R.string.service_type_pentavalent_2_short);</span>
+        }
+
+        @Override
+        public String category() {
+<span class="nc" id="L157">            return ChildClient.CATEGORY_PENTAVALENT;</span>
+        }
+    },
+<span class="fc" id="L160">    PENTAVALENT_3 {</span>
+        @Override
+        public String displayName() {
+<span class="nc" id="L163">            return Context.getInstance().applicationContext().getString(R.string.service_type_pentavalent_3);</span>
+        }
+
+        @Override
+        public String shortName() {
+<span class="nc" id="L168">            return Context.getInstance().applicationContext().getString(R.string.service_type_pentavalent_3_short);</span>
+        }
+
+        @Override
+        public String category() {
+<span class="nc" id="L173">            return ChildClient.CATEGORY_PENTAVALENT;</span>
+        }
+    },
+<span class="fc" id="L176">    BCG {</span>
+        @Override
+        public String displayName() {
+<span class="nc" id="L179">            return Context.getInstance().applicationContext().getString(R.string.service_type_bcg);</span>
+        }
+
+        @Override
+        public String category() {
+<span class="nc" id="L184">            return ChildClient.CATEGORY_BCG;</span>
+        }
+    },
+<span class="fc" id="L187">    PNC {</span>
+        @Override
+        public String displayName() {
+<span class="nc" id="L190">            return Context.getInstance().applicationContext().getString(R.string.service_type_pnc);</span>
+        }
+
+        @Override
+        public String category() {
+<span class="nc" id="L195">            return &quot;&quot;;</span>
+        }
+    },
+<span class="fc" id="L198">    JE {</span>
+        @Override
+        public String displayName() {
+<span class="nc" id="L201">            return Context.getInstance().applicationContext().getString(R.string.service_type_je);</span>
+        }
+
+        @Override
+        public String category() {
+<span class="nc" id="L206">            return &quot;&quot;;</span>
+        }
+    },
+<span class="fc" id="L209">    MMR {</span>
+        @Override
+        public String displayName() {
+<span class="nc" id="L212">            return Context.getInstance().applicationContext().getString(R.string.service_type_mmr);</span>
+        }
+
+        @Override
+        public String category() {
+<span class="nc" id="L217">            return &quot;&quot;;</span>
+        }
+    },
+<span class="fc" id="L220">    VITAMIN_A {</span>
+        @Override
+        public String displayName() {
+<span class="nc" id="L223">            return Context.getInstance().applicationContext().getString(R.string.service_type_vitamin_a);</span>
+        }
+
+        @Override
+        public String category() {
+<span class="nc" id="L228">            return ChildClient.CATEGORY_VITAMIN_A;</span>
+        }
+    },
+<span class="fc" id="L231">    ILLNESS_VISIT {</span>
+        @Override
+        public String displayName() {
+<span class="nc" id="L234">            return Context.getInstance().applicationContext().getString(R.string.service_type_illness_visit);</span>
+        }
+
+        @Override
+        public String category() {
+<span class="nc" id="L239">            return ChildClient.CATEGORY_CHILD_ILLNESS;</span>
+        }
+    },
+<span class="fc" id="L242">    HEPB_0 {</span>
+        @Override
+        public String displayName() {
+<span class="nc" id="L245">            return Context.getInstance().applicationContext().getString(R.string.service_type_hepb_0);</span>
+        }
+
+        @Override
+        public String category() {
+<span class="nc" id="L250">            return ChildClient.CATEGORY_HEPB;</span>
+        }
+    },
+<span class="fc" id="L253">    EMPTY {</span>
+        @Override
+        public String displayName() {
+<span class="nc" id="L256">            return Context.getInstance().applicationContext().getString(R.string.service_type_empty);</span>
+        }
+        @Override
+        public String category() {
+<span class="nc" id="L260">            return &quot;&quot;;</span>
+        }
+    };
+
+    public abstract String displayName();
+
+    public String shortName() {
+<span class="nc" id="L267">        return displayName();</span>
+    }
+
+    public abstract String category();
+
+    public static ChildServiceType tryParse(String type, ChildServiceType defaultType) {
+        try {
+<span class="nc bnc" id="L274" title="All 2 branches missed.">            if (type.equalsIgnoreCase(&quot;Illness Visit&quot;)) {</span>
+<span class="nc" id="L275">                return ChildServiceType.valueOf(&quot;ILLNESS_VISIT&quot;);</span>
+<span class="nc bnc" id="L276" title="All 2 branches missed.">            } else if (type.equalsIgnoreCase(&quot;Vitamin A&quot;)) {</span>
+<span class="nc" id="L277">                return ChildServiceType.valueOf(&quot;VITAMIN_A&quot;);</span>
+<span class="nc bnc" id="L278" title="All 2 branches missed.">            }  else if (type.equalsIgnoreCase(&quot;opvbooster&quot;)) {</span>
+<span class="nc" id="L279">                return ChildServiceType.valueOf(&quot;OPV_BOOSTER&quot;);</span>
+            } else {
+<span class="nc bnc" id="L281" title="All 2 branches missed.">                return StringUtils.isBlank(type) ? defaultType : ChildServiceType.valueOf(type.toUpperCase(Locale.getDefault()));</span>
+            }
+<span class="nc" id="L283">        } catch (IllegalArgumentException e) {</span>
+<span class="nc" id="L284">            logWarn(&quot;Unknown current Service Type : &quot; + type + &quot; Exception : &quot; + e);</span>
+<span class="nc" id="L285">            return defaultType;</span>
+        }
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.1.201405082137</span></div></body></html>

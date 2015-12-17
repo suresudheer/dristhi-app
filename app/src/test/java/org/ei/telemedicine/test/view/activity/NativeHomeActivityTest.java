@@ -1,3 +1,4 @@
+/*
 package org.ei.telemedicine.test.view.activity;
 
 import android.app.Activity;
@@ -119,3 +120,4 @@ public class NativeHomeActivityTest extends ActivityInstrumentationTestCase2<Nat
     }
 
 }
+*/

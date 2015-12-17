@@ -1,0 +1,466 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>TimelineEvent.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">org.ei.telemedicine.domain</a> &gt; <span class="el_source">TimelineEvent.java</span></div><h1>TimelineEvent.java</h1><pre class="source lang-java linenums">package org.ei.telemedicine.domain;
+
+import android.util.Log;
+
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.ei.telemedicine.util.DateUtil;
+import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.Map;
+
+import static org.apache.commons.lang3.StringUtils.isBlank;
+import static org.ei.telemedicine.AllConstants.ANCVisitFields.ANM_POC;
+import static org.ei.telemedicine.AllConstants.ANCVisitFields.POC_INFO;
+import static org.ei.telemedicine.AllConstants.PNCVisitFields.BLOODGLUCOSEDATA;
+import static org.ei.telemedicine.AllConstants.PNCVisitFields.BP_DIASTOLIC;
+import static org.ei.telemedicine.AllConstants.PNCVisitFields.BP_SYSTOLIC;
+import static org.ei.telemedicine.AllConstants.PNCVisitFields.HB_LEVEL;
+import static org.ei.telemedicine.AllConstants.PNCVisitFields.ISCONSULTDOCTOR;
+import static org.ei.telemedicine.AllConstants.PNCVisitFields.TEMPERATURE;
+import static org.ei.telemedicine.util.EasyMap.create;
+import static org.ei.telemedicine.util.EasyMap.mapOf;
+
+public class TimelineEvent {
+    private String caseId;
+    private String type;
+    private LocalDate referenceDate;
+    private String title;
+    private String detail1;
+    private String detail2;
+
+<span class="fc" id="L37">    public TimelineEvent(String caseId, String type, LocalDate referenceDate, String title, String detail1, String detail2) {</span>
+<span class="fc" id="L38">        this.caseId = caseId;</span>
+<span class="fc" id="L39">        this.type = type;</span>
+<span class="fc" id="L40">        this.referenceDate = referenceDate;</span>
+<span class="fc" id="L41">        this.title = title;</span>
+<span class="fc" id="L42">        this.detail1 = detail1;</span>
+<span class="fc" id="L43">        this.detail2 = detail2;</span>
+<span class="fc" id="L44">    }</span>
+
+    public static TimelineEvent forChildBirthInChildProfile(String caseId, String dateOfBirth, String weight, String immunizationsGiven) {
+<span class="fc" id="L47">        Map&lt;String, String&gt; details = create(&quot;childWeight&quot;, weight).put(&quot;immunizationsGiven&quot;, immunizationsGiven).map();</span>
+<span class="fc" id="L48">        String detailsString = new DetailBuilder(details).withWeight(&quot;childWeight&quot;).withImmunizations(&quot;immunizationsGiven&quot;).value();</span>
+<span class="fc" id="L49">        return new TimelineEvent(caseId, &quot;CHILD-BIRTH&quot;, LocalDate.parse(dateOfBirth), &quot;Birth Date: &quot; + DateUtil.formatDateForTimelineEvent(dateOfBirth), detailsString, null);</span>
+    }
+
+    public static TimelineEvent forChildBirthInMotherProfile(String caseId, String dateOfBirth, String gender, String dateOfDelivery, String placeOfDelivery) {
+<span class="fc" id="L53">        Map&lt;String, String&gt; details = create(&quot;dateOfDelivery&quot;, dateOfDelivery).put(&quot;placeOfDelivery&quot;, placeOfDelivery).map();</span>
+<span class="fc" id="L54">        String detailsString = new DetailBuilder(details).withDateOfDelivery(&quot;dateOfDelivery&quot;).withPlaceOfDelivery(&quot;placeOfDelivery&quot;).value();</span>
+<span class="fc bfc" id="L55" title="All 2 branches covered.">        String title = (gender.equals(&quot;male&quot;) ? &quot;Boy&quot; : &quot;Girl&quot;) + &quot; Delivered&quot;;</span>
+<span class="fc" id="L56">        return new TimelineEvent(caseId, &quot;CHILD-BIRTH&quot;, LocalDate.parse(dateOfBirth), title, detailsString, null);</span>
+    }
+
+    public static TimelineEvent forChildBirthInECProfile(String caseId, String dateOfBirth, String gender, String dateOfDelivery) {
+<span class="fc" id="L60">        String detailsString = new DetailBuilder(mapOf(&quot;dateOfDelivery&quot;, dateOfDelivery)).withDateOfDelivery(&quot;dateOfDelivery&quot;).value();</span>
+<span class="fc bfc" id="L61" title="All 2 branches covered.">        String title = gender.equals(&quot;male&quot;) ? &quot;Boy&quot; : &quot;Girl&quot; + &quot; Delivered&quot;;</span>
+<span class="fc" id="L62">        return new TimelineEvent(caseId, &quot;CHILD-BIRTH&quot;, LocalDate.parse(dateOfBirth), title, detailsString, null);</span>
+    }
+
+    public static TimelineEvent forStartOfPregnancy(String caseId, String registrationDate, String referenceDate) {
+<span class="fc" id="L66">        return new TimelineEvent(caseId, &quot;PREGNANCY&quot;, LocalDate.parse(registrationDate), &quot;ANC Registered&quot;, &quot;LMP Date: &quot; + DateUtil.formatDateForTimelineEvent(referenceDate), null);</span>
+    }
+
+    public static TimelineEvent forStartOfPregnancyForEC(String ecCaseId, String thayiCardNumber, String registrationDate, String referenceDate) {
+<span class="fc" id="L70">        return new TimelineEvent(ecCaseId, &quot;PREGNANCY&quot;, LocalDate.parse(registrationDate), &quot;ANC Registered&quot;, &quot;LMP Date: &quot; + DateUtil.formatDateForTimelineEvent(referenceDate),</span>
+                &quot;Thayi No: &quot; + thayiCardNumber);
+    }
+
+    public static TimelineEvent forDeliveryPlan(String caseId, String deliveryFacilityName, String transportationPlan, String birthCompanion, String ashaPhoneNumber, String familyContactNumber, String highRiskReason, String referenceDate) {
+<span class="fc" id="L75">        Map&lt;String, String&gt; map = create(&quot;deliveryFacilityName&quot;, deliveryFacilityName)</span>
+                .put(&quot;transportationPlan&quot;, transportationPlan)
+                .put(&quot;birthCompanion&quot;, birthCompanion)
+                .put(&quot;ashaPhoneNumber&quot;, ashaPhoneNumber)
+                .put(&quot;phoneNumber&quot;, familyContactNumber)
+                .put(&quot;reviewedHRPStatus&quot;, highRiskReason).map();
+
+<span class="fc" id="L82">        String detailsString = new DetailBuilder(map)</span>
+                .withDeliveryFacilityName(&quot;deliveryFacilityName&quot;)
+                .withTransportationPlan(&quot;transportationPlan&quot;)
+                .withBirthCompanion(&quot;birthCompanion&quot;)
+                .withAshaPhoneNumber(&quot;ashaPhoneNumber&quot;)
+                .withFamilyContactNumber(&quot;phoneNumber&quot;)
+                .withHighRiskReason(&quot;reviewedHRPStatus&quot;)
+                .value();
+
+<span class="fc" id="L91">        return new TimelineEvent(caseId, &quot;DELIVERYPLAN&quot;, LocalDate.parse(referenceDate), &quot;Delivery Plan&quot;, &quot;Detail: &quot; + detailsString, null);</span>
+    }
+
+    public static TimelineEvent forChangeOfFPMethod(String caseId, String oldFPMethod, String newFPMethod, String dateOfFPChange) {
+<span class="fc" id="L95">        return new TimelineEvent(caseId, &quot;FPCHANGE&quot;, LocalDate.parse(dateOfFPChange), &quot;Changed FP Method&quot;, &quot;From: &quot; + oldFPMethod, &quot;To: &quot; + newFPMethod);</span>
+    }
+
+    public static TimelineEvent forANCCareProvided(String caseId, String visitNumber, String visitDate, Map&lt;String, String&gt; details) {
+<span class="fc" id="L99">        String detailsString = new DetailBuilder(details).withBP(&quot;bpSystolic&quot;, &quot;bpDiastolic&quot;).withTemperature(&quot;temperature&quot;).withHbLevel(&quot;hbLevel&quot;).withBloodGlucose(&quot;bloodGlucoseData&quot;).withDCReq(&quot;isConsultDoctor&quot;).withFetal(&quot;fetalData&quot;).withRisks(&quot;riskObservedDuringANC&quot;).withANMPOC(ANM_POC, &quot;ANM Prescribed Drugs: &quot;).value();</span>
+//        String pocData = new DetailBuilder(details).withPOC(POC_INFO).value();
+<span class="fc" id="L101">        Log.e(&quot;Details String12&quot;, visitDate);</span>
+<span class="fc" id="L102">        return new TimelineEvent(caseId, &quot;ANCVISIT&quot;, LocalDate.parse(visitDate), &quot;ANC Visit &quot; + visitNumber, detailsString, &quot;&quot;);</span>
+    }
+
+    public static TimelineEvent forPOCGiven(String caseId, String visitDate, String visitType, String title, Map&lt;String, String&gt; details) {
+<span class="nc" id="L106">        String detailsString = new DetailBuilder(details).withPOC(POC_INFO).value();</span>
+<span class="nc" id="L107">        Log.e(&quot;Having POC&quot;, detailsString);</span>
+        try {
+<span class="nc" id="L109">            JSONArray pocJsonArray = new JSONArray(detailsString);</span>
+<span class="nc bnc" id="L110" title="All 2 branches missed.">            if (pocJsonArray.length() != 0) {</span>
+<span class="nc" id="L111">                JSONObject pocInfoData = pocJsonArray.getJSONObject(pocJsonArray.length() - 1);</span>
+<span class="nc" id="L112">                String pocDataStr = getDataFromJson(pocInfoData.toString(), &quot;poc&quot;);</span>
+<span class="nc" id="L113">                String investigationsStr = getDataFromArray(getDataFromJson(pocDataStr, &quot;investigations&quot;), &quot;Investigations: &quot;);</span>
+<span class="nc" id="L114">                String diagnosisStr = getDataFromArray(getDataFromJson(pocDataStr, &quot;diagnosis&quot;), &quot;Diagnosis: &quot;);</span>
+<span class="nc" id="L115">                String drugsStr = getDatafromDrugsArray(getDataFromJson(pocDataStr, &quot;drugs&quot;));</span>
+<span class="nc bnc" id="L116" title="All 2 branches missed.">                String adviceStr = !getDataFromJson(pocDataStr, &quot;advice&quot;).equals(&quot;&quot;) ? &quot;Advice:&quot; + getDataFromJson(pocDataStr, &quot;advice&quot;) : &quot;&quot;;</span>
+<span class="nc bnc" id="L117" title="All 2 branches missed.">                String detailStr = investigationsStr + diagnosisStr + (!drugsStr.equals(&quot;&quot;) ? &quot;Drugs:&quot; + drugsStr + &quot;;&quot; : &quot;&quot;) + &quot;\n&quot; + adviceStr;</span>
+<span class="nc" id="L118">                return new TimelineEvent(caseId, visitType, LocalDate.parse(visitDate), title, detailStr, &quot;&quot;);</span>
+            }
+
+<span class="nc" id="L121">        } catch (JSONException e) {</span>
+<span class="nc" id="L122">            e.printStackTrace();</span>
+<span class="nc" id="L123">        }</span>
+<span class="nc" id="L124">        return null;</span>
+    }
+
+    private static String getDataFromJson(String jsonStr, String key) {
+        try {
+<span class="nc bnc" id="L129" title="All 4 branches missed.">            if (jsonStr != null &amp;&amp; !jsonStr.equals(&quot;&quot;)) {</span>
+<span class="nc" id="L130">                JSONObject jsonObject = new JSONObject(jsonStr);</span>
+<span class="nc bnc" id="L131" title="All 2 branches missed.">                return jsonObject.has(key) ? jsonObject.getString(key) : &quot;&quot;;</span>
+            }
+<span class="nc" id="L133">        } catch (JSONException e) {</span>
+<span class="nc" id="L134">            e.printStackTrace();</span>
+<span class="nc" id="L135">        }</span>
+<span class="nc" id="L136">        return &quot;&quot;;</span>
+    }
+
+    private static String getDataFromArray(String jsonArrayStr, String name) {
+        try {
+<span class="nc" id="L141">            JSONArray jsonArray = new JSONArray(jsonArrayStr);</span>
+<span class="nc" id="L142">            String str = &quot;&quot;;</span>
+<span class="nc bnc" id="L143" title="All 2 branches missed.">            for (int i = 0; i &lt; jsonArray.length(); i++) {</span>
+<span class="nc bnc" id="L144" title="All 2 branches missed.">                str = !str.equals(&quot;&quot;) ? str + &quot;;&quot; + jsonArray.getString(i) : jsonArray.getString(i);</span>
+            }
+<span class="nc bnc" id="L146" title="All 2 branches missed.">            return !str.equals(&quot;&quot;) ? name + str + &quot;\n&quot; : &quot;&quot;;</span>
+<span class="nc" id="L147">        } catch (JSONException e) {</span>
+<span class="nc" id="L148">            e.printStackTrace();</span>
+        }
+<span class="nc" id="L150">        return &quot;&quot;;</span>
+    }
+
+    public static String getDatafromDrugsArray(String jsonArray) {
+        try {
+<span class="nc" id="L155">            String result = &quot;&quot;;</span>
+<span class="nc bnc" id="L156" title="All 2 branches missed.">            if (jsonArray != null) {</span>
+<span class="nc" id="L157">                JSONArray jsonArray1 = new JSONArray(jsonArray);</span>
+<span class="nc bnc" id="L158" title="All 2 branches missed.">                for (int i = 0; i &lt; jsonArray1.length(); i++) {</span>
+<span class="nc" id="L159">                    JSONObject jsonObject = jsonArray1.getJSONObject(i);</span>
+<span class="nc" id="L160">                    String data = jsonObject.getString(&quot;drugName&quot;) + &quot;-&quot; + jsonObject.getString(&quot;direction&quot;) + &quot;-&quot; + jsonObject.getString(&quot;dosage&quot;) + &quot;-&quot; + jsonObject.getString(&quot;frequency&quot;) + &quot;- Days :&quot; + jsonObject.getString(&quot;drugNoOfDays&quot;) + &quot;- Qty :&quot; + jsonObject.getString(&quot;drugQty&quot;);</span>
+<span class="nc bnc" id="L161" title="All 2 branches missed.">                    result = !result.equals(&quot;&quot;) ? result + &quot;\n&quot; + data : data;</span>
+                }
+<span class="nc" id="L163">                return result;</span>
+            }
+<span class="nc" id="L165">        } catch (Exception e) {</span>
+<span class="nc" id="L166">            e.printStackTrace();</span>
+<span class="nc" id="L167">        }</span>
+<span class="nc" id="L168">        return &quot;&quot;;</span>
+    }
+
+    public static TimelineEvent forIFATabletsGiven(String caseId, String numberOfIFATabletsProvided, String visitDate) {
+<span class="fc" id="L172">        return new TimelineEvent(caseId, &quot;IFAPROVIDED&quot;, LocalDate.parse(visitDate), &quot;IFA Provided&quot;, numberOfIFATabletsProvided + &quot; tablets&quot;, null);</span>
+    }
+
+    public static TimelineEvent forTTShotProvided(String caseId, String ttDose, String visitDate) {
+<span class="fc" id="L176">        return new TimelineEvent(caseId, &quot;TTSHOTPROVIDED&quot;, LocalDate.parse(visitDate), &quot;TT Injection Given&quot;, ttDose, null);</span>
+    }
+
+    public static TimelineEvent forECRegistered(String caseId, String registrationDate) {
+<span class="fc" id="L180">        LocalDate registrationDate1 = DateTime.parse(registrationDate).toLocalDate();</span>
+<span class="fc" id="L181">        return new TimelineEvent(caseId, &quot;ECREGISTERED&quot;, registrationDate1, &quot;EC Registered&quot;, null, null);</span>
+    }
+
+    public static TimelineEvent forMotherPNCVisit(String caseId, String visitNumber, String visitDate, String bpSystolic, String bpDiastolic, String temperature, String hbLevel, String bgmData, String isConsultDoctor, String anmPoc) {
+<span class="fc" id="L185">        Map&lt;String, String&gt; details = create(BP_SYSTOLIC, bpSystolic).put(BP_DIASTOLIC, bpDiastolic).put(TEMPERATURE, temperature).put(HB_LEVEL, hbLevel).put(BLOODGLUCOSEDATA, bgmData).put(ISCONSULTDOCTOR, isConsultDoctor).put(ANM_POC, anmPoc).map();</span>
+<span class="fc" id="L186">        String detailsString = new DetailBuilder(details).withBP(BP_SYSTOLIC, BP_DIASTOLIC).withTemperature(TEMPERATURE).withHbLevel(HB_LEVEL).withBloodGlucose(BLOODGLUCOSEDATA).withDCReq(ISCONSULTDOCTOR).withANMPOC(ANM_POC, &quot;ANM Prescribed Drugs: &quot;).value();</span>
+<span class="fc" id="L187">        return new TimelineEvent(caseId, &quot;PNCVISIT&quot;, LocalDate.parse(visitDate), &quot;PNC Visit &quot; + visitNumber, detailsString, null);</span>
+    }
+
+    public static TimelineEvent forChildPNCVisit(String caseId, String visitNumber, String visitDate, String weight, String temperature) {
+<span class="fc" id="L191">        Map&lt;String, String&gt; details = create(&quot;childWeight&quot;, weight).put(&quot;childTemperature&quot;, temperature).map();</span>
+<span class="fc" id="L192">        String detailsString = new DetailBuilder(details).withTemperature(&quot;childTemperature&quot;).withWeight(&quot;childWeight&quot;).value();</span>
+
+<span class="fc" id="L194">        return new TimelineEvent(caseId, &quot;PNCVISIT&quot;, LocalDate.parse(visitDate), &quot;PNC Visit &quot; + visitNumber, detailsString, null);</span>
+    }
+
+    public static TimelineEvent forChildIllness(String caseId, String visitDate, String temperature, String anmPoc) {
+<span class="fc" id="L198">        Map&lt;String, String&gt; details = create(&quot;childTemperature&quot;, temperature).put(ANM_POC, anmPoc).map();</span>
+<span class="fc" id="L199">        String detailsString = new DetailBuilder(details).withTemperature(&quot;childTemperature&quot;).withWeight(&quot;childWeight&quot;).withANMPOC(ANM_POC, &quot;ANM Prescribed Drugs: &quot;).value();</span>
+<span class="fc" id="L200">        return new TimelineEvent(caseId, &quot;CHILDILLNESS&quot;, LocalDate.parse(visitDate), &quot;Child Illness&quot;, detailsString, null);</span>
+    }
+
+
+    public static TimelineEvent forChildImmunization(String caseId, String immunizationsGiven, String immunizationsGivenDate) {
+<span class="fc" id="L205">        String detailString = new DetailBuilder(null).withImmunizationsGiven(immunizationsGiven).value();</span>
+<span class="fc" id="L206">        return new TimelineEvent(caseId, &quot;IMMUNIZATIONSGIVEN&quot;, LocalDate.parse(immunizationsGivenDate), &quot;Immunization Date: &quot; + DateUtil.formatDateForTimelineEvent(immunizationsGivenDate), detailString, null);</span>
+    }
+
+    public static TimelineEvent forFPCondomRenew(String caseId, Map&lt;String, String&gt; details) {
+<span class="fc" id="L210">        String detailString = new DetailBuilder(details).withNumberOfCondomsSupplied(&quot;numberOfCondomsSupplied&quot;).value();</span>
+
+<span class="fc" id="L212">        return new TimelineEvent(caseId, &quot;FPRENEW&quot;, LocalDate.parse(details.get(&quot;familyPlanningMethodChangeDate&quot;)), &quot;FP Renewed&quot;, detailString, null);</span>
+    }
+
+    public static TimelineEvent forFPOCPRenew(String caseId, Map&lt;String, String&gt; details) {
+<span class="fc" id="L216">        String detailString = new DetailBuilder(details).withNumberOfOCPDelivered(&quot;numberOfOCPDelivered&quot;).value();</span>
+
+<span class="fc" id="L218">        return new TimelineEvent(caseId, &quot;FPRENEW&quot;, LocalDate.parse(details.get(&quot;familyPlanningMethodChangeDate&quot;)), &quot;FP Renewed&quot;, detailString, null);</span>
+    }
+
+    public static TimelineEvent forFPIUDRenew(String caseId, Map&lt;String, String&gt; details) {
+<span class="fc" id="L222">        String detailString = new DetailBuilder(details).withNewIUDInsertionDate(&quot;familyPlanningMethodChangeDate&quot;).value();</span>
+
+<span class="fc" id="L224">        return new TimelineEvent(caseId, &quot;FPRENEW&quot;, LocalDate.parse(details.get(&quot;familyPlanningMethodChangeDate&quot;)), &quot;FP Renewed&quot;, detailString, null);</span>
+    }
+
+    public static TimelineEvent forFPDMPARenew(String caseId, Map&lt;String, String&gt; details) {
+<span class="fc" id="L228">        String detailString = new DetailBuilder(details).withDMPAInjectionDate(&quot;familyPlanningMethodChangeDate&quot;).value();</span>
+
+<span class="fc" id="L230">        return new TimelineEvent(caseId, &quot;FPRENEW&quot;, LocalDate.parse(details.get(&quot;familyPlanningMethodChangeDate&quot;)), &quot;FP Renewed&quot;, detailString, null);</span>
+    }
+
+    public String type() {
+<span class="fc" id="L234">        return type;</span>
+    }
+
+    public LocalDate referenceDate() {
+<span class="fc" id="L238">        return referenceDate;</span>
+    }
+
+    public String caseId() {
+<span class="nc" id="L242">        return caseId;</span>
+    }
+
+    public String detail1() {
+<span class="fc" id="L246">        return detail1;</span>
+    }
+
+    public String detail2() {
+<span class="fc" id="L250">        return detail2;</span>
+    }
+
+    public String title() {
+<span class="fc" id="L254">        return title;</span>
+    }
+
+    private static class DetailBuilder {
+        private Map&lt;String, String&gt; details;
+        private final StringBuilder stringBuilder;
+
+<span class="fc" id="L261">        private DetailBuilder(Map&lt;String, String&gt; details) {</span>
+<span class="fc" id="L262">            this.details = details;</span>
+<span class="fc" id="L263">            stringBuilder = new StringBuilder();</span>
+<span class="fc" id="L264">        }</span>
+
+        private DetailBuilder withTemperature(String temperature) {
+<span class="fc" id="L267">            String temp = &quot;&quot;;</span>
+<span class="pc bpc" id="L268" title="2 of 6 branches missed.">            if (details.get(temperature) != null &amp;&amp; !details.get(temperature).equals(&quot;&quot;) &amp;&amp; details.get(temperature).contains(&quot;-&quot;)) {</span>
+<span class="nc" id="L269">                String[] tempData = details.get(temperature).split(&quot;-&quot;);</span>
+<span class="nc" id="L270">                temp = &quot;Temp: &quot; + tempData[0] + &quot; °&quot; + tempData[1] + &quot;\n&quot;;</span>
+            }
+<span class="fc" id="L272">            this.stringBuilder.append(checkEmptyField(temp, details.get(temperature)));</span>
+<span class="fc" id="L273">            return this;</span>
+        }
+
+
+        private DetailBuilder withBloodGlucose(String bloodGlucoseData) {
+<span class="fc" id="L278">            String bgm = &quot;BGM: &quot; + details.get(bloodGlucoseData) + &quot; mmoI/L\n&quot;;</span>
+<span class="fc" id="L279">            this.stringBuilder.append(checkEmptyField(bgm, details.get(bloodGlucoseData)));</span>
+<span class="fc" id="L280">            return this;</span>
+        }
+
+        private DetailBuilder withFetal(String fetalData) {
+<span class="fc" id="L284">            String fetal = &quot;Fetal Data : &quot; + details.get(fetalData) + &quot; bpm\n&quot;;</span>
+<span class="fc" id="L285">            this.stringBuilder.append(checkEmptyField(fetal, details.get(fetalData)));</span>
+<span class="fc" id="L286">            return this;</span>
+        }
+
+        private DetailBuilder withRisks(String risksObserved) {
+<span class="fc" id="L290">            String fetal = &quot;Risks Observed : &quot; + details.get(risksObserved) + &quot;\n&quot;;</span>
+<span class="fc" id="L291">            this.stringBuilder.append(checkEmptyField(fetal, details.get(risksObserved)));</span>
+<span class="fc" id="L292">            return this;</span>
+        }
+
+        private DetailBuilder withDCReq(String isConsultDoctor) {
+<span class="fc" id="L296">            String dcReq = &quot;Doctor Consultation: &quot; + details.get(isConsultDoctor) + &quot;\n&quot;;</span>
+<span class="fc" id="L297">            this.stringBuilder.append(checkEmptyField(dcReq, details.get(isConsultDoctor)));</span>
+<span class="fc" id="L298">            return this;</span>
+        }
+
+        private DetailBuilder withDeliveryFacilityName(String deliveryFacilityName) {
+<span class="fc" id="L302">            String deliveryFacility = &quot;Delivery Facility Name: &quot; + details.get(deliveryFacilityName);</span>
+<span class="fc" id="L303">            this.stringBuilder.append(checkEmptyField(deliveryFacility, details.get(deliveryFacilityName)));</span>
+<span class="fc" id="L304">            return this;</span>
+        }
+
+        private DetailBuilder withTransportationPlan(String transportationPlan) {
+<span class="fc" id="L308">            String plan = &quot;Transportation Plan: &quot; + details.get(transportationPlan);</span>
+<span class="fc" id="L309">            this.stringBuilder.append(checkEmptyField(plan, details.get(transportationPlan)));</span>
+<span class="fc" id="L310">            return this;</span>
+        }
+
+        private DetailBuilder withBirthCompanion(String birthCompanion) {
+<span class="fc" id="L314">            String companion = &quot;Birth Companion: &quot; + details.get(birthCompanion);</span>
+<span class="fc" id="L315">            this.stringBuilder.append(checkEmptyField(companion, details.get(birthCompanion)));</span>
+<span class="fc" id="L316">            return this;</span>
+        }
+
+        private DetailBuilder withAshaPhoneNumber(String ashaPhoneNumber) {
+<span class="fc" id="L320">            String ashaPhone = &quot;Asha Phone Number: &quot; + details.get(ashaPhoneNumber);</span>
+<span class="fc" id="L321">            this.stringBuilder.append(checkEmptyField(ashaPhone, details.get(ashaPhoneNumber)));</span>
+<span class="fc" id="L322">            return this;</span>
+        }
+
+        private DetailBuilder withFamilyContactNumber(String phoneNumber) {
+<span class="fc" id="L326">            String familyContact = &quot;Phone Number: &quot; + details.get(phoneNumber);</span>
+<span class="fc" id="L327">            this.stringBuilder.append(checkEmptyField(familyContact, details.get(phoneNumber)));</span>
+<span class="fc" id="L328">            return this;</span>
+        }
+
+        private DetailBuilder withHighRiskReason(String highRiskReasons) {
+<span class="fc" id="L332">            String hrpReason = &quot;High Risk Reason: &quot; + details.get(highRiskReasons);</span>
+<span class="fc" id="L333">            this.stringBuilder.append(checkEmptyField(hrpReason, details.get(highRiskReasons)));</span>
+<span class="fc" id="L334">            return this;</span>
+        }
+
+        private DetailBuilder withWeight(String weight) {
+<span class="fc" id="L338">            String wt = &quot;Weight: &quot; + details.get(weight) + &quot; kg\n&quot;;</span>
+<span class="fc" id="L339">            this.stringBuilder.append(checkEmptyField(wt, details.get(weight)));</span>
+<span class="fc" id="L340">            return this;</span>
+        }
+
+        private DetailBuilder withHbLevel(String hbLevel) {
+<span class="fc" id="L344">            String hb = &quot;Hb Level: &quot; + details.get(hbLevel) + &quot;\n&quot;;</span>
+<span class="fc" id="L345">            this.stringBuilder.append(checkEmptyField(hb, details.get(hbLevel)));</span>
+<span class="fc" id="L346">            return this;</span>
+        }
+
+        private DetailBuilder withBP(String bpSystolic, String bpDiastolic) {
+<span class="fc" id="L350">            String bp = &quot;BP: &quot; + details.get(bpSystolic) + &quot;/&quot; + details.get(bpDiastolic) + &quot;\n&quot;;</span>
+<span class="fc" id="L351">            this.stringBuilder.append(checkEmptyField(bp, details.get(bpSystolic)));</span>
+<span class="fc" id="L352">            return this;</span>
+        }
+
+        private DetailBuilder withANMPOC(String pocData, String title) {
+<span class="fc" id="L356">            Log.e(&quot;Ssdfs&quot;, details.toString() + &quot;-------------------------------&quot; + pocData);</span>
+<span class="fc bfc" id="L357" title="All 2 branches covered.">            String pocInfo = details.get(pocData) != null ? title + details.get(pocData).replace(&quot;[&quot;, &quot;&quot;).replace(&quot;]&quot;, &quot;&quot;).replace(&quot;\&quot;&quot;, &quot;&quot;) : &quot;&quot;;</span>
+<span class="fc" id="L358">            this.stringBuilder.append(checkEmptyField(pocInfo, details.get(pocData)));</span>
+<span class="fc" id="L359">            return this;</span>
+        }
+
+        private DetailBuilder withPOC(String pocData) {
+<span class="nc" id="L363">            String pocInfo = details.get(pocData);</span>
+<span class="nc" id="L364">            this.stringBuilder.append(checkEmptyField(pocInfo, details.get(&quot;docPocInfo&quot;)));</span>
+<span class="nc" id="L365">            return this;</span>
+        }
+
+        public DetailBuilder withDateOfDelivery(String dateOfDelivery) {
+<span class="fc bfc" id="L369" title="All 2 branches covered.">            if (isBlank(details.get(dateOfDelivery))) {</span>
+<span class="fc" id="L370">                return this;</span>
+            }
+<span class="fc" id="L372">            this.stringBuilder.append(&quot;On: &quot;).append(DateUtil.formatDateForTimelineEvent(details.get(dateOfDelivery))).append(&quot;\n&quot;);</span>
+<span class="fc" id="L373">            return this;</span>
+        }
+
+        public DetailBuilder withPlaceOfDelivery(String placeOfDelivery) {
+<span class="fc" id="L377">            String place = &quot;At: &quot; + details.get(placeOfDelivery) + &quot;\n&quot;;</span>
+<span class="fc" id="L378">            this.stringBuilder.append(checkEmptyField(place, details.get(placeOfDelivery)));</span>
+<span class="fc" id="L379">            return this;</span>
+        }
+
+        public DetailBuilder withImmunizations(String immunizationsGiven) {
+<span class="fc" id="L383">            String immunizationString = details.get(immunizationsGiven);</span>
+<span class="fc bfc" id="L384" title="All 2 branches covered.">            if (immunizationString == null) {</span>
+<span class="fc" id="L385">                return this;</span>
+            }
+<span class="fc" id="L387">            String finalString = immunizationFormatter(immunizationString);</span>
+<span class="fc" id="L388">            String formattedImmunization = &quot;Immunizations: &quot; + finalString + &quot;\n&quot;;</span>
+<span class="fc" id="L389">            this.stringBuilder.append(checkEmptyField(formattedImmunization, finalString));</span>
+<span class="fc" id="L390">            return this;</span>
+        }
+
+        private String value() {
+<span class="fc" id="L394">            return this.stringBuilder.toString();</span>
+        }
+
+        private String checkEmptyField(String msg, String condition) {
+<span class="fc bfc" id="L398" title="All 2 branches covered.">            if (isBlank(condition)) {</span>
+<span class="fc" id="L399">                return &quot;&quot;;</span>
+            }
+<span class="fc" id="L401">            return msg;</span>
+        }
+
+        public DetailBuilder withImmunizationsGiven(String immunizationsGiven) {
+<span class="pc bpc" id="L405" title="1 of 2 branches missed.">            if (isBlank(immunizationsGiven)) {</span>
+<span class="nc" id="L406">                return this;</span>
+            }
+<span class="fc" id="L408">            this.stringBuilder.append(immunizationFormatter(immunizationsGiven));</span>
+<span class="fc" id="L409">            return this;</span>
+        }
+
+        public DetailBuilder withNumberOfCondomsSupplied(String numberOfCondomsSupplied) {
+<span class="fc" id="L413">            String condomsGiven = &quot;Condoms given: &quot; + details.get(numberOfCondomsSupplied) + &quot;\n&quot;;</span>
+<span class="fc" id="L414">            this.stringBuilder.append(checkEmptyField(condomsGiven, details.get(numberOfCondomsSupplied)));</span>
+<span class="fc" id="L415">            return this;</span>
+        }
+
+        public DetailBuilder withNumberOfOCPDelivered(String numberOfOCPDelivered) {
+<span class="fc" id="L419">            String ocpCyclesGiven = &quot;OCP cycles given: &quot; + details.get(numberOfOCPDelivered) + &quot;\n&quot;;</span>
+<span class="fc" id="L420">            this.stringBuilder.append(checkEmptyField(ocpCyclesGiven, details.get(numberOfOCPDelivered)));</span>
+<span class="fc" id="L421">            return this;</span>
+        }
+
+        public DetailBuilder withNewIUDInsertionDate(String iudInsertionDate) {
+<span class="fc" id="L425">            String newIUDInsertionDate = &quot;New IUD insertion date: &quot; + details.get(iudInsertionDate) + &quot;\n&quot;;</span>
+<span class="fc" id="L426">            this.stringBuilder.append(checkEmptyField(newIUDInsertionDate, details.get(iudInsertionDate)));</span>
+<span class="fc" id="L427">            return this;</span>
+        }
+
+        public DetailBuilder withDMPAInjectionDate(String dmpaInjectionDate) {
+<span class="fc" id="L431">            String dmpaInjectionDateMessage = &quot;DMPA injection date: &quot; + details.get(dmpaInjectionDate) + &quot;\n&quot;;</span>
+<span class="fc" id="L432">            this.stringBuilder.append(checkEmptyField(dmpaInjectionDateMessage, details.get(dmpaInjectionDate)));</span>
+<span class="fc" id="L433">            return this;</span>
+        }
+
+        private String immunizationFormatter(String immunizationString) {
+<span class="fc" id="L437">            String[] immunizations = immunizationString.split(&quot; &quot;);</span>
+<span class="fc" id="L438">            StringBuilder builder = new StringBuilder();</span>
+<span class="fc bfc" id="L439" title="All 2 branches covered.">            for (String immunization : immunizations) {</span>
+<span class="fc" id="L440">                Immunizations value = Immunizations.value(immunization);</span>
+<span class="fc bfc" id="L441" title="All 2 branches covered.">                if (value == null) {</span>
+<span class="fc" id="L442">                    continue;</span>
+                }
+<span class="fc" id="L444">                builder.append(value.displayValue()).append(&quot;, &quot;);</span>
+            }
+<span class="fc" id="L446">            return builder.toString().replaceAll(&quot;, $&quot;, &quot;&quot;);</span>
+        }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+<span class="fc" id="L452">        return EqualsBuilder.reflectionEquals(o, this);</span>
+    }
+
+    @Override
+    public int hashCode() {
+<span class="nc" id="L457">        return HashCodeBuilder.reflectionHashCode(this);</span>
+    }
+
+    @Override
+    public String toString() {
+<span class="nc" id="L462">        return ToStringBuilder.reflectionToString(this);</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.1.201405082137</span></div></body></html>

@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>EligibleCoupleService.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">org.ei.telemedicine.service</a> &gt; <span class="el_source">EligibleCoupleService.java</span></div><h1>EligibleCoupleService.java</h1><pre class="source lang-java linenums">package org.ei.telemedicine.service;
+
+import org.ei.telemedicine.AllConstants;
+import org.ei.telemedicine.domain.TimelineEvent;
+import org.ei.telemedicine.domain.form.FormSubmission;
+import org.ei.telemedicine.repository.AllBeneficiaries;
+import org.ei.telemedicine.repository.AllEligibleCouples;
+import org.ei.telemedicine.repository.AllTimelineEvents;
+
+import static org.apache.commons.lang3.StringUtils.isBlank;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
+import static org.ei.telemedicine.AllConstants.NEW_FP_METHOD_FIELD_NAME;
+import static org.ei.telemedicine.domain.TimelineEvent.forChangeOfFPMethod;
+import static org.ei.telemedicine.util.EasyMap.mapOf;
+
+public class EligibleCoupleService {
+    private final AllEligibleCouples allEligibleCouples;
+    private final AllTimelineEvents allTimelineEvents;
+    private final AllBeneficiaries allBeneficiaries;
+
+<span class="fc" id="L21">    public EligibleCoupleService(AllEligibleCouples allEligibleCouples, AllTimelineEvents allTimelineEvents, AllBeneficiaries allBeneficiaries) {</span>
+<span class="fc" id="L22">        this.allEligibleCouples = allEligibleCouples;</span>
+<span class="fc" id="L23">        this.allTimelineEvents = allTimelineEvents;</span>
+<span class="fc" id="L24">        this.allBeneficiaries = allBeneficiaries;</span>
+<span class="fc" id="L25">    }</span>
+
+    public void register(FormSubmission submission) {
+<span class="fc bfc" id="L28" title="All 2 branches covered.">        if (isNotBlank(submission.getFieldValue(AllConstants.CommonFormFields.SUBMISSION_DATE))) {</span>
+<span class="fc" id="L29">            allTimelineEvents.add(TimelineEvent.forECRegistered(submission.entityId(), submission.getFieldValue(AllConstants.CommonFormFields.SUBMISSION_DATE)));</span>
+        }
+<span class="fc" id="L31">    }</span>
+
+    public void fpComplications(FormSubmission submission) {
+<span class="nc" id="L34">    }</span>
+
+    public void fpChange(FormSubmission submission) {
+<span class="fc" id="L37">        String fpMethodChangeDate = submission.getFieldValue(AllConstants.ECRegistrationFields.FAMILY_PLANNING_METHOD_CHANGE_DATE);</span>
+<span class="fc bfc" id="L38" title="All 2 branches covered.">        if (isBlank(fpMethodChangeDate)) {</span>
+<span class="fc" id="L39">            fpMethodChangeDate = submission.getFieldValue(AllConstants.CommonFormFields.SUBMISSION_DATE);</span>
+        }
+<span class="fc" id="L41">        allTimelineEvents.add(forChangeOfFPMethod(submission.entityId(), submission.getFieldValue(AllConstants.ECRegistrationFields.CURRENT_FP_METHOD),</span>
+                submission.getFieldValue(NEW_FP_METHOD_FIELD_NAME), fpMethodChangeDate));
+<span class="fc" id="L43">        allEligibleCouples.mergeDetails(submission.entityId(), mapOf(AllConstants.ECRegistrationFields.CURRENT_FP_METHOD, submission.getFieldValue(NEW_FP_METHOD_FIELD_NAME)));</span>
+<span class="fc" id="L44">    }</span>
+
+    public void renewFPProduct(FormSubmission submission) {
+<span class="nc" id="L47">    }</span>
+
+    public void closeEligibleCouple(FormSubmission submission) {
+<span class="fc" id="L50">        allEligibleCouples.close(submission.entityId());</span>
+<span class="fc" id="L51">        allBeneficiaries.closeAllMothersForEC(submission.entityId());</span>
+<span class="fc" id="L52">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.1.201405082137</span></div></body></html>

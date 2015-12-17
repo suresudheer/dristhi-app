@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>ANMLocationController.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">org.ei.telemedicine.view.controller</a> &gt; <span class="el_source">ANMLocationController.java</span></div><h1>ANMLocationController.java</h1><pre class="source lang-java linenums">package org.ei.telemedicine.view.controller;
+
+import com.google.gson.Gson;
+
+import org.ei.telemedicine.AllConstants;
+import org.ei.telemedicine.repository.AllSettings;
+import org.ei.telemedicine.util.Cache;
+import org.ei.telemedicine.util.CacheableData;
+import org.ei.telemedicine.view.contract.ANMLocation;
+
+import static org.ei.telemedicine.AllConstants.Configuration.HUSBAND_MAX_AGE;
+import static org.ei.telemedicine.AllConstants.Configuration.HUSBAND_MIN_AGE;
+import static org.ei.telemedicine.AllConstants.Configuration.WIFE_MAX_AGE;
+import static org.ei.telemedicine.AllConstants.Configuration.WIFE_MIN_AGE;
+
+public class ANMLocationController {
+    private static final String ANM_LOCATION = &quot;anmLocation&quot;;
+    private static final String ANM_LOCATION_JSON = &quot;anmLocationJSON&quot;;
+    private AllSettings allSettings;
+    private Cache&lt;String&gt; cache;
+
+<span class="nc" id="L22">    public ANMLocationController(AllSettings allSettings, Cache&lt;String&gt; cache) {</span>
+<span class="nc" id="L23">        this.allSettings = allSettings;</span>
+<span class="nc" id="L24">        this.cache = cache;</span>
+<span class="nc" id="L25">    }</span>
+
+    public String get() {
+<span class="nc" id="L28">        return cache.get(ANM_LOCATION, new CacheableData&lt;String&gt;() {</span>
+            @Override
+            public String fetch() {
+<span class="nc" id="L31">                return allSettings.fetchANMLocation();</span>
+            }
+        });
+    }
+
+    public String getFormInfoJSON() {
+<span class="nc" id="L37">        return cache.get(ANM_LOCATION_JSON, new CacheableData&lt;String&gt;() {</span>
+            @Override
+            public String fetch() {
+<span class="nc" id="L40">                return new Gson().fromJson(allSettings.fetchANMLocation(), ANMLocation.class).asJSONString(allSettings.fetchANMPassword(), allSettings.fetchANMConfiguration(WIFE_MIN_AGE), allSettings.fetchANMConfiguration(WIFE_MAX_AGE), allSettings.fetchANMConfiguration(HUSBAND_MIN_AGE), allSettings.fetchANMConfiguration(HUSBAND_MAX_AGE), allSettings.fetchCountryCode());</span>
+
+            }
+        });
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.1.201405082137</span></div></body></html>

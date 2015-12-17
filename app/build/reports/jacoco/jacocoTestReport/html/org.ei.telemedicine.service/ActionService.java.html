@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>ActionService.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">org.ei.telemedicine.service</a> &gt; <span class="el_source">ActionService.java</span></div><h1>ActionService.java</h1><pre class="source lang-java linenums">package org.ei.telemedicine.service;
+
+import com.google.gson.Gson;
+
+import org.ei.telemedicine.domain.FetchStatus;
+import org.ei.telemedicine.domain.Response;
+import org.ei.telemedicine.dto.Action;
+import org.ei.telemedicine.repository.AllReports;
+import org.ei.telemedicine.repository.AllSettings;
+import org.ei.telemedicine.repository.AllSharedPreferences;
+import org.ei.telemedicine.router.ActionRouter;
+import org.ei.telemedicine.util.Log;
+
+import java.util.List;
+
+import static java.text.MessageFormat.format;
+import static org.ei.telemedicine.domain.FetchStatus.fetchedFailed;
+import static org.ei.telemedicine.domain.FetchStatus.nothingFetched;
+
+public class ActionService {
+    private final ActionRouter actionRouter;
+    private DrishtiService drishtiService;
+    private AllSettings allSettings;
+    private AllSharedPreferences allSharedPreference;
+    private AllReports allReports;
+
+    public ActionService(DrishtiService drishtiService, AllSettings allSettings, AllSharedPreferences allSharedPreferences, AllReports allReports) {
+<span class="nc" id="L28">       this(drishtiService, allSettings, allSharedPreferences, allReports, null);</span>
+<span class="nc" id="L29">    }</span>
+
+<span class="fc" id="L31">    public ActionService(DrishtiService drishtiService, AllSettings allSettings, AllSharedPreferences allSharedPreferences, AllReports allReports, ActionRouter actionRouter) {</span>
+<span class="fc" id="L32">        this.drishtiService = drishtiService;</span>
+<span class="fc" id="L33">        this.allSettings = allSettings;</span>
+<span class="fc" id="L34">        this.allSharedPreference = allSharedPreferences;</span>
+<span class="fc" id="L35">        this.allReports = allReports;</span>
+<span class="pc bpc" id="L36" title="1 of 2 branches missed.">        this.actionRouter = actionRouter == null ? new ActionRouter() : actionRouter;</span>
+<span class="fc" id="L37">    }</span>
+
+    public FetchStatus fetchNewActions() {
+<span class="fc" id="L40">        String previousFetchIndex = allSettings.fetchPreviousFetchIndex();</span>
+<span class="fc" id="L41">        Response&lt;List&lt;Action&gt;&gt; response = drishtiService.fetchNewActions(allSharedPreference.fetchRegisteredANM(), previousFetchIndex);</span>
+
+<span class="fc bfc" id="L43" title="All 2 branches covered.">        if (response.isFailure()) {</span>
+<span class="fc" id="L44">            return fetchedFailed;</span>
+        }
+
+<span class="fc bfc" id="L47" title="All 2 branches covered.">        if (response.payload().isEmpty()) {</span>
+<span class="fc" id="L48">            return nothingFetched;</span>
+        }
+
+<span class="fc" id="L51">        handleActions(response);</span>
+<span class="fc" id="L52">        return FetchStatus.fetched;</span>
+    }
+
+    private void handleActions(Response&lt;List&lt;Action&gt;&gt; response) {
+<span class="fc bfc" id="L56" title="All 2 branches covered.">        for (Action actionToUse : response.payload()) {</span>
+            try {
+<span class="fc" id="L58">                handleAction(actionToUse);</span>
+<span class="nc" id="L59">            } catch (Exception e) {</span>
+<span class="nc" id="L60">                Log.logError(format(&quot;Failed while handling action with target: {0} and exception: {1}&quot;, actionToUse.target(), e));</span>
+<span class="fc" id="L61">            }</span>
+<span class="fc" id="L62">        }</span>
+<span class="fc" id="L63">    }</span>
+
+    private void handleAction(Action actionToUse) {
+<span class="fc bfc" id="L66" title="All 2 branches covered.">        if (&quot;report&quot;.equals(actionToUse.target())) {</span>
+<span class="fc" id="L67">            runAction(actionToUse, new ActionHandler() {</span>
+                @Override
+                public void run(Action action) {
+<span class="fc" id="L70">                    allReports.handleAction(action);</span>
+<span class="fc" id="L71">                }</span>
+            });
+
+<span class="fc bfc" id="L74" title="All 2 branches covered.">        } else if (&quot;alert&quot;.equals(actionToUse.target())) {</span>
+<span class="fc" id="L75">            runAction(actionToUse, new ActionHandler() {</span>
+                @Override
+                public void run(Action action) {
+<span class="fc" id="L78">                    actionRouter.directAlertAction(action);</span>
+<span class="fc" id="L79">                }</span>
+            });
+
+<span class="pc bpc" id="L82" title="1 of 2 branches missed.">        } else if (&quot;mother&quot;.equals(actionToUse.target())) {</span>
+<span class="fc" id="L83">            runAction(actionToUse, new ActionHandler() {</span>
+                @Override
+                public void run(Action action) {
+<span class="fc" id="L86">                    actionRouter.directMotherAction(action);</span>
+<span class="fc" id="L87">                }</span>
+            });
+
+        } else {
+<span class="nc" id="L91">            Log.logWarn(&quot;Unknown action &quot; + actionToUse.target());</span>
+        }
+
+<span class="fc" id="L94">        allSettings.savePreviousFetchIndex(actionToUse.index());</span>
+<span class="fc" id="L95">    }</span>
+
+    private void runAction(Action action, ActionHandler actionHandler) {
+        try {
+<span class="fc" id="L99">            actionHandler.run(action);</span>
+<span class="nc" id="L100">        } catch (Exception e) {</span>
+<span class="nc" id="L101">            throw new RuntimeException(&quot;Failed to run action: &quot; + new Gson().toJson(action), e);</span>
+<span class="fc" id="L102">        }</span>
+<span class="fc" id="L103">    }</span>
+
+<span class="fc" id="L105">    private abstract class ActionHandler {</span>
+        public void run(Action action) {
+<span class="nc" id="L107">        }</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.1.201405082137</span></div></body></html>

@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>NativePNCSmartRegisterViewHolder.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">org.ei.telemedicine.view.viewHolder</a> &gt; <span class="el_source">NativePNCSmartRegisterViewHolder.java</span></div><h1>NativePNCSmartRegisterViewHolder.java</h1><pre class="source lang-java linenums">package org.ei.telemedicine.view.viewHolder;
+
+import org.ei.telemedicine.R;
+import org.ei.telemedicine.view.customControls.ClientPNCPpFpMethodView;
+import org.ei.telemedicine.view.customControls.ClientProfileView;
+import org.ei.telemedicine.view.customControls.DeliveryInfoView;
+import org.ei.telemedicine.view.customControls.PNCWebViewClient;
+
+import android.view.View;
+import android.view.ViewGroup;
+import android.webkit.WebView;
+import android.widget.ImageButton;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+
+public class NativePNCSmartRegisterViewHolder {
+    private final ClientProfileView profileInfoLayout;
+    private final TextView txtPNCNumberView;
+    private final DeliveryInfoView deliveryInfoView;
+    private final TextView txtComplicationsView;
+    private final ClientPNCPpFpMethodView pncPpFpMethodView;
+    private final TextView txtPpFpView;
+    private final LinearLayout childHolderLayout;
+    private final ImageButton editButton;
+    private final ViewGroup pncOverviewServiceModeView;
+    private final ViewGroup pncVisitsServiceModeView;
+    private final TextView txtNumberOfVisits;
+    private final TextView txtDOB;
+    private final TextView txtVisitComplicationsView;
+    private final WebView wbvPncVisitsGraph;
+    private final LinearLayout recentPNCVisitsLayout;
+    private final TextView btnPncVisitView;
+    private final View layoutPNCVisitAlert;
+    private final TextView txtPNCVisitDoneOn;
+    private final TextView txtPNCVisitDueType;
+    private final TextView txtPNCVisitAlertDueOn;
+
+<span class="nc" id="L38">    public NativePNCSmartRegisterViewHolder(ViewGroup itemView) {</span>
+<span class="nc" id="L39">        this.profileInfoLayout = (ClientProfileView) itemView.findViewById(R.id.profile_info_layout);</span>
+<span class="nc" id="L40">        this.profileInfoLayout.initialize();</span>
+
+<span class="nc" id="L42">        this.txtPNCNumberView = (TextView) itemView.findViewById(R.id.txt_pnc_number);</span>
+
+<span class="nc" id="L44">        this.pncOverviewServiceModeView = (ViewGroup) itemView.findViewById(R.id.pnc_overview_service_mode_views);</span>
+
+<span class="nc" id="L46">        this.deliveryInfoView = (DeliveryInfoView) pncOverviewServiceModeView.findViewById(R.id.delivery_info_layout);</span>
+<span class="nc" id="L47">        this.deliveryInfoView.initialize();</span>
+
+<span class="nc" id="L49">        txtComplicationsView = (TextView) pncOverviewServiceModeView.findViewById(R.id.txt_complications);</span>
+
+<span class="nc" id="L51">        pncPpFpMethodView = (ClientPNCPpFpMethodView) pncOverviewServiceModeView.findViewById(R.id.pp_fp_method_layout);</span>
+<span class="nc" id="L52">        pncPpFpMethodView.initialize();</span>
+<span class="nc" id="L53">        pncPpFpMethodView.setLayoutParams();</span>
+
+<span class="nc" id="L55">        txtPpFpView = (TextView) pncPpFpMethodView.findViewById(R.id.txt_pp_fp_method_view);</span>
+
+<span class="nc" id="L57">        childHolderLayout = (LinearLayout) pncOverviewServiceModeView.findViewById(R.id.lyt_pnc_child_holder);</span>
+
+<span class="nc" id="L59">        editButton = (ImageButton) pncOverviewServiceModeView.findViewById(R.id.btn_edit);</span>
+
+<span class="nc" id="L61">        this.pncVisitsServiceModeView = (ViewGroup) itemView.findViewById(R.id.pnc_visits_service_mode_views);</span>
+
+<span class="nc" id="L63">        txtNumberOfVisits = (TextView) pncVisitsServiceModeView.findViewById(R.id.txt_no_of_visits);</span>
+
+<span class="nc" id="L65">        txtDOB = (TextView) pncVisitsServiceModeView.findViewById(R.id.txt_dob);</span>
+
+<span class="nc" id="L67">        txtVisitComplicationsView = (TextView) pncVisitsServiceModeView.findViewById(R.id.txt_pnc_visits_complications);</span>
+
+<span class="nc" id="L69">        wbvPncVisitsGraph = (WebView) pncVisitsServiceModeView.findViewById(R.id.wbv_pnc_visit_graph);</span>
+<span class="nc" id="L70">        wbvPncVisitsGraph.getSettings().setJavaScriptEnabled(true);</span>
+<span class="nc" id="L71">        wbvPncVisitsGraph.setVerticalScrollbarOverlay(false);</span>
+<span class="nc" id="L72">        wbvPncVisitsGraph.setHorizontalScrollbarOverlay(false);</span>
+<span class="nc" id="L73">        wbvPncVisitsGraph.setWebViewClient(new PNCWebViewClient());</span>
+<span class="nc" id="L74">        wbvPncVisitsGraph.loadUrl(&quot;file:///android_asset/www/pnc_graph/pnc_visit_graph.html&quot;);</span>
+
+<span class="nc" id="L76">        recentPNCVisitsLayout = (LinearLayout) pncVisitsServiceModeView.findViewById(R.id.lyt_pnc_recent_visits_holder);</span>
+
+<span class="nc" id="L78">        btnPncVisitView = (TextView) pncVisitsServiceModeView.findViewById(R.id.btn_pnc_visit);</span>
+<span class="nc" id="L79">        layoutPNCVisitAlert = pncVisitsServiceModeView.findViewById(R.id.layout_pnc_visit_alert);</span>
+<span class="nc" id="L80">        txtPNCVisitDoneOn = (TextView) pncVisitsServiceModeView.findViewById(R.id.txt_pnc_visit_on);</span>
+<span class="nc" id="L81">        txtPNCVisitDueType = (TextView) pncVisitsServiceModeView.findViewById(R.id.txt_pnc_visit_due_type);</span>
+<span class="nc" id="L82">        txtPNCVisitAlertDueOn = (TextView) pncVisitsServiceModeView.findViewById(R.id.txt_anc_visit_due_on);</span>
+
+<span class="nc" id="L84">    }</span>
+
+    public void hideAllServiceModeOptions() {
+<span class="nc" id="L87">        pncOverviewServiceModeView().setVisibility(View.GONE);</span>
+<span class="nc" id="L88">        pncVisitsServiceModeView().setVisibility(View.GONE);</span>
+<span class="nc" id="L89">    }</span>
+
+    public ClientProfileView profileInfoLayout() {
+<span class="nc" id="L92">        return profileInfoLayout;</span>
+    }
+
+    public TextView txtPNCNumberView() {
+<span class="nc" id="L96">        return txtPNCNumberView;</span>
+    }
+
+    public ViewGroup pncOverviewServiceModeView() {
+<span class="nc" id="L100">        return pncOverviewServiceModeView;</span>
+    }
+
+    public ViewGroup pncVisitsServiceModeView() {
+<span class="nc" id="L104">        return pncVisitsServiceModeView;</span>
+    }
+
+    public DeliveryInfoView deliveryInfoView() {
+<span class="nc" id="L108">        return deliveryInfoView;</span>
+    }
+
+    public TextView txtComplicationsView() {
+<span class="nc" id="L112">        return txtComplicationsView;</span>
+    }
+
+    public ClientPNCPpFpMethodView pncPpFpMethodView() {
+<span class="nc" id="L116">        return pncPpFpMethodView;</span>
+    }
+
+    public TextView txtPpFpView() {
+<span class="nc" id="L120">        return txtPpFpView;</span>
+    }
+
+    public LinearLayout childHolderLayout() {
+<span class="nc" id="L124">        return childHolderLayout;</span>
+    }
+
+    public ImageButton editButton() {
+<span class="nc" id="L128">        return editButton;</span>
+    }
+
+    public TextView txtNumberOfVisits() {
+<span class="nc" id="L132">        return txtNumberOfVisits;</span>
+    }
+
+    public TextView txtDOB() {
+<span class="nc" id="L136">        return txtDOB;</span>
+    }
+
+    public TextView txtVisitComplicationsView() {
+<span class="nc" id="L140">        return txtVisitComplicationsView;</span>
+    }
+
+    public WebView wbvPncVisitsGraph() {
+<span class="nc" id="L144">        return wbvPncVisitsGraph;</span>
+    }
+
+    public LinearLayout recentPNCVisits() {
+<span class="nc" id="L148">        return recentPNCVisitsLayout;</span>
+    }
+
+    public TextView btnPncVisitView() {
+<span class="nc" id="L152">        return btnPncVisitView;</span>
+    }
+
+    public View layoutPNCVisitAlert() {
+<span class="nc" id="L156">        return layoutPNCVisitAlert;</span>
+    }
+
+    public TextView txtPNCVisitDoneOn() {
+<span class="nc" id="L160">        return txtPNCVisitDoneOn;</span>
+    }
+
+    public TextView txtPNCVisitDueType() {
+<span class="nc" id="L164">        return txtPNCVisitDueType;</span>
+    }
+
+    public TextView txtPNCVisitAlertDueOn() {
+<span class="nc" id="L168">        return txtPNCVisitAlertDueOn;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.1.201405082137</span></div></body></html>

@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>AllTestRepository.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">org.ei.telemedicine.repository</a> &gt; <span class="el_source">AllTestRepository.java</span></div><h1>AllTestRepository.java</h1><pre class="source lang-java linenums">package org.ei.telemedicine.repository;
+
+import android.database.Cursor;
+
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
+import net.sqlcipher.database.SQLiteDatabase;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import org.ei.telemedicine.domain.Mother;
+import org.ei.telemedicine.domain.TestDomain;
+
+public class AllTestRepository {
+    private TestRepository test_repository;
+    private final TimelineEventRepository timelineEventRepository;
+    private final AlertRepository alertRepository;
+
+    public AllTestRepository(TestRepository test_repository,
+                             AlertRepository alertRepository,
+<span class="nc" id="L24">                             TimelineEventRepository timelineEventRepository) {</span>
+<span class="nc" id="L25">        this.test_repository = test_repository;</span>
+<span class="nc" id="L26">        this.timelineEventRepository = timelineEventRepository;</span>
+<span class="nc" id="L27">        this.alertRepository = alertRepository;</span>
+
+<span class="nc" id="L29">    }</span>
+
+//    public List&lt;Mother&gt; readAllMothers() {
+//        Cursor cursor = test_repository.allmotherData();
+//        cursor.moveToFirst();
+//        List&lt;Mother&gt; mothers = new ArrayList&lt;Mother&gt;();
+//        while (!cursor.isAfterLast()) {
+//            Map&lt;String, String&gt; details = new Gson().fromJson(cursor.getString(5), new TypeToken&lt;Map&lt;String, String&gt;&gt;() {
+//            }.getType());
+//
+//            mothers.add(new Mother(cursor.getString(0), cursor.getString(1), cursor.getString(2), cursor.getString(4))
+//                    .withDetails(details)
+//                    .setIsClosed(Boolean.valueOf(cursor.getString(6)))
+//                    .withType(cursor.getString(cursor.getColumnIndex(&quot;type&quot;))));
+//            cursor.moveToNext();
+//        }
+//        cursor.close();
+//        return mothers;
+//    }
+
+    public int getChildCount() {
+<span class="nc" id="L50">        return 0;</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.1.201405082137</span></div></body></html>

@@ -1,0 +1,246 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>DoctorRepository.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">org.ei.telemedicine.repository</a> &gt; <span class="el_source">DoctorRepository.java</span></div><h1>DoctorRepository.java</h1><pre class="source lang-java linenums">package org.ei.telemedicine.repository;
+
+import android.content.ContentValues;
+import android.database.Cursor;
+import android.util.Log;
+
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
+import net.sqlcipher.database.SQLiteDatabase;
+
+import org.ei.telemedicine.doctor.DoctorData;
+import org.ei.telemedicine.domain.EligibleCouple;
+import org.ei.telemedicine.domain.Mother;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import static java.text.MessageFormat.format;
+
+/**
+ * Created by naveen on 5/21/15.
+ * New Consultants Table
+ */
+<span class="nc" id="L28">public class DoctorRepository extends DrishtiRepository {</span>
+    static final String DOCTORS_INFO_SQL = &quot;CREATE TABLE doctors(SNo INTEGER PRIMARY KEY AUTOINCREMENT,AnmId VARCHAR,CaseId VARCHAR, FormInformation VARCHAR,FormTime VARCHAR,POCInformation VARCHAR,POCTime VARCHAR,PocStatus VARCHAR,SyncStatus VARCHAR,VisitType VARCHAR,Village VARCHAR)&quot;;
+
+    public static final String DOCTORS_INFO_TABLE_NAME = &quot;doctors&quot;;
+
+    public static final String SNO_COLUMN = &quot;SNo&quot;;
+    public static final String ANMID_COLUMN = &quot;AnmId&quot;;
+    public static final String CASE_ID_COLUMN = &quot;CaseId&quot;;
+    public static final String FORMINFORMATION_COLUMN = &quot;FormInformation&quot;;
+    public static final String FORMTIME_COLUMN = &quot;FormTime&quot;;
+    public static final String POCINFORMATION_COL = &quot;POCInformation&quot;;
+    public static final String POCSTATUS_COL = &quot;PocStatus&quot;;
+    public static final String POCTIME_COL = &quot;PocTime&quot;;
+    public static final String SYNCSTATUS_COL = &quot;SyncStatus&quot;;
+    public static final String VISIT_TYPE_COL = &quot;VisitType&quot;;
+    public static final String VILLAGE_NAME_COL = &quot;Village&quot;;
+
+<span class="nc" id="L45">    public static final String[] DOCTOR_TABLE_COLUMNS = new String[]{SNO_COLUMN, ANMID_COLUMN, CASE_ID_COLUMN, FORMINFORMATION_COLUMN, FORMTIME_COLUMN, POCINFORMATION_COL, POCSTATUS_COL, POCTIME_COL, SYNCSTATUS_COL, VISIT_TYPE_COL, VILLAGE_NAME_COL};</span>
+<span class="nc" id="L46">    private String TAG = &quot;DoctorRepository&quot;;</span>
+
+
+    @Override
+    protected void onCreate(SQLiteDatabase database) {
+<span class="nc" id="L51">        database.execSQL(DOCTORS_INFO_SQL);</span>
+<span class="nc" id="L52">    }</span>
+
+    public List&lt;DoctorData&gt; allConsultantsData() throws JSONException {
+<span class="nc" id="L55">        SQLiteDatabase database = masterRepository.getReadableDatabase();</span>
+<span class="nc" id="L56">        Cursor cursor = database.query(DOCTORS_INFO_TABLE_NAME, DOCTOR_TABLE_COLUMNS, null, null, null, null, null, null);</span>
+<span class="nc" id="L57">        Log.e(TAG, &quot;Cursor Size&quot; + cursor.getCount());</span>
+<span class="nc" id="L58">        return readAllConstultansData(cursor);</span>
+    }
+
+    private List&lt;DoctorData&gt; readAllConstultansData(Cursor cursor) throws JSONException {
+<span class="nc" id="L62">        cursor.moveToFirst();</span>
+<span class="nc" id="L63">        List&lt;DoctorData&gt; doctorDatas = new ArrayList&lt;DoctorData&gt;();</span>
+<span class="nc bnc" id="L64" title="All 2 branches missed.">        while (!cursor.isAfterLast()) {</span>
+<span class="nc" id="L65">            DoctorData doctorData = new DoctorData();</span>
+
+<span class="nc" id="L67">            doctorData.setCaseId(cursor.getString(cursor.getColumnIndex(CASE_ID_COLUMN)));</span>
+<span class="nc" id="L68">            doctorData.setAnmId(cursor.getString(cursor.getColumnIndex(ANMID_COLUMN)));</span>
+<span class="nc" id="L69">            String form = cursor.getString(cursor.getColumnIndex(FORMINFORMATION_COLUMN));</span>
+<span class="nc" id="L70">            doctorData.setFormInformation(form);</span>
+<span class="nc" id="L71">            doctorData.setFormTime(cursor.getString(cursor.getColumnIndex(FORMTIME_COLUMN)));</span>
+//            doctorData.setPOCInformation(cursor.getBlob(cursor.getColumnIndex(POCINFORMATION_COL)) + &quot;&quot;);
+//            doctorData.setPocStatus(cursor.getString(cursor.getColumnIndex(POCSTATUS_COL)));
+//            doctorData.setPocTime(cursor.getString(cursor.getColumnIndex(POCTIME_COL)));
+//            doctorData.setSyncStatus(cursor.getString(cursor.getColumnIndex(SYNCSTATUS_COL)));
+<span class="nc" id="L76">            String string = cursor.getString(cursor.getColumnIndex(VISIT_TYPE_COL));</span>
+<span class="nc" id="L77">            doctorData.setVisitType(string);</span>
+
+<span class="nc" id="L79">            doctorDatas.add(doctorData);</span>
+<span class="nc" id="L80">            cursor.moveToNext();</span>
+<span class="nc" id="L81">        }</span>
+<span class="nc" id="L82">        cursor.close();</span>
+<span class="nc" id="L83">        return doctorDatas;</span>
+    }
+
+    public void add(DoctorData doctorData) {
+<span class="nc" id="L87">        SQLiteDatabase database = masterRepository.getWritableDatabase();</span>
+<span class="nc" id="L88">        Log.e(TAG, &quot;Adding records&quot; + doctorData.getFormInformation());</span>
+<span class="nc bnc" id="L89" title="All 2 branches missed.">        if (!isExistCaseId(doctorData.getCaseId()))</span>
+<span class="nc" id="L90">            database.insert(DOCTORS_INFO_TABLE_NAME, null, createValuesFor(doctorData));</span>
+        else {
+            try {
+<span class="nc" id="L93">                database.update(DOCTORS_INFO_TABLE_NAME, createValuesFor(doctorData), CASE_ID_COLUMN + &quot; = ?&quot;, new String[]{doctorData.getCaseId()});</span>
+<span class="nc" id="L94">            } catch (Exception e) {</span>
+<span class="nc" id="L95">                e.printStackTrace();</span>
+<span class="nc" id="L96">            }</span>
+<span class="nc" id="L97">            Log.e(TAG, &quot;Already exist&quot;);</span>
+        }
+
+//        if (isExistCaseId(doctorData.getCaseId())) {
+//            deleteUseCaseId(doctorData.getCaseId());
+//            Log.e(TAG, &quot;Already exist&quot;);
+//        }
+//        database.insert(DOCTORS_INFO_TABLE_NAME, null, createValuesFor(doctorData));
+<span class="nc" id="L105">    }</span>
+
+
+    private ContentValues createValuesFor(DoctorData doctorData) {
+<span class="nc" id="L109">        ContentValues values = new ContentValues();</span>
+<span class="nc" id="L110">        values.put(CASE_ID_COLUMN, doctorData.getCaseId());</span>
+<span class="nc" id="L111">        values.put(ANMID_COLUMN, doctorData.getAnmId());</span>
+<span class="nc" id="L112">        values.put(FORMINFORMATION_COLUMN, doctorData.getFormInformation().toString());</span>
+<span class="nc" id="L113">        values.put(POCINFORMATION_COL, doctorData.getPOCInformation());</span>
+<span class="nc" id="L114">        values.put(FORMTIME_COLUMN, doctorData.getFormTime());</span>
+<span class="nc" id="L115">        values.put(POCSTATUS_COL, doctorData.getPocStatus());</span>
+<span class="nc" id="L116">        values.put(POCTIME_COL, doctorData.getPocTime());</span>
+<span class="nc" id="L117">        values.put(SYNCSTATUS_COL, doctorData.getSyncStatus());</span>
+<span class="nc" id="L118">        values.put(VISIT_TYPE_COL, doctorData.getVisitType());</span>
+<span class="nc" id="L119">        values.put(VILLAGE_NAME_COL, doctorData.getVillageName());</span>
+<span class="nc" id="L120">        return values;</span>
+    }
+
+    public void updateDetails(String caseId, String pocInformation, String pocPendingInfo) {
+<span class="nc" id="L124">        SQLiteDatabase database = masterRepository.getWritableDatabase();</span>
+<span class="nc" id="L125">        String formInfo = getFormInfo(caseId);</span>
+<span class="nc bnc" id="L126" title="All 2 branches missed.">        if (formInfo != null) {</span>
+            try {
+<span class="nc" id="L128">                JSONObject formInfoJson = new JSONObject(formInfo);</span>
+<span class="nc" id="L129">                formInfoJson.put(&quot;pocPending&quot;, pocPendingInfo);</span>
+<span class="nc" id="L130">                ContentValues valuesToUpdate = new ContentValues();</span>
+<span class="nc" id="L131">                valuesToUpdate.put(POCINFORMATION_COL, pocInformation);</span>
+<span class="nc" id="L132">                valuesToUpdate.put(FORMINFORMATION_COLUMN, formInfoJson.toString());</span>
+<span class="nc" id="L133">                database.update(DOCTORS_INFO_TABLE_NAME, valuesToUpdate, CASE_ID_COLUMN + &quot; = ?&quot;, new String[]{caseId});</span>
+<span class="nc" id="L134">            } catch (JSONException e) {</span>
+<span class="nc" id="L135">                e.printStackTrace();</span>
+<span class="nc" id="L136">            }</span>
+        }
+<span class="nc" id="L138">    }</span>
+
+    /**
+     * @param caseId
+     * @return formInformation for this caseId
+     */
+    private String getFormInfo(String caseId) {
+<span class="nc" id="L145">        SQLiteDatabase database = masterRepository.getWritableDatabase();</span>
+<span class="nc" id="L146">        Cursor cursor = database.rawQuery(&quot;select * from &quot; + DOCTORS_INFO_TABLE_NAME + &quot; where &quot; + CASE_ID_COLUMN + &quot; ='&quot; + caseId + &quot;'&quot;, null);</span>
+<span class="nc" id="L147">        String formInfo = null;</span>
+//        Cursor cursor = database.query(DOCTORS_INFO_TABLE_NAME, DOCTOR_TABLE_COLUMNS, CASE_ID_COLUMN, new String[]{caseId}, null, null, null, null);
+<span class="nc bnc" id="L149" title="All 2 branches missed.">        while (cursor.moveToNext()) {</span>
+<span class="nc" id="L150">            formInfo = cursor.getString(cursor.getColumnIndex(FORMINFORMATION_COLUMN));</span>
+        }
+<span class="nc" id="L152">        cursor.close();</span>
+<span class="nc" id="L153">        return formInfo;</span>
+    }
+
+    public String getPocInfo(String caseId) {
+<span class="nc" id="L157">        SQLiteDatabase database = masterRepository.getWritableDatabase();</span>
+<span class="nc" id="L158">        Cursor cursor = database.rawQuery(&quot;select * from &quot; + DOCTORS_INFO_TABLE_NAME + &quot; where &quot; + CASE_ID_COLUMN + &quot; ='&quot; + caseId + &quot;'&quot;, null);</span>
+<span class="nc" id="L159">        Log.e(TAG, &quot;Poc Cursor Size&quot; + cursor.getCount() + &quot;&quot;);</span>
+<span class="nc" id="L160">        String pocInfo = null;</span>
+<span class="nc bnc" id="L161" title="All 2 branches missed.">        while (cursor.moveToNext()) {</span>
+<span class="nc" id="L162">            Log.e(TAG, &quot;PocCursor Data&quot; + cursor.getString(cursor.getColumnIndex(POCINFORMATION_COL)) + &quot;&quot;);</span>
+<span class="nc" id="L163">            pocInfo = cursor.getString(cursor.getColumnIndex(POCINFORMATION_COL));</span>
+        }
+<span class="nc" id="L165">        cursor.close();</span>
+<span class="nc" id="L166">        return pocInfo;</span>
+    }
+
+    public void deleteAll() {
+<span class="nc" id="L170">        SQLiteDatabase database = masterRepository.getWritableDatabase();</span>
+<span class="nc" id="L171">        database.execSQL(&quot;DELETE FROM  &quot; + DOCTORS_INFO_TABLE_NAME + &quot; where POCInformation is null&quot;);</span>
+<span class="nc" id="L172">    }</span>
+
+    public void deleteUseCaseId(String caseId) {
+<span class="nc" id="L175">        SQLiteDatabase database = masterRepository.getWritableDatabase();</span>
+<span class="nc" id="L176">        String deleteQuery = &quot;DELETE FROM  &quot; + DOCTORS_INFO_TABLE_NAME + &quot; where CaseId ='&quot; + caseId + &quot;'&quot;;</span>
+<span class="nc" id="L177">        database.execSQL(deleteQuery);</span>
+<span class="nc" id="L178">    }</span>
+
+    public ArrayList&lt;String&gt; allVillages() {
+<span class="nc" id="L181">        SQLiteDatabase database = masterRepository.getWritableDatabase();</span>
+
+//        String villagesQuery = &quot;select DISTINCT(Village) from &quot; + DOCTORS_INFO_TABLE_NAME;
+//        Cursor cursor = database.rawQuery(villagesQuery, null);
+<span class="nc" id="L185">        Cursor cursor = database.query(true, DOCTORS_INFO_TABLE_NAME, new String[]{VILLAGE_NAME_COL}, null, null, null, null, null, null);</span>
+<span class="nc" id="L186">        ArrayList&lt;String&gt; villagesList = new ArrayList&lt;String&gt;();</span>
+<span class="nc bnc" id="L187" title="All 2 branches missed.">        while (cursor.moveToNext()) {</span>
+<span class="nc" id="L188">            Log.e(&quot;Villages&quot;, cursor.getString(cursor.getColumnIndex(VILLAGE_NAME_COL)));</span>
+<span class="nc" id="L189">            villagesList.add(cursor.getString(cursor.getColumnIndex(VILLAGE_NAME_COL)));</span>
+        }
+<span class="nc" id="L191">        cursor.close();</span>
+<span class="nc" id="L192">        return villagesList;</span>
+    }
+
+
+    public int getCountByType(String type) {
+<span class="nc" id="L197">        SQLiteDatabase database = masterRepository.getWritableDatabase();</span>
+<span class="nc" id="L198">        Cursor cursor = database.rawQuery(&quot;select * from &quot; + DOCTORS_INFO_TABLE_NAME + &quot; where &quot; + VISIT_TYPE_COL + &quot;='&quot; + type + &quot;'&quot;, null);</span>
+        //        Cursor cursor = database.rawQuery(&quot;select * from mother where isClosed=?&quot;, new String[]{&quot;false&quot;});
+<span class="nc" id="L200">        int count = cursor.getCount();</span>
+<span class="nc" id="L201">        Log.e(TAG, count + &quot;&quot;);</span>
+<span class="nc" id="L202">        cursor.close();</span>
+<span class="nc" id="L203">        return count;</span>
+    }
+
+    public boolean isExistCaseId(String caseId) {
+<span class="nc" id="L207">        SQLiteDatabase database = masterRepository.getWritableDatabase();</span>
+<span class="nc" id="L208">        String selectqry = &quot;select * from &quot; + DOCTORS_INFO_TABLE_NAME + &quot; where &quot; + CASE_ID_COLUMN + &quot;= '&quot; + caseId + &quot;'&quot;;</span>
+<span class="nc" id="L209">        Cursor cursor = database.rawQuery(selectqry, null);</span>
+<span class="nc" id="L210">        Log.e(TAG, cursor.getCount() + &quot;&quot;);</span>
+<span class="nc bnc" id="L211" title="All 2 branches missed.">        boolean isCaseIdExist = cursor.getCount() != 0;</span>
+<span class="nc" id="L212">        cursor.close();</span>
+<span class="nc" id="L213">        return isCaseIdExist;</span>
+    }
+
+    public List&lt;Mother&gt; allmotherData() {
+<span class="nc" id="L217">        SQLiteDatabase database = masterRepository.getWritableDatabase();</span>
+<span class="nc" id="L218">        Cursor cursor = null;</span>
+<span class="nc bnc" id="L219" title="All 2 branches missed.">        if (database != null) {</span>
+<span class="nc" id="L220">            cursor = database.rawQuery(&quot;select * from mother where isClosed=?&quot;, new String[]{&quot;false&quot;});</span>
+        }
+<span class="nc" id="L222">        return readAllMothers(cursor);</span>
+    }
+
+    private List&lt;Mother&gt; readAllMothers(Cursor cursor) {
+<span class="nc" id="L226">        cursor.moveToFirst();</span>
+<span class="nc" id="L227">        List&lt;Mother&gt; mothers = new ArrayList&lt;Mother&gt;();</span>
+<span class="nc bnc" id="L228" title="All 2 branches missed.">        while (!cursor.isAfterLast()) {</span>
+<span class="nc" id="L229">            Map&lt;String, String&gt; details = new Gson().fromJson(cursor.getString(5), new TypeToken&lt;Map&lt;String, String&gt;&gt;() {</span>
+            }.getType());
+
+<span class="nc" id="L232">            mothers.add(new Mother(cursor.getString(0), cursor.getString(1), cursor.getString(2), cursor.getString(4))</span>
+                    .withDetails(details)
+                    .setIsClosed(Boolean.valueOf(cursor.getString(6)))
+                    .withType(cursor.getString(cursor.getColumnIndex(&quot;type&quot;))));
+<span class="nc" id="L236">            cursor.moveToNext();</span>
+<span class="nc" id="L237">        }</span>
+<span class="nc" id="L238">        cursor.close();</span>
+<span class="nc" id="L239">        return mothers;</span>
+    }
+
+    public int getChildCount() {
+<span class="nc" id="L243">        return 0;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.1.201405082137</span></div></body></html>

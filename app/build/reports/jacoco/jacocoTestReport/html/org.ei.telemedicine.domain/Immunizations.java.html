@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>Immunizations.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">org.ei.telemedicine.domain</a> &gt; <span class="el_source">Immunizations.java</span></div><h1>Immunizations.java</h1><pre class="source lang-java linenums">package org.ei.telemedicine.domain;
+
+<span class="fc" id="L3">public enum Immunizations implements Displayable {</span>
+<span class="fc" id="L4">    bcg(&quot;BCG&quot;), opv_0(&quot;OPV 0&quot;), hepb_0(&quot;HepB 0&quot;), opv_1(&quot;OPV 1&quot;), opv_2(&quot;OPV 2&quot;), measles(&quot;Measles&quot;),</span>
+<span class="fc" id="L5">    pentavalent_1(&quot;Pentavalent 1&quot;), pentavalent_2(&quot;Pentavalent 2&quot;), opv_3(&quot;OPV 3&quot;), pentavalent_3(&quot;Pentavalent 3&quot;), je(&quot;JE&quot;), mmr(&quot;MMR&quot;),</span>
+<span class="fc" id="L6">    dptbooster_1(&quot;DPT Booster 1&quot;), opvbooster(&quot;OPV Booster&quot;), measlesbooster(&quot;Measles Booster&quot;), je_2(&quot;JE 2&quot;), dptbooster_2(&quot;DPT Booster 2&quot;);</span>
+    private String displayValue;
+
+<span class="fc" id="L9">    Immunizations(String displayValue) {</span>
+<span class="fc" id="L10">        this.displayValue = displayValue;</span>
+<span class="fc" id="L11">    }</span>
+
+    @Override
+    public String displayValue() {
+<span class="fc" id="L15">        return displayValue;</span>
+    }
+
+    public static Immunizations value(String name) {
+        try {
+<span class="fc" id="L20">            return valueOf(name);</span>
+<span class="fc" id="L21">        } catch (Exception e) {</span>
+<span class="fc" id="L22">            return null;</span>
+        }
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.1.201405082137</span></div></body></html>

@@ -1,0 +1,273 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>PNCClientPreProcessor.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">org.ei.telemedicine.view.preProcessor</a> &gt; <span class="el_source">PNCClientPreProcessor.java</span></div><h1>PNCClientPreProcessor.java</h1><pre class="source lang-java linenums">package org.ei.telemedicine.view.preProcessor;
+
+import com.google.common.base.Predicate;
+import com.google.common.collect.Iterables;
+
+import org.ei.telemedicine.util.DateUtil;
+import org.ei.telemedicine.view.contract.ServiceProvidedDTO;
+import org.ei.telemedicine.view.contract.pnc.*;
+import org.joda.time.LocalDate;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
+
+import static org.ei.telemedicine.util.DateUtil.dayDifference;
+import static org.ei.telemedicine.util.DateUtil.formatDate;
+
+<span class="fc" id="L18">public class PNCClientPreProcessor {</span>
+    private static final String PNC_IDENTIFIER = &quot;PNC&quot;;
+<span class="fc" id="L20">    private static List&lt;Integer&gt; defaultVisitDays = new ArrayList&lt;Integer&gt;(Arrays.asList(1, 3, 7));</span>
+
+    public PNCClient preProcess(PNCClient client) {
+<span class="fc" id="L23">        List&lt;PNCCircleDatum&gt; circleData = new ArrayList&lt;PNCCircleDatum&gt;();</span>
+<span class="fc" id="L24">        List&lt;PNCStatusDatum&gt; statusData = new ArrayList&lt;PNCStatusDatum&gt;();</span>
+<span class="fc" id="L25">        List&lt;PNCTickDatum&gt; tickData = new ArrayList&lt;PNCTickDatum&gt;();</span>
+<span class="fc" id="L26">        List&lt;PNCLineDatum&gt; lineData = new ArrayList&lt;PNCLineDatum&gt;();</span>
+
+<span class="fc" id="L28">        int currentDay = DateUtil.dayDifference(client.deliveryDate(), DateUtil.today());</span>
+<span class="fc" id="L29">        populateExpectedVisitDates(client);</span>
+<span class="fc" id="L30">        List&lt;ServiceProvidedDTO&gt; first7DaysVisits = getFirst7DaysVisits(client);</span>
+<span class="fc" id="L31">        createViewElements(client, currentDay, first7DaysVisits, circleData, statusData, tickData, lineData);</span>
+<span class="fc" id="L32">        populateRecent3Visits(client);</span>
+<span class="fc" id="L33">        return client;</span>
+    }
+
+    private void populateRecent3Visits(PNCClient client) {
+<span class="fc" id="L37">        List&lt;ServiceProvidedDTO&gt; servicesProvided = getServicesProvidedAfterFirstSevenDays(client);</span>
+<span class="fc" id="L38">        Collections.sort(servicesProvided, new DateComparator());</span>
+<span class="fc" id="L39">        ArrayList&lt;ServiceProvidedDTO&gt; recentServicesProvided = new ArrayList&lt;ServiceProvidedDTO&gt;();</span>
+        int iter;
+<span class="fc bfc" id="L41" title="All 2 branches covered.">        for (iter = 0; iter &lt; 3; iter++) {</span>
+<span class="fc" id="L42">            int index = servicesProvided.size() - iter - 1;</span>
+<span class="fc bfc" id="L43" title="All 2 branches covered.">            if (index &gt;= 0) {</span>
+<span class="fc" id="L44">                recentServicesProvided.add(servicesProvided.get(index));</span>
+            }
+
+        }
+<span class="fc" id="L48">        List&lt;ServiceProvidedDTO&gt; recentServicesWithDays</span>
+                = findAndSetTheVisitDayOfTheServicesWithRespectToDeliveryDate(recentServicesProvided, client.deliveryDate());
+<span class="fc" id="L50">        client.withRecentlyProvidedServices(recentServicesWithDays);</span>
+<span class="fc" id="L51">    }</span>
+
+    private List&lt;ServiceProvidedDTO&gt; getServicesProvidedAfterFirstSevenDays(PNCClient client) {
+<span class="fc" id="L54">        ArrayList&lt;ServiceProvidedDTO&gt; servicesProvidedAfterFirstSevenDays = new ArrayList&lt;ServiceProvidedDTO&gt;();</span>
+<span class="fc" id="L55">        int VISIT_END_OFFSET_DAY_COUNT = 7;</span>
+<span class="fc" id="L56">        LocalDate endDate = client.deliveryDate().plusDays(VISIT_END_OFFSET_DAY_COUNT);</span>
+<span class="pc bpc" id="L57" title="1 of 4 branches missed.">        if (client.servicesProvided() != null &amp;&amp; !client.servicesProvided().isEmpty()) {</span>
+<span class="fc bfc" id="L58" title="All 2 branches covered.">            for (ServiceProvidedDTO serviceProvided : client.servicesProvided()) {</span>
+<span class="fc" id="L59">                LocalDate serviceProvidedDate = serviceProvided.localDate();</span>
+<span class="fc bfc" id="L60" title="All 2 branches covered.">                if (serviceProvidedDate.isAfter(endDate)) {</span>
+<span class="fc" id="L61">                    servicesProvidedAfterFirstSevenDays.add(serviceProvided);</span>
+                }
+<span class="fc" id="L63">            }</span>
+<span class="fc" id="L64">            Collections.sort(servicesProvidedAfterFirstSevenDays, new DateComparator());</span>
+<span class="fc" id="L65">            Collections.reverse(servicesProvidedAfterFirstSevenDays);</span>
+        }
+<span class="fc" id="L67">        return servicesProvidedAfterFirstSevenDays;</span>
+    }
+
+    private void populateExpectedVisitDates(PNCClient client) {
+<span class="fc" id="L71">        List&lt;ServiceProvidedDTO&gt; expectedVisits = new ArrayList&lt;ServiceProvidedDTO&gt;();</span>
+<span class="fc bfc" id="L72" title="All 2 branches covered.">        for (Integer visitDay : defaultVisitDays) {</span>
+<span class="fc" id="L73">            LocalDate expectedVisitDate = client.deliveryDate().plusDays(visitDay);</span>
+<span class="fc" id="L74">            ServiceProvidedDTO expectedVisit = new ServiceProvidedDTO(&quot;PNC&quot;, visitDay, formatDate(expectedVisitDate, &quot;YYYY-MM-dd&quot;));</span>
+<span class="fc" id="L75">            expectedVisits.add(expectedVisit);</span>
+<span class="fc" id="L76">        }</span>
+<span class="fc" id="L77">        client.withExpectedVisits(expectedVisits);</span>
+<span class="fc" id="L78">    }</span>
+
+    private void createViewElements(PNCClient client, int numberOfDaysFromDeliveryDate,
+                                           List&lt;ServiceProvidedDTO&gt; first7DaysVisits, List&lt;PNCCircleDatum&gt; circleData,
+                                           List&lt;PNCStatusDatum&gt; statusData, List&lt;PNCTickDatum&gt; tickData,
+                                           List&lt;PNCLineDatum&gt; lineData) {
+<span class="fc" id="L84">        int currentDay = DateUtil.dayDifference(client.deliveryDate(), DateUtil.today());</span>
+<span class="fc" id="L85">        createViewElementsBasedOnExpectedVisits(client, first7DaysVisits, circleData, statusData);</span>
+<span class="fc" id="L86">        createViewDataBasedOnServicesProvided(first7DaysVisits, circleData);</span>
+<span class="fc" id="L87">        PNCStatusColor pncVisitStatusColor = getPNCVisitStatusColor(client, first7DaysVisits, numberOfDaysFromDeliveryDate);</span>
+<span class="fc" id="L88">        createTickData(currentDay, circleData, tickData);</span>
+<span class="fc" id="L89">        createLineData(currentDay, lineData);</span>
+<span class="fc" id="L90">        ArrayList&lt;PNCVisitDaysDatum&gt; pncVisitDaysData = generateDayNumbers(currentDay, circleData);</span>
+<span class="fc" id="L91">        PNCFirstSevenDaysVisits pncFirstSevenDaysVisits = new PNCFirstSevenDaysVisits(circleData, statusData,</span>
+                pncVisitStatusColor, tickData, lineData, pncVisitDaysData);
+<span class="fc" id="L93">        client.withFirstSevenDaysVisit(pncFirstSevenDaysVisits);</span>
+<span class="fc" id="L94">    }</span>
+
+    private ArrayList&lt;PNCVisitDaysDatum&gt; generateDayNumbers(int currentDay, List&lt;PNCCircleDatum&gt; circleData) {
+<span class="fc" id="L97">        ArrayList&lt;PNCVisitDaysDatum&gt; visitDaysData = new ArrayList&lt;PNCVisitDaysDatum&gt;();</span>
+<span class="fc bfc" id="L98" title="All 2 branches covered.">        for (PNCCircleDatum pncCircleDatum : circleData) {</span>
+<span class="fc bfc" id="L99" title="All 4 branches covered.">            if (pncCircleDatum.day() &gt; currentDay || pncCircleDatum.type().equals(PNCVisitType.ACTUAL)) {</span>
+<span class="fc" id="L100">                visitDaysData.add(new PNCVisitDaysDatum(pncCircleDatum.day(), pncCircleDatum.type()));</span>
+            }
+<span class="fc" id="L102">        }</span>
+<span class="fc" id="L103">        return visitDaysData;</span>
+    }
+
+    private void createLineData(int currentDay, List&lt;PNCLineDatum&gt; lineData) {
+<span class="fc bfc" id="L107" title="All 2 branches covered.">        if (currentDay &gt; 1) {</span>
+<span class="fc" id="L108">            lineData.add(new PNCLineDatum(1, Math.min(7, currentDay), PNCVisitType.ACTUAL));</span>
+        }
+<span class="fc bfc" id="L110" title="All 2 branches covered.">        if (currentDay &lt; 7) {</span>
+<span class="fc" id="L111">            lineData.add(new PNCLineDatum(Math.max(1, currentDay), 7, PNCVisitType.EXPECTED));</span>
+        }
+<span class="fc" id="L113">    }</span>
+
+    private void createTickData(Integer currentDay, List&lt;PNCCircleDatum&gt; circleData, List&lt;PNCTickDatum&gt; tickData) {
+<span class="fc" id="L116">        List&lt;Integer&gt; possibleTickDays = Arrays.asList(2, 4, 5, 6);</span>
+<span class="fc" id="L117">        List&lt;Integer&gt; circleDays = new ArrayList&lt;Integer&gt;();</span>
+<span class="fc bfc" id="L118" title="All 2 branches covered.">        for (PNCCircleDatum pncCircleDatum : circleData) {</span>
+<span class="fc" id="L119">            circleDays.add(pncCircleDatum.day());</span>
+<span class="fc" id="L120">        }</span>
+<span class="fc bfc" id="L121" title="All 2 branches covered.">        for (Integer tickDay : possibleTickDays) {</span>
+<span class="fc bfc" id="L122" title="All 2 branches covered.">            if (!circleDays.contains(tickDay)) {</span>
+<span class="fc bfc" id="L123" title="All 2 branches covered.">                if (tickDay &gt; currentDay) {</span>
+<span class="fc" id="L124">                    tickData.add(new PNCTickDatum(tickDay, PNCVisitType.EXPECTED));</span>
+                } else {
+<span class="fc" id="L126">                    tickData.add(new PNCTickDatum(tickDay, PNCVisitType.ACTUAL));</span>
+                }
+            }
+<span class="fc" id="L129">        }</span>
+<span class="fc" id="L130">    }</span>
+
+    private PNCStatusColor getPNCVisitStatusColor(PNCClient client, List&lt;ServiceProvidedDTO&gt; first7DaysVisits, int numberOfDaysFromDeliveryDate) {
+<span class="fc" id="L133">        PNCStatusColor statusColor = PNCStatusColor.YELLOW;</span>
+<span class="fc bfc" id="L134" title="All 4 branches covered.">        if (first7DaysVisits.isEmpty() &amp;&amp; numberOfDaysFromDeliveryDate &gt; 1) {</span>
+<span class="fc" id="L135">            statusColor = PNCStatusColor.RED;</span>
+<span class="fc bfc" id="L136" title="All 2 branches covered.">        } else if (actualVisitsHaveBeenDoneOnExpectedDays(client, first7DaysVisits, numberOfDaysFromDeliveryDate)) {</span>
+<span class="fc" id="L137">            statusColor = PNCStatusColor.GREEN;</span>
+        }
+<span class="fc" id="L139">        return statusColor;</span>
+    }
+
+    private boolean actualVisitsHaveBeenDoneOnExpectedDays(PNCClient client, List&lt;ServiceProvidedDTO&gt; first7DaysVisits, int numberOfDaysFromDeliveryDate) {
+<span class="fc" id="L143">        List&lt;Integer&gt; expectedVisitDaysTillToday =</span>
+                getExpectedVisitDaysTillToday(client.expectedVisits(), numberOfDaysFromDeliveryDate); //valid_expected_visit_days
+
+<span class="fc" id="L146">        ArrayList&lt;Integer&gt; actualVisitDays = getActualVisitDays(first7DaysVisits); //valid_actual_visit_days</span>
+<span class="fc bfc" id="L147" title="All 2 branches covered.">        for (Integer expectedVisitDay : expectedVisitDaysTillToday) {</span>
+<span class="fc bfc" id="L148" title="All 2 branches covered.">            if (!actualVisitDays.contains(expectedVisitDay)) {</span>
+<span class="fc" id="L149">                return false;</span>
+            }
+<span class="fc" id="L151">        }</span>
+<span class="fc" id="L152">        return true;</span>
+    }
+
+
+    private ArrayList&lt;Integer&gt; getActualVisitDays(List&lt;ServiceProvidedDTO&gt; first7DaysVisits) {
+<span class="fc" id="L157">        ArrayList&lt;Integer&gt; actualVisitDays = new ArrayList&lt;Integer&gt;();</span>
+<span class="fc bfc" id="L158" title="All 2 branches covered.">        for (ServiceProvidedDTO serviceProvided : first7DaysVisits) {</span>
+<span class="fc" id="L159">            actualVisitDays.add(serviceProvided.day());</span>
+<span class="fc" id="L160">        }</span>
+<span class="fc" id="L161">        return actualVisitDays;</span>
+    }
+
+    private ArrayList&lt;Integer&gt; getExpectedVisitDaysTillToday(List&lt;ServiceProvidedDTO&gt; expectedVisits, int numberOfDaysFromDeliveryDate) {
+<span class="fc" id="L165">        ArrayList&lt;Integer&gt; expectedVisitDaysTillToday = new ArrayList&lt;Integer&gt;();</span>
+<span class="fc bfc" id="L166" title="All 2 branches covered.">        for (ServiceProvidedDTO expectedVisit : expectedVisits) {</span>
+<span class="fc bfc" id="L167" title="All 2 branches covered.">            if (expectedVisit.day() &lt; numberOfDaysFromDeliveryDate) {</span>
+<span class="fc" id="L168">                expectedVisitDaysTillToday.add(expectedVisit.day());</span>
+            }
+<span class="fc" id="L170">        }</span>
+<span class="fc" id="L171">        return expectedVisitDaysTillToday;</span>
+    }
+
+    private void createViewDataBasedOnServicesProvided(List&lt;ServiceProvidedDTO&gt; first7DaysVisits, List&lt;PNCCircleDatum&gt; circleData) {
+<span class="fc bfc" id="L175" title="All 2 branches covered.">        for (ServiceProvidedDTO serviceProvided : first7DaysVisits) {</span>
+<span class="fc" id="L176">            circleData.add(new PNCCircleDatum(serviceProvided.day(), PNCVisitType.ACTUAL, true));</span>
+<span class="fc" id="L177">        }</span>
+<span class="fc" id="L178">    }</span>
+
+    private void createViewElementsBasedOnExpectedVisits(
+            PNCClient client, List&lt;ServiceProvidedDTO&gt; first7DaysVisits, List&lt;PNCCircleDatum&gt; circleData, List&lt;PNCStatusDatum&gt; statusData) {
+<span class="fc" id="L182">        int currentDay = DateUtil.dayDifference(client.deliveryDate(), DateUtil.today());</span>
+<span class="fc bfc" id="L183" title="All 2 branches covered.">        for (ServiceProvidedDTO expectedVisit : client.expectedVisits()) {</span>
+<span class="fc" id="L184">            LocalDate expectedVisitDate = DateUtil.getLocalDate(expectedVisit.date());</span>
+<span class="fc" id="L185">            int expectedVisitDay = DateUtil.dayDifference(client.deliveryDate(), expectedVisitDate);</span>
+
+<span class="fc bfc" id="L187" title="All 2 branches covered.">            if (expectedVisitDay &gt;= currentDay) {</span>
+<span class="fc" id="L188">                circleData.add(new PNCCircleDatum(expectedVisitDay, PNCVisitType.EXPECTED, false));</span>
+<span class="pc bpc" id="L189" title="1 of 2 branches missed.">            } else if (expectedVisitDay &lt; currentDay) {</span>
+<span class="fc bfc" id="L190" title="All 2 branches covered.">                if (!hasVisitHappenedOn(expectedVisitDay, first7DaysVisits)) {</span>
+                    //TODO : check if this boolean here is necessary
+<span class="fc" id="L192">                    PNCCircleDatum circleDatum = new PNCCircleDatum(expectedVisitDay, PNCVisitType.EXPECTED, true);</span>
+<span class="fc" id="L193">                    circleData.add(circleDatum);</span>
+<span class="fc" id="L194">                    statusData.add(new PNCStatusDatum(expectedVisitDay, PNCVisitStatus.MISSED));</span>
+<span class="fc" id="L195">                } else {</span>
+<span class="fc" id="L196">                    statusData.add(new PNCStatusDatum(expectedVisitDay, PNCVisitStatus.DONE));</span>
+                }
+            }
+<span class="fc" id="L199">        }</span>
+<span class="fc" id="L200">    }</span>
+
+    private boolean hasVisitHappenedOn(int expectedVisitDay, List&lt;ServiceProvidedDTO&gt; first7DaysVisits) {
+<span class="fc bfc" id="L203" title="All 2 branches covered.">        for (ServiceProvidedDTO first7DaysVisit : first7DaysVisits) {</span>
+<span class="fc bfc" id="L204" title="All 2 branches covered.">            if (first7DaysVisit.day() == expectedVisitDay)</span>
+<span class="fc" id="L205">                return true;</span>
+<span class="fc" id="L206">        }</span>
+<span class="fc" id="L207">        return false;</span>
+    }
+
+    private List&lt;ServiceProvidedDTO&gt; getFirst7DaysVisits(PNCClient client) {
+<span class="fc" id="L211">        int VISIT_END_OFFSET_DAY_COUNT = 7;</span>
+<span class="fc" id="L212">        LocalDate endDate = client.deliveryDate().plusDays(VISIT_END_OFFSET_DAY_COUNT);</span>
+<span class="fc" id="L213">        List&lt;ServiceProvidedDTO&gt; validServices = getValidServicesProvided(client, endDate);</span>
+<span class="fc" id="L214">        validServices = removeDuplicateServicesAndReturnList(validServices);</span>
+<span class="fc" id="L215">        Collections.sort(validServices, new DateComparator());//Ascending sort based on the date</span>
+<span class="fc" id="L216">        findAndSetTheVisitDayOfTheServicesWithRespectToDeliveryDate(validServices, client.deliveryDate());//Find the day offset from the delivery date for the visits</span>
+<span class="fc" id="L217">        return validServices;</span>
+    }
+
+    private List&lt;ServiceProvidedDTO&gt; getValidServicesProvided(PNCClient client, final LocalDate visitEndDate) {
+<span class="fc" id="L221">        List&lt;ServiceProvidedDTO&gt; validServicesProvided = new ArrayList&lt;ServiceProvidedDTO&gt;();</span>
+<span class="fc" id="L222">        List&lt;ServiceProvidedDTO&gt; servicesProvided = client.servicesProvided();</span>
+<span class="pc bpc" id="L223" title="1 of 4 branches missed.">        if (servicesProvided != null &amp;&amp; servicesProvided.size() &gt; 0) {</span>
+<span class="fc" id="L224">            Iterables.addAll(validServicesProvided, Iterables.filter(servicesProvided, new Predicate&lt;ServiceProvidedDTO&gt;() {</span>
+                @Override
+                public boolean apply(ServiceProvidedDTO serviceProvided) {
+<span class="fc" id="L227">                    LocalDate serviceProvidedDate = serviceProvided.localDate();</span>
+<span class="pc bpc" id="L228" title="1 of 6 branches missed.">                    return PNC_IDENTIFIER.equalsIgnoreCase(serviceProvided.name())</span>
+                            &amp;&amp; (serviceProvidedDate.isBefore(visitEndDate) || serviceProvidedDate.equals(visitEndDate));
+                }
+            }));
+        }
+<span class="fc" id="L233">        return validServicesProvided;</span>
+    }
+
+    private List&lt;ServiceProvidedDTO&gt; removeDuplicateServicesAndReturnList(List&lt;ServiceProvidedDTO&gt; serviceList) {
+<span class="pc bpc" id="L237" title="1 of 2 branches missed.">        if (serviceList != null) {</span>
+<span class="fc" id="L238">            Set&lt;ServiceProvidedDTO&gt; serviceSet = new HashSet&lt;ServiceProvidedDTO&gt;(serviceList);</span>
+            //To function this correctly the hash code of the object and equals method should override and should return the proper values
+<span class="fc" id="L240">            serviceList.clear();</span>
+<span class="fc" id="L241">            serviceList.addAll(serviceSet);</span>
+        }
+<span class="fc" id="L243">        return serviceList;</span>
+    }
+
+    private List&lt;ServiceProvidedDTO&gt; findAndSetTheVisitDayOfTheServicesWithRespectToDeliveryDate(List&lt;ServiceProvidedDTO&gt; services, LocalDate deliveryDate) {
+<span class="pc bpc" id="L247" title="1 of 2 branches missed.">        if (services != null) {</span>
+<span class="fc bfc" id="L248" title="All 2 branches covered.">            for (ServiceProvidedDTO service : services) {</span>
+<span class="fc" id="L249">                service.withDay(dayDifference(service.localDate(), deliveryDate));</span>
+<span class="fc" id="L250">            }</span>
+        }
+<span class="fc" id="L252">        return services;</span>
+    }
+
+<span class="fc" id="L255">    static class DateComparator implements Comparator&lt;ServiceProvidedDTO&gt; {</span>
+
+        @Override
+        public int compare(ServiceProvidedDTO serviceProvidedDTO1, ServiceProvidedDTO serviceProvidedDTO2) {
+<span class="fc" id="L259">            SimpleDateFormat simpleDateFormat = new SimpleDateFormat(&quot;dd/MM/yyyy&quot;);</span>
+            Date date1;
+            Date date2;
+            try {
+<span class="fc" id="L263">                date1 = simpleDateFormat.parse(serviceProvidedDTO1.date());</span>
+<span class="fc" id="L264">                date2 = simpleDateFormat.parse(serviceProvidedDTO2.date());</span>
+<span class="fc" id="L265">                return date1.compareTo(date2);</span>
+<span class="nc" id="L266">            } catch (ParseException e) {</span>
+                //TODO
+            }
+<span class="nc" id="L269">            return -1;</span>
+        }
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.1.201405082137</span></div></body></html>

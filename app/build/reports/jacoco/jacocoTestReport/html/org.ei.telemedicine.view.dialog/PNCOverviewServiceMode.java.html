@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>PNCOverviewServiceMode.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">org.ei.telemedicine.view.dialog</a> &gt; <span class="el_source">PNCOverviewServiceMode.java</span></div><h1>PNCOverviewServiceMode.java</h1><pre class="source lang-java linenums">package org.ei.telemedicine.view.dialog;
+
+import static android.view.View.VISIBLE;
+import static org.ei.telemedicine.AllConstants.FormNames.PNC_POSTPARTUM_FAMILY_PLANNING;
+import static org.ei.telemedicine.Context.getInstance;
+
+import org.ei.telemedicine.Context;
+import org.ei.telemedicine.R;
+import org.ei.telemedicine.provider.SmartRegisterClientsProvider;
+import org.ei.telemedicine.view.activity.SecuredNativeSmartRegisterActivity.ClientsHeaderProvider;
+import org.ei.telemedicine.view.contract.ANCSmartRegisterClient;
+import org.ei.telemedicine.view.contract.ChildClient;
+import org.ei.telemedicine.view.contract.ChildSmartRegisterClient;
+import org.ei.telemedicine.view.contract.FPSmartRegisterClient;
+import org.ei.telemedicine.view.contract.pnc.PNCSmartRegisterClient;
+import org.ei.telemedicine.view.viewHolder.NativeANCSmartRegisterViewHolder;
+import org.ei.telemedicine.view.viewHolder.NativeChildSmartRegisterViewHolder;
+import org.ei.telemedicine.view.viewHolder.NativeFPSmartRegisterViewHolder;
+import org.ei.telemedicine.view.viewHolder.NativePNCSmartRegisterViewHolder;
+import org.ei.telemedicine.view.viewHolder.OnClickFormLauncher;
+
+import android.graphics.drawable.Drawable;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.TextView;
+
+public class PNCOverviewServiceMode extends ServiceModeOption {
+
+    private Drawable iconPencilDrawable;
+
+    private final LayoutInflater inflater;
+
+    public PNCOverviewServiceMode(SmartRegisterClientsProvider provider) {
+<span class="nc" id="L35">        super(provider);</span>
+<span class="nc" id="L36">        this.inflater = LayoutInflater.from(Context.getInstance().applicationContext());</span>
+<span class="nc" id="L37">    }</span>
+
+    @Override
+    public String name() {
+<span class="nc" id="L41">        return getInstance().getStringResource(R.string.pnc_register_service_mode_overview);</span>
+    }
+
+    @Override
+    public ClientsHeaderProvider getHeaderProvider() {
+<span class="nc" id="L46">        return new ClientsHeaderProvider() {</span>
+            @Override
+            public int count() {
+<span class="nc" id="L49">                return 6;</span>
+            }
+
+            @Override
+            public int weightSum() {
+<span class="nc" id="L54">                return 100;</span>
+            }
+
+            @Override
+            public int[] weights() {
+<span class="nc" id="L59">                return new int[]{24, 8, 17, 15, 12, 24};</span>
+            }
+
+            @Override
+            public int[] headerTextResourceIds() {
+<span class="nc" id="L64">                return new int[]{</span>
+                        R.string.header_name, R.string.pnc_no, R.string.header_delivery_info,
+                        R.string.header_delivery_complications, R.string.header_pp_fp, R.string.header_child};
+            }
+        };
+    }
+
+    @Override
+    public void setupListView(PNCSmartRegisterClient client,
+                              NativePNCSmartRegisterViewHolder viewHolder,
+                              View.OnClickListener clientSectionClickListener) {
+<span class="nc" id="L75">        viewHolder.pncOverviewServiceModeView().setVisibility(VISIBLE);</span>
+<span class="nc" id="L76">        setupDeliveryInfo(client, viewHolder);</span>
+<span class="nc" id="L77">        setupComplicationsView(client, viewHolder);</span>
+<span class="nc" id="L78">        setPpFpMethodView(client, viewHolder, getInstance().getColorResource(R.color.text_black));</span>
+<span class="nc" id="L79">        setChildView(client, viewHolder);</span>
+<span class="nc" id="L80">        setupEditView(client, viewHolder, clientSectionClickListener);</span>
+<span class="nc" id="L81">    }</span>
+
+    private void setupDeliveryInfo(PNCSmartRegisterClient client, NativePNCSmartRegisterViewHolder viewHolder) {
+<span class="nc" id="L84">        viewHolder.deliveryInfoView().bindData(client);</span>
+<span class="nc" id="L85">    }</span>
+
+    private void setupComplicationsView(PNCSmartRegisterClient client, NativePNCSmartRegisterViewHolder viewHolder) {
+<span class="nc" id="L88">        viewHolder.txtComplicationsView().setText(client.deliveryComplications());</span>
+<span class="nc" id="L89">    }</span>
+
+    private void setPpFpMethodView(PNCSmartRegisterClient client, NativePNCSmartRegisterViewHolder viewHolder, int txtColorBlack) {
+<span class="nc" id="L92">        viewHolder.pncPpFpMethodView().bindData(client, txtColorBlack);</span>
+<span class="nc" id="L93">        viewHolder.txtPpFpView().setOnClickListener(launchForm(PNC_POSTPARTUM_FAMILY_PLANNING, client.entityId(), null));</span>
+<span class="nc" id="L94">        viewHolder.txtPpFpView().setTag(client);</span>
+<span class="nc" id="L95">    }</span>
+
+    private void setChildView(PNCSmartRegisterClient client, NativePNCSmartRegisterViewHolder viewHolder) {
+<span class="nc" id="L98">        viewHolder.childHolderLayout().removeAllViews();</span>
+<span class="nc bnc" id="L99" title="All 2 branches missed.">        for (ChildClient child : client.children()) {</span>
+<span class="nc" id="L100">            ViewGroup childViewGroup = (ViewGroup) inflater.inflate(R.layout.smart_register_pnc_child_layout, null);</span>
+<span class="nc" id="L101">            ((TextView) childViewGroup.findViewById(R.id.txt_child_gender)).setText(child.gender());</span>
+<span class="nc" id="L102">            ((TextView) childViewGroup.findViewById(R.id.txt_child_weight)).setText(String.format(org.ei.telemedicine.Context.getInstance().getStringResource(R.string.str_pnc_child_weight), child.weight()));</span>
+<span class="nc" id="L103">            viewHolder.childHolderLayout().addView(childViewGroup);</span>
+<span class="nc" id="L104">        }</span>
+<span class="nc" id="L105">    }</span>
+
+    private void setupEditView(PNCSmartRegisterClient client, NativePNCSmartRegisterViewHolder viewHolder, View.OnClickListener onClickListener) {
+<span class="nc bnc" id="L108" title="All 2 branches missed.">        if (iconPencilDrawable == null) {</span>
+<span class="nc" id="L109">            iconPencilDrawable = Context.getInstance().getDrawable(R.drawable.ic_pencil);</span>
+        }
+<span class="nc" id="L111">        viewHolder.editButton().setImageDrawable(iconPencilDrawable);</span>
+<span class="nc" id="L112">        viewHolder.editButton().setOnClickListener(onClickListener);</span>
+<span class="nc" id="L113">        viewHolder.editButton().setTag(client);</span>
+<span class="nc" id="L114">    }</span>
+
+    private OnClickFormLauncher launchForm(String formName, String entityId, String metaData) {
+<span class="nc" id="L117">        return provider().newFormLauncher(formName, entityId, metaData);</span>
+    }
+
+    @Override
+    public void setupListView(FPSmartRegisterClient client,
+                              NativeFPSmartRegisterViewHolder viewHolder,
+                              View.OnClickListener clientSectionClickListener) {
+
+<span class="nc" id="L125">    }</span>
+
+    @Override
+    public void setupListView(ChildSmartRegisterClient client,
+                              NativeChildSmartRegisterViewHolder viewHolder,
+                              View.OnClickListener clientSectionClickListener) {
+
+<span class="nc" id="L132">    }</span>
+
+    @Override
+    public void setupListView(ANCSmartRegisterClient client, NativeANCSmartRegisterViewHolder viewHolder, View.OnClickListener clientSectionClickListener) {
+
+<span class="nc" id="L137">    }</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.1.201405082137</span></div></body></html>

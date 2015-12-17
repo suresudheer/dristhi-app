@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>MotherService.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">org.ei.telemedicine.service</a> &gt; <span class="el_source">MotherService.java</span></div><h1>MotherService.java</h1><pre class="source lang-java linenums">package org.ei.telemedicine.service;
+
+import android.util.Log;
+
+import org.ei.telemedicine.AllConstants;
+import org.ei.telemedicine.domain.Mother;
+import org.ei.telemedicine.domain.ServiceProvided;
+import org.ei.telemedicine.domain.TimelineEvent;
+import org.ei.telemedicine.domain.form.FormSubmission;
+import org.ei.telemedicine.repository.AllBeneficiaries;
+import org.ei.telemedicine.repository.AllEligibleCouples;
+import org.ei.telemedicine.repository.AllTimelineEvents;
+import org.joda.time.LocalDate;
+
+import static org.ei.telemedicine.AllConstants.ANCVisitFields.*;
+import static org.ei.telemedicine.AllConstants.DeliveryPlanFields.*;
+import static org.ei.telemedicine.AllConstants.BOOLEAN_FALSE;
+import static org.ei.telemedicine.AllConstants.ANCCloseFields.CLOSE_REASON_FIELD_NAME;
+import static org.ei.telemedicine.AllConstants.ANCCloseFields.DEATH_OF_WOMAN_FIELD_VALUE;
+import static org.ei.telemedicine.AllConstants.ANCRegistrationFields.REGISTRATION_DATE;
+import static org.ei.telemedicine.AllConstants.CommonFormFields.SUBMISSION_DATE;
+import static org.ei.telemedicine.AllConstants.DeliveryOutcomeFields.DID_MOTHER_SURVIVE;
+import static org.ei.telemedicine.AllConstants.DeliveryOutcomeFields.DID_WOMAN_SURVIVE;
+import static org.ei.telemedicine.AllConstants.HbTestFields.HB_LEVEL;
+import static org.ei.telemedicine.AllConstants.HbTestFields.HB_TEST_DATE;
+import static org.ei.telemedicine.AllConstants.IFAFields.IFA_TABLETS_DATE;
+import static org.ei.telemedicine.AllConstants.IFAFields.NUMBER_OF_IFA_TABLETS_GIVEN;
+import static org.ei.telemedicine.AllConstants.PNCCloseFields.DEATH_OF_MOTHER_FIELD_VALUE;
+import static org.ei.telemedicine.AllConstants.TTFields.TT_DATE;
+import static org.ei.telemedicine.AllConstants.TTFields.TT_DOSE;
+import static org.ei.telemedicine.domain.ServiceProvided.forHBTest;
+import static org.ei.telemedicine.domain.ServiceProvided.forTTDose;
+import static org.ei.telemedicine.domain.TimelineEvent.*;
+import static org.ei.telemedicine.util.EasyMap.create;
+import static org.ei.telemedicine.util.IntegerUtil.tryParse;
+import static org.ei.telemedicine.util.Log.logWarn;
+
+public class MotherService {
+    public static final String MOTHER_ID = &quot;motherId&quot;;
+    private AllBeneficiaries allBeneficiaries;
+    private AllTimelineEvents allTimelines;
+    private AllEligibleCouples allEligibleCouples;
+    private ServiceProvidedService serviceProvidedService;
+<span class="fc" id="L44">    public static String submissionDate = &quot;submissionDate&quot;;</span>
+
+
+    public MotherService(AllBeneficiaries allBeneficiaries, AllEligibleCouples allEligibleCouples,
+<span class="fc" id="L48">                         AllTimelineEvents allTimelineEvents, ServiceProvidedService serviceProvidedService) {</span>
+<span class="fc" id="L49">        this.allBeneficiaries = allBeneficiaries;</span>
+<span class="fc" id="L50">        this.allTimelines = allTimelineEvents;</span>
+<span class="fc" id="L51">        this.allEligibleCouples = allEligibleCouples;</span>
+<span class="fc" id="L52">        this.serviceProvidedService = serviceProvidedService;</span>
+<span class="fc" id="L53">    }</span>
+
+    public void registerANC(FormSubmission submission) {
+<span class="fc" id="L56">        addTimelineEventsForMotherRegistration(submission);</span>
+<span class="fc" id="L57">    }</span>
+
+    public void registerOutOfAreaANC(FormSubmission submission) {
+<span class="fc" id="L60">        addTimelineEventsForMotherRegistration(submission);</span>
+<span class="fc" id="L61">    }</span>
+
+    public void ancVisit(FormSubmission submission) {
+<span class="fc" id="L64">        String risks = submission.getFieldValue(&quot;riskObservedDuringANC&quot;);</span>
+<span class="fc" id="L65">        String riskObserved = &quot;&quot;;</span>
+<span class="pc bpc" id="L66" title="3 of 4 branches missed.">        if (risks != null &amp;&amp; risks.trim().length() != 0) {</span>
+<span class="nc" id="L67">            riskObserved = risks.trim().replace(&quot; &quot;, &quot;,&quot;).replace(&quot;_&quot;, &quot; &quot;);</span>
+        }
+<span class="fc" id="L69">        allTimelines.add(</span>
+                forANCCareProvided(
+                        submission.entityId(),
+                        submission.getFieldValue(ANC_VISIT_NUMBER),
+                        submission.getFieldValue(ANC_VISIT_DATE),
+                        create(BP_SYSTOLIC, submission.getFieldValue(BP_SYSTOLIC))
+                                .put(BP_DIASTOLIC, submission.getFieldValue(BP_DIASTOLIC))
+                                .put(TEMPERATURE, submission.getFieldValue(TEMPERATURE))
+                                .put(HB_LEVEL, submission.getFieldValue(HB_LEVEL))
+                                .put(BLOODGLUCOSEDATA, submission.getFieldValue(BLOODGLUCOSEDATA))
+                                .put(ISCONSULTDOCTOR, submission.getFieldValue(ISCONSULTDOCTOR))
+                                .put(FETALDATA, submission.getFieldValue(FETALDATA))
+                                .put(POC_INFO, submission.getFieldValue(POC_INFO))
+                                .put(ANM_POC, submission.getFieldValue(ANM_POC))
+                                .put(RISKS, riskObserved)
+                                .map()));
+
+<span class="pc bpc" id="L86" title="3 of 4 branches missed.">        if (submission.getFieldValue(POC_INFO) != null &amp;&amp; !submission.getFieldValue(POC_INFO).equals(&quot;&quot;)) {</span>
+<span class="nc" id="L87">            Log.e(&quot;Submission Form for poc&quot;, &quot;POc fot visit-------------------&quot; + submission.getFieldValue(POC_INFO));</span>
+<span class="nc" id="L88">            TimelineEvent ancVisitPoc = forPOCGiven(submission.entityId(),</span>
+                    submission.getFieldValue(ANC_VISIT_DATE),
+                    &quot;ANCVISIT&quot;, &quot;Plan of care for ANC Visit&quot; + &quot;-&quot; + submission.getFieldValue(ANC_VISIT_NUMBER), create(POC_INFO, submission.getFieldValue(POC_INFO)).map());
+<span class="nc bnc" id="L91" title="All 2 branches missed.">            if (ancVisitPoc != null)</span>
+<span class="nc" id="L92">                allTimelines.add(ancVisitPoc);</span>
+        }
+
+<span class="fc" id="L95">        serviceProvidedService.add(</span>
+                ServiceProvided.forANCCareProvided(
+                        submission.entityId(),
+                        submission.getFieldValue(ANC_VISIT_NUMBER),
+                        submission.getFieldValue(ANC_VISIT_DATE),
+                        submission.getFieldValue(BP_SYSTOLIC),
+                        submission.getFieldValue(BP_DIASTOLIC),
+                        submission.getFieldValue(WEIGHT)));
+<span class="fc" id="L103">    }</span>
+
+    public void close(FormSubmission submission) {
+<span class="fc" id="L106">        close(submission.entityId(), submission.getFieldValue(CLOSE_REASON_FIELD_NAME));</span>
+<span class="fc" id="L107">    }</span>
+
+
+    public void close(String entityId, String reason) {
+<span class="fc" id="L111">        Mother mother = allBeneficiaries.findMotherWithOpenStatus(entityId);</span>
+<span class="fc bfc" id="L112" title="All 2 branches covered.">        if (mother == null) {</span>
+<span class="fc" id="L113">            logWarn(&quot;Tried to close non-existent mother. Entity ID: &quot; + entityId);</span>
+<span class="fc" id="L114">            return;</span>
+        }
+
+<span class="fc" id="L117">        allBeneficiaries.closeMother(entityId);</span>
+<span class="fc bfc" id="L118" title="All 8 branches covered.">        if (DEATH_OF_WOMAN_FIELD_VALUE.equalsIgnoreCase(reason)</span>
+                || DEATH_OF_MOTHER_FIELD_VALUE.equalsIgnoreCase(reason)
+                || AllConstants.ANCCloseFields.PERMANENT_RELOCATION_FIELD_VALUE.equalsIgnoreCase(reason)
+                || AllConstants.PNCCloseFields.PERMANENT_RELOCATION_FIELD_VALUE.equalsIgnoreCase(reason)) {
+<span class="fc" id="L122">            allEligibleCouples.close(mother.ecCaseId());</span>
+        }
+<span class="fc" id="L124">    }</span>
+
+    public void ttProvided(FormSubmission submission) {
+<span class="fc" id="L127">        allTimelines.add(forTTShotProvided(submission.entityId(), submission.getFieldValue(TT_DOSE), submission.getFieldValue(TT_DATE)));</span>
+<span class="fc" id="L128">        serviceProvidedService.add(forTTDose(submission.entityId(), submission.getFieldValue(TT_DOSE), submission.getFieldValue(TT_DATE)));</span>
+<span class="fc" id="L129">    }</span>
+
+    public void ifaTabletsGiven(FormSubmission submission) {
+<span class="fc" id="L132">        String numberOfIFATabletsGiven = submission.getFieldValue(NUMBER_OF_IFA_TABLETS_GIVEN);</span>
+<span class="fc bfc" id="L133" title="All 2 branches covered.">        if (tryParse(numberOfIFATabletsGiven, 0) &gt; 0) {</span>
+<span class="fc" id="L134">            allTimelines.add(forIFATabletsGiven(submission.entityId(), numberOfIFATabletsGiven, submission.getFieldValue(IFA_TABLETS_DATE)));</span>
+<span class="fc" id="L135">            serviceProvidedService.add(ServiceProvided.forIFATabletsGiven(submission.entityId(), numberOfIFATabletsGiven, submission.getFieldValue(IFA_TABLETS_DATE)));</span>
+        }
+<span class="fc" id="L137">    }</span>
+
+    private void addTimelineEventsForMotherRegistration(FormSubmission submission) {
+<span class="fc" id="L140">        allTimelines.add(forStartOfPregnancy(submission.getFieldValue(MOTHER_ID), submission.getFieldValue(REGISTRATION_DATE), submission.getFieldValue(REFERENCE_DATE)));</span>
+<span class="fc" id="L141">        allTimelines.add(forStartOfPregnancyForEC(submission.entityId(), submission.getFieldValue(THAYI_CARD_NUMBER), submission.getFieldValue(REGISTRATION_DATE), submission.getFieldValue(REFERENCE_DATE)));</span>
+<span class="fc" id="L142">    }</span>
+
+    public void hbTest(FormSubmission submission) {
+<span class="fc" id="L145">        serviceProvidedService.add(</span>
+                forHBTest(submission.entityId(),
+                        submission.getFieldValue(HB_LEVEL),
+                        submission.getFieldValue(HB_TEST_DATE)));
+<span class="fc" id="L149">    }</span>
+
+    public void deliveryOutcome(FormSubmission submission) {
+<span class="fc" id="L152">        Mother mother = allBeneficiaries.findMotherWithOpenStatus(submission.entityId());</span>
+<span class="pc bpc" id="L153" title="1 of 2 branches missed.">        if (mother == null) {</span>
+<span class="nc" id="L154">            logWarn(&quot;Failed to handle delivery outcome for mother. Entity ID: &quot; + submission.entityId());</span>
+<span class="nc" id="L155">            return;</span>
+        }
+<span class="fc bfc" id="L157" title="All 4 branches covered.">        if (BOOLEAN_FALSE.equals(submission.getFieldValue(DID_WOMAN_SURVIVE)) || BOOLEAN_FALSE.equals(submission.getFieldValue(DID_MOTHER_SURVIVE))) {</span>
+<span class="fc" id="L158">            allBeneficiaries.closeMother(submission.entityId());</span>
+<span class="fc" id="L159">            allEligibleCouples.close(mother.ecCaseId());</span>
+<span class="fc" id="L160">            return;</span>
+        }
+
+<span class="fc" id="L163">        allBeneficiaries.switchMotherToPNC(submission.entityId());</span>
+<span class="fc" id="L164">    }</span>
+
+    public void pncVisitHappened(FormSubmission submission) {
+<span class="fc" id="L167">        allTimelines.add(</span>
+                forMotherPNCVisit(
+                        submission.entityId(),
+                        submission.getFieldValue(AllConstants.PNCVisitFields.PNC_VISIT_DAY),
+                        submission.getFieldValue(AllConstants.PNCVisitFields.PNC_VISIT_DATE),
+                        submission.getFieldValue(AllConstants.PNCVisitFields.BP_SYSTOLIC),
+                        submission.getFieldValue(AllConstants.PNCVisitFields.BP_DIASTOLIC),
+                        submission.getFieldValue(AllConstants.PNCVisitFields.TEMPERATURE),
+                        submission.getFieldValue(AllConstants.PNCVisitFields.HB_LEVEL),
+                        submission.getFieldValue(AllConstants.PNCVisitFields.BLOODGLUCOSEDATA), submission.getFieldValue(AllConstants.PNCVisitFields.ISCONSULTDOCTOR), submission.getFieldValue(AllConstants.ANCVisitFields.ANM_POC)));
+<span class="fc" id="L177">        Log.e(&quot;Submission Form for poc&quot;, &quot;POc fot visit&quot; + submission.instance() + &quot;&quot;);</span>
+<span class="pc bpc" id="L178" title="3 of 4 branches missed.">        if (submission.getFieldValue(POC_INFO) != null &amp;&amp; !submission.getFieldValue(POC_INFO).equals(&quot;&quot;)) {</span>
+<span class="nc" id="L179">            TimelineEvent pncVisitPoc = forPOCGiven(</span>
+                    submission.entityId(),
+                    submission.getFieldValue(AllConstants.PNCVisitFields.PNC_VISIT_DATE),
+                    &quot;PNCVISIT&quot;, &quot;Plan of care for PNC Visit&quot; + &quot;-&quot; + submission.getFieldValue(AllConstants.PNCVisitFields.PNC_VISIT_DAY), create(POC_INFO, submission.getFieldValue(POC_INFO)).map());
+<span class="nc bnc" id="L183" title="All 2 branches missed.">            if (pncVisitPoc != null)</span>
+<span class="nc" id="L184">                allTimelines.add(pncVisitPoc);</span>
+        }
+<span class="fc" id="L186">        serviceProvidedService.add(</span>
+                ServiceProvided.forMotherPNCVisit(
+                        submission.entityId(),
+                        submission.getFieldValue(AllConstants.PNCVisitFields.PNC_VISIT_DAY),
+                        submission.getFieldValue(AllConstants.PNCVisitFields.PNC_VISIT_DATE)));
+
+<span class="fc" id="L192">        String numberOfIFATabletsGiven = submission.getFieldValue(AllConstants.PNCVisitFields.NUMBER_OF_IFA_TABLETS_GIVEN);</span>
+<span class="fc bfc" id="L193" title="All 2 branches covered.">        if (tryParse(numberOfIFATabletsGiven, 0) &gt; 0) {</span>
+<span class="fc" id="L194">            allTimelines.add(forIFATabletsGiven(submission.entityId(), numberOfIFATabletsGiven, submission.getFieldValue(SUBMISSION_DATE)));</span>
+        }
+<span class="fc" id="L196">    }</span>
+
+    public void deliveryPlan(FormSubmission submission) {
+<span class="fc" id="L199">        allTimelines.add(</span>
+                forDeliveryPlan(
+                        submission.entityId(),
+                        submission.getFieldValue(DELIVERY_FACILITY_NAME),
+                        submission.getFieldValue(TRANSPORTATION_PLAN),
+                        submission.getFieldValue(BIRTH_COMPANION),
+                        submission.getFieldValue(ASHA_PHONE_NUMBER),
+                        submission.getFieldValue(PHONE_NUMBER),
+                        submission.getFieldValue(REVIEWED_HRP_STATUS),
+                        submission.getFieldValue(SUBMISSION_DATE)));
+
+<span class="fc" id="L210">        serviceProvidedService.add(</span>
+                ServiceProvided.forDeliveryPlan(
+                        submission.entityId(),
+                        submission.getFieldValue(DELIVERY_FACILITY_NAME),
+                        submission.getFieldValue(TRANSPORTATION_PLAN),
+                        submission.getFieldValue(BIRTH_COMPANION),
+                        submission.getFieldValue(ASHA_PHONE_NUMBER),
+                        submission.getFieldValue(PHONE_NUMBER),
+                        submission.getFieldValue(REVIEWED_HRP_STATUS),
+                        submission.getFieldValue(SUBMISSION_DATE)
+                ));
+<span class="fc" id="L221">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.1.201405082137</span></div></body></html>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="org.ei.telemedicine.test.view.contract.ECChildClientTest" tests="11" skipped="0" failures="0" errors="0" timestamp="2015-12-17T05:22:15" hostname="DIPL-PC0206" time="0.021">
+  <properties/>
+  <testcase name="testShouldReturnZeroDaysForNullCurrentDate" classname="org.ei.telemedicine.test.view.contract.ECChildClientTest" time="0.002"/>
+  <testcase name="testShouldReturn1YearsForCurrentDateMinus1000Days" classname="org.ei.telemedicine.test.view.contract.ECChildClientTest" time="0.014"/>
+  <testcase name="testShouldReturn1YearsForCurrentDateMinus720Days" classname="org.ei.telemedicine.test.view.contract.ECChildClientTest" time="0.001"/>
+  <testcase name="testShouldReturn3MonthsForCurrentDateMinus119Days" classname="org.ei.telemedicine.test.view.contract.ECChildClientTest" time="0.0"/>
+  <testcase name="testShouldReturnZeroDaysForEmptyCurrentDate" classname="org.ei.telemedicine.test.view.contract.ECChildClientTest" time="0.0"/>
+  <testcase name="testShouldReturn16WeeksForCurrentDateMinus118Days" classname="org.ei.telemedicine.test.view.contract.ECChildClientTest" time="0.0"/>
+  <testcase name="testShouldReturn27DaysForCurrentDateMinus27Days" classname="org.ei.telemedicine.test.view.contract.ECChildClientTest" time="0.0"/>
+  <testcase name="testShouldReturnZeroDaysForCurrentDate" classname="org.ei.telemedicine.test.view.contract.ECChildClientTest" time="0.001"/>
+  <testcase name="testShouldReturn5DaysForCurrentDateMinus5Days" classname="org.ei.telemedicine.test.view.contract.ECChildClientTest" time="0.0"/>
+  <testcase name="testShouldReturn4WeeksForCurrentDateMinus28Days" classname="org.ei.telemedicine.test.view.contract.ECChildClientTest" time="0.001"/>
+  <testcase name="testShouldReturn23MonthsForCurrentDateMinus719Days" classname="org.ei.telemedicine.test.view.contract.ECChildClientTest" time="0.0"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

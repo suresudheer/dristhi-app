@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>SmartRegisterDialogFragment.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">org.ei.telemedicine.view.dialog</a> &gt; <span class="el_source">SmartRegisterDialogFragment.java</span></div><h1>SmartRegisterDialogFragment.java</h1><pre class="source lang-java linenums">package org.ei.telemedicine.view.dialog;
+
+import org.ei.telemedicine.R;
+import org.ei.telemedicine.view.activity.SecuredNativeSmartRegisterActivity;
+
+import android.app.DialogFragment;
+import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
+import android.widget.TextView;
+
+public class SmartRegisterDialogFragment extends DialogFragment {
+    private final SecuredNativeSmartRegisterActivity parentActivity;
+    private final DialogOption[] options;
+    private final DialogOptionModel dialogOptionModel;
+    private final Object tag;
+
+    private SmartRegisterDialogFragment(SecuredNativeSmartRegisterActivity activity,
+                                        DialogOptionModel dialogOptionModel,
+<span class="nc" id="L24">                                        Object tag) {</span>
+<span class="nc" id="L25">        this.parentActivity = activity;</span>
+<span class="nc" id="L26">        this.options = dialogOptionModel.getDialogOptions();</span>
+<span class="nc" id="L27">        this.dialogOptionModel = dialogOptionModel;</span>
+<span class="nc" id="L28">        this.tag = tag;</span>
+<span class="nc" id="L29">    }</span>
+
+    public static SmartRegisterDialogFragment newInstance(
+            SecuredNativeSmartRegisterActivity activity,
+            DialogOptionModel dialogOptionModel, Object tag) {
+<span class="nc" id="L34">        return new SmartRegisterDialogFragment(activity, dialogOptionModel, tag);</span>
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+<span class="nc" id="L39">        super.onCreate(savedInstanceState);</span>
+<span class="nc" id="L40">        setStyle(DialogFragment.STYLE_NO_TITLE, android.R.style.Theme_Holo_Light_Dialog);</span>
+<span class="nc" id="L41">    }</span>
+
+    @Override
+    public View onCreateView(final LayoutInflater inflater, final ViewGroup container,
+                             Bundle savedInstanceState) {
+<span class="nc" id="L46">        ViewGroup dialogView = (ViewGroup) inflater.inflate(R.layout.smart_register_dialog_view, container, false);</span>
+<span class="nc" id="L47">        ListView listView = (ListView) dialogView.findViewById(R.id.dialog_list);</span>
+<span class="nc" id="L48">        listView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);</span>
+
+<span class="nc" id="L50">        final ArrayAdapter&lt;DialogOption&gt; adapter = new ArrayAdapter&lt;DialogOption&gt;(</span>
+<span class="nc" id="L51">                parentActivity, R.layout.smart_register_dialog_list_item, options) {</span>
+            @Override
+            public View getView(int position, View convertView, ViewGroup parent) {
+                ViewGroup itemView;
+<span class="nc bnc" id="L55" title="All 2 branches missed.">                if (convertView == null) {</span>
+<span class="nc" id="L56">                    itemView = (ViewGroup) inflater.inflate(R.layout.smart_register_dialog_list_item, parent, false);</span>
+                } else {
+<span class="nc" id="L58">                    itemView = (ViewGroup) convertView;</span>
+                }
+
+<span class="nc" id="L61">                ((TextView) itemView.findViewById(R.id.dialog_list_option))</span>
+                        .setText(getItem(position).name());
+<span class="nc" id="L63">                return itemView;</span>
+            }
+        };
+
+<span class="nc" id="L67">        listView.setAdapter(adapter);</span>
+<span class="nc" id="L68">        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {</span>
+            @Override
+            public void onItemClick(AdapterView&lt;?&gt; adapterView, View view, int i, long l) {
+<span class="nc" id="L71">                dismiss();</span>
+<span class="nc" id="L72">                dialogOptionModel.onDialogOptionSelection(options[i], tag);</span>
+<span class="nc" id="L73">            }</span>
+        });
+
+<span class="nc" id="L76">        return dialogView;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.1.201405082137</span></div></body></html>

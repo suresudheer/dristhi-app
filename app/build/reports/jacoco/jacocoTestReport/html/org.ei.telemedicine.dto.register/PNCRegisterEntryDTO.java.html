@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>PNCRegisterEntryDTO.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">org.ei.telemedicine.dto.register</a> &gt; <span class="el_source">PNCRegisterEntryDTO.java</span></div><h1>PNCRegisterEntryDTO.java</h1><pre class="source lang-java linenums">package org.ei.telemedicine.dto.register;
+
+import java.util.List;
+import java.util.Map;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.codehaus.jackson.annotate.JsonProperty;
+
+<span class="nc" id="L10">public class PNCRegisterEntryDTO</span>
+{
+  @JsonProperty
+  private String address;
+  @JsonProperty
+  private List&lt;Map&lt;String, String&gt;&gt; childrenDetails;
+  @JsonProperty
+  private String dateOfDelivery;
+  @JsonProperty
+  private String deliveryComplications;
+  @JsonProperty
+  private String dischargeDate;
+  @JsonProperty
+  private String fpMethodDate;
+  @JsonProperty
+  private String fpMethodName;
+  @JsonProperty
+  private String husbandName;
+  @JsonProperty
+  private String placeOfDelivery;
+  @JsonProperty
+  private List&lt;PNCVisitDTO&gt; pncVisits;
+  @JsonProperty
+  private String registrationDate;
+  @JsonProperty
+  private String thayiCardNumber;
+  @JsonProperty
+  private String typeOfDelivery;
+  @JsonProperty
+  private String wifeDOB;
+  @JsonProperty
+  private String wifeName;
+  
+  public boolean equals(Object paramObject)
+  {
+<span class="nc" id="L45">    return EqualsBuilder.reflectionEquals(this, paramObject, new String[0]);</span>
+  }
+  
+  public int hashCode()
+  {
+<span class="nc" id="L50">    return HashCodeBuilder.reflectionHashCode(this, new String[0]);</span>
+  }
+  
+  public String toString()
+  {
+<span class="nc" id="L55">    return ToStringBuilder.reflectionToString(this);</span>
+  }
+  
+  public PNCRegisterEntryDTO withAddress(String paramString)
+  {
+<span class="nc" id="L60">    this.address = paramString;</span>
+<span class="nc" id="L61">    return this;</span>
+  }
+  
+  public PNCRegisterEntryDTO withChildrenDetails(List&lt;Map&lt;String, String&gt;&gt; paramList)
+  {
+<span class="nc" id="L66">    this.childrenDetails = paramList;</span>
+<span class="nc" id="L67">    return this;</span>
+  }
+  
+  public PNCRegisterEntryDTO withDateOfDelivery(String paramString)
+  {
+<span class="nc" id="L72">    this.dateOfDelivery = paramString;</span>
+<span class="nc" id="L73">    return this;</span>
+  }
+  
+  public PNCRegisterEntryDTO withDeliveryComplications(String paramString)
+  {
+<span class="nc" id="L78">    this.deliveryComplications = paramString;</span>
+<span class="nc" id="L79">    return this;</span>
+  }
+  
+  public PNCRegisterEntryDTO withDischargeDate(String paramString)
+  {
+<span class="nc" id="L84">    this.dischargeDate = paramString;</span>
+<span class="nc" id="L85">    return this;</span>
+  }
+  
+  public PNCRegisterEntryDTO withFPMethodDate(String paramString)
+  {
+<span class="nc" id="L90">    this.fpMethodDate = paramString;</span>
+<span class="nc" id="L91">    return this;</span>
+  }
+  
+  public PNCRegisterEntryDTO withFPMethodName(String paramString)
+  {
+<span class="nc" id="L96">    this.fpMethodName = paramString;</span>
+<span class="nc" id="L97">    return this;</span>
+  }
+  
+  public PNCRegisterEntryDTO withHusbandName(String paramString)
+  {
+<span class="nc" id="L102">    this.husbandName = paramString;</span>
+<span class="nc" id="L103">    return this;</span>
+  }
+  
+  public PNCRegisterEntryDTO withPNCVisits(List&lt;PNCVisitDTO&gt; paramList)
+  {
+<span class="nc" id="L108">    this.pncVisits = paramList;</span>
+<span class="nc" id="L109">    return this;</span>
+  }
+  
+  public PNCRegisterEntryDTO withPlaceOfDelivery(String paramString)
+  {
+<span class="nc" id="L114">    this.placeOfDelivery = paramString;</span>
+<span class="nc" id="L115">    return this;</span>
+  }
+  
+  public PNCRegisterEntryDTO withRegistrationDate(String paramString)
+  {
+<span class="nc" id="L120">    this.registrationDate = paramString;</span>
+<span class="nc" id="L121">    return this;</span>
+  }
+  
+  public PNCRegisterEntryDTO withThayiCardNumber(String paramString)
+  {
+<span class="nc" id="L126">    this.thayiCardNumber = paramString;</span>
+<span class="nc" id="L127">    return this;</span>
+  }
+  
+  public PNCRegisterEntryDTO withTypeOfDelivery(String paramString)
+  {
+<span class="nc" id="L132">    this.typeOfDelivery = paramString;</span>
+<span class="nc" id="L133">    return this;</span>
+  }
+  
+  public PNCRegisterEntryDTO withWifeDOB(String paramString)
+  {
+<span class="nc" id="L138">    this.wifeDOB = paramString;</span>
+<span class="nc" id="L139">    return this;</span>
+  }
+  
+  public PNCRegisterEntryDTO withWifeName(String paramString)
+  {
+<span class="nc" id="L144">    this.wifeName = paramString;</span>
+<span class="nc" id="L145">    return this;</span>
+  }
+}
+
+
+
+/* Location:           C:\Users\appaji.r\Downloads\classes-dex2.jar
+
+ * Qualified Name:     org.ei.drishti.dto.register.PNCRegisterEntryDTO
+
+ * JD-Core Version:    0.7.0.1
+
+ */
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.1.201405082137</span></div></body></html>

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="org.ei.telemedicine.test.domain.FPMethodTest" tests="3" skipped="0" failures="0" errors="0" timestamp="2015-12-17T05:22:15" hostname="DIPL-PC0206" time="0.021">
+  <properties/>
+  <testcase name="shouldParseStringToFPMethod" classname="org.ei.telemedicine.test.domain.FPMethodTest" time="0.019"/>
+  <testcase name="shouldParseBlankStringAsDefaultFPMethod" classname="org.ei.telemedicine.test.domain.FPMethodTest" time="0.0"/>
+  <testcase name="shouldParseInvalidStringAsDefaultFPMethod" classname="org.ei.telemedicine.test.domain.FPMethodTest" time="0.001"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

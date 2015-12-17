@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="org.ei.telemedicine.test.service.FormSubmissionServiceTest" tests="2" skipped="0" failures="0" errors="0" timestamp="2015-12-17T05:22:14" hostname="DIPL-PC0206" time="0.121">
+  <properties/>
+  <testcase name="testShouldDelegateProcessingToZiggyServiceAndMarkAsSynced" classname="org.ei.telemedicine.test.service.FormSubmissionServiceTest" time="0.112"/>
+  <testcase name="testShouldNotDelegateProcessingToZiggyServiceForProcessedSubmissions" classname="org.ei.telemedicine.test.service.FormSubmissionServiceTest" time="0.007"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

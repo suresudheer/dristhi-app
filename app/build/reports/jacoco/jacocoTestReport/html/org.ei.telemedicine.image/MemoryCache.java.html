@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>MemoryCache.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">org.ei.telemedicine.image</a> &gt; <span class="el_source">MemoryCache.java</span></div><h1>MemoryCache.java</h1><pre class="source lang-java linenums">package org.ei.telemedicine.image;
+
+import java.lang.ref.SoftReference;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import android.graphics.Bitmap;
+ 
+<span class="nc" id="L9">public class MemoryCache {</span>
+<span class="nc" id="L10">    private Map&lt;String, SoftReference&lt;Bitmap&gt;&gt; cache=Collections.synchronizedMap(new HashMap&lt;String, SoftReference&lt;Bitmap&gt;&gt;());</span>
+ 
+    public Bitmap get(String id){
+<span class="nc bnc" id="L13" title="All 2 branches missed.">        if(!cache.containsKey(id))</span>
+<span class="nc" id="L14">            return null;</span>
+<span class="nc" id="L15">        SoftReference&lt;Bitmap&gt; ref=cache.get(id);</span>
+<span class="nc" id="L16">        return ref.get();</span>
+    }
+ 
+    public void put(String id, Bitmap bitmap){
+<span class="nc" id="L20">        cache.put(id, new SoftReference&lt;Bitmap&gt;(bitmap));</span>
+<span class="nc" id="L21">    }</span>
+ 
+    public void clear() {
+<span class="nc" id="L24">        cache.clear();</span>
+<span class="nc" id="L25">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.1.201405082137</span></div></body></html>

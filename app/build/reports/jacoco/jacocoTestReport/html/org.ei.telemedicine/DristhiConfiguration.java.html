@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>DristhiConfiguration.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">org.ei.telemedicine</a> &gt; <span class="el_source">DristhiConfiguration.java</span></div><h1>DristhiConfiguration.java</h1><pre class="source lang-java linenums">package org.ei.telemedicine;
+
+import android.content.*;
+import android.content.res.AssetManager;
+import android.preference.PreferenceManager;
+
+import org.ei.telemedicine.util.IntegerUtil;
+import org.ei.telemedicine.view.activity.LoginActivity;
+
+import java.io.IOException;
+import java.util.Properties;
+
+public class DristhiConfiguration {
+
+    private static final String DRISHTI_BASE_URL = &quot;DRISHTI_BASE_URL&quot;;
+    private static final String DRISHTI_DJANGO_BASE_URL = &quot;DRISHTI_DJANGO_BASE_URL&quot;;
+    private static final String HOST = &quot;HOST&quot;;
+    private static final String PORT = &quot;PORT&quot;;
+    private static final String SHOULD_VERIFY_CERTIFICATE = &quot;SHOULD_VERIFY_CERTIFICATE&quot;;
+    private static final String SYNC_DOWNLOAD_BATCH_SIZE = &quot;SYNC_DOWNLOAD_BATCH_SIZE&quot;;
+    private static final String DRISHTI_AUDIO_URL = &quot;DRISHTI_AUDIO_URL&quot;;
+
+<span class="nc" id="L23">    private Properties properties = new Properties();</span>
+    SharedPreferences preferences;
+
+<span class="nc" id="L26">    public DristhiConfiguration(AssetManager assetManager, android.content.Context context) {</span>
+        try {
+<span class="nc" id="L28">            properties.load(assetManager.open(&quot;app.properties&quot;));</span>
+<span class="nc" id="L29">            preferences = PreferenceManager.getDefaultSharedPreferences(context);</span>
+<span class="nc" id="L30">        } catch (IOException e) {</span>
+<span class="nc" id="L31">            e.printStackTrace();</span>
+<span class="nc" id="L32">        }</span>
+<span class="nc" id="L33">    }</span>
+
+
+    private String get(String key) {
+<span class="nc" id="L37">        return properties.getProperty(key);</span>
+    }
+
+    public String host() {
+<span class="nc" id="L41">        return this.get(HOST);</span>
+    }
+
+    public int port() {
+<span class="nc" id="L45">        return Integer.parseInt(this.get(PORT));</span>
+    }
+
+    public boolean shouldVerifyCertificate() {
+<span class="nc" id="L49">        return Boolean.parseBoolean(this.get(SHOULD_VERIFY_CERTIFICATE));</span>
+    }
+
+    public String dristhiBaseURL() {
+<span class="nc" id="L53">        return this.get(DRISHTI_BASE_URL);</span>
+    }
+
+    public String drishtiAudioURL() {
+<span class="nc" id="L57">        return this.get(DRISHTI_AUDIO_URL);</span>
+    }
+
+    public String dristhiDjangoBaseURL() {
+<span class="nc" id="L61">        return this.get(DRISHTI_DJANGO_BASE_URL);</span>
+    }
+
+    public int syncDownloadBatchSize() {
+<span class="nc" id="L65">        return IntegerUtil.tryParse(this.get(SYNC_DOWNLOAD_BATCH_SIZE), 100);</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.1.201405082137</span></div></body></html>

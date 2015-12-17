@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>ANCSmartRegisterClient.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">org.ei.telemedicine.view.contract</a> &gt; <span class="el_source">ANCSmartRegisterClient.java</span></div><h1>ANCSmartRegisterClient.java</h1><pre class="source lang-java linenums">package org.ei.telemedicine.view.contract;
+
+
+import org.ei.telemedicine.domain.ANCServiceType;
+import org.joda.time.LocalDateTime;
+
+import java.util.Comparator;
+import java.util.List;
+
+public interface ANCSmartRegisterClient extends SmartRegisterClient {
+
+<span class="nc" id="L12">    Comparator&lt;SmartRegisterClient&gt; EDD_COMPARATOR = new Comparator&lt;SmartRegisterClient&gt;() {</span>
+        @Override
+        public int compare(SmartRegisterClient client, SmartRegisterClient anotherClient) {
+<span class="nc" id="L15">            return ((ANCSmartRegisterClient) client).edd()</span>
+                    .compareTo(((ANCSmartRegisterClient) anotherClient).edd());
+        }
+    };
+
+    public String eddForDisplay();
+
+    LocalDateTime edd();
+
+    public String pastDueInDays();
+
+    public String weeksAfterLMP();
+
+    public AlertDTO getAlert(ANCServiceType type);
+
+    public boolean isVisitsDone();
+
+    public boolean isPocPending();
+
+    public boolean isTTDone();
+
+    public boolean isIFADone();
+
+    public String visitDoneDateWithVisitName();
+
+    public String ttDoneDate();
+
+    public String ifaDoneDate();
+
+    public String thayiCardNumber();
+
+    public String ancNumber();
+
+    public String lmp();
+
+    public String riskFactors();
+
+    public ServiceProvidedDTO serviceProvidedToACategory(String category);
+
+    public String getHyperTension(ServiceProvidedDTO ancServiceProvided);
+
+    public ServiceProvidedDTO getServiceProvidedDTO(String serviceName);
+
+    public List&lt;ServiceProvidedDTO&gt; allServicesProvidedForAServiceType(String serviceType);
+
+    public String ashaPhoneNumber();
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.1.201405082137</span></div></body></html>

@@ -1,0 +1,302 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>ANCRegisterEntryDTO.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">org.ei.telemedicine.dto.register</a> &gt; <span class="el_source">ANCRegisterEntryDTO.java</span></div><h1>ANCRegisterEntryDTO.java</h1><pre class="source lang-java linenums">package org.ei.telemedicine.dto.register;
+
+import java.util.List;
+import java.util.Map;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.codehaus.jackson.annotate.JsonProperty;
+
+<span class="nc" id="L10">public class ANCRegisterEntryDTO</span>
+{
+  @JsonProperty
+  private String aadharCardNumber;
+  @JsonProperty
+  private String address;
+  @JsonProperty
+  private List&lt;Map&lt;String, String&gt;&gt; ancInvestigations;
+  @JsonProperty
+  private String ancNumber;
+  @JsonProperty
+  private List&lt;Map&lt;String, String&gt;&gt; ancVisits;
+  @JsonProperty
+  private String bloodGroup;
+  @JsonProperty
+  private String bplCardNumber;
+  @JsonProperty
+  private String caste;
+  @JsonProperty
+  private String ecNumber;
+  @JsonProperty
+  private String economicStatus;
+  @JsonProperty
+  private String edd;
+  @JsonProperty
+  private String gravida;
+  @JsonProperty
+  private List&lt;Map&lt;String, String&gt;&gt; hbTests;
+  @JsonProperty
+  private String height;
+  @JsonProperty
+  private String husbandEducationLevel;
+  @JsonProperty
+  private String husbandName;
+  @JsonProperty
+  private List&lt;Map&lt;String, String&gt;&gt; ifaTablets;
+  @JsonProperty
+  private String isHRP;
+  @JsonProperty
+  private String jsyBeneficiary;
+  @JsonProperty
+  private String lmp;
+  @JsonProperty
+  private String numberOfAbortions;
+  @JsonProperty
+  private String numberOfLivingChildren;
+  @JsonProperty
+  private String numberOfStillBirths;
+  @JsonProperty
+  private String parity;
+  @JsonProperty
+  private String phoneNumber;
+  @JsonProperty
+  private String registrationDate;
+  @JsonProperty
+  private String religion;
+  @JsonProperty
+  private String thayiCardNumber;
+  @JsonProperty
+  private List&lt;Map&lt;String, String&gt;&gt; ttDoses;
+  @JsonProperty
+  private String wifeDOB;
+  @JsonProperty
+  private String wifeEducationLevel;
+  @JsonProperty
+  private String wifeName;
+  @JsonProperty
+  private String youngestChildDOB;
+  
+  public boolean equals(Object paramObject)
+  {
+<span class="nc" id="L81">    return EqualsBuilder.reflectionEquals(this, paramObject, new String[0]);</span>
+  }
+  
+  public int hashCode()
+  {
+<span class="nc" id="L86">    return HashCodeBuilder.reflectionHashCode(this, new String[0]);</span>
+  }
+  
+  public String toString()
+  {
+<span class="nc" id="L91">    return ToStringBuilder.reflectionToString(this);</span>
+  }
+  
+  public ANCRegisterEntryDTO withANCInvestigations(List&lt;Map&lt;String, String&gt;&gt; paramList)
+  {
+<span class="nc" id="L96">    this.ancInvestigations = paramList;</span>
+<span class="nc" id="L97">    return this;</span>
+  }
+  
+  public ANCRegisterEntryDTO withANCNumber(String paramString)
+  {
+<span class="nc" id="L102">    this.ancNumber = paramString;</span>
+<span class="nc" id="L103">    return this;</span>
+  }
+  
+  public ANCRegisterEntryDTO withANCVisits(List&lt;Map&lt;String, String&gt;&gt; paramList)
+  {
+<span class="nc" id="L108">    this.ancVisits = paramList;</span>
+<span class="nc" id="L109">    return this;</span>
+  }
+  
+  public ANCRegisterEntryDTO withAadharCardNumber(String paramString)
+  {
+<span class="nc" id="L114">    this.aadharCardNumber = paramString;</span>
+<span class="nc" id="L115">    return this;</span>
+  }
+  
+  public ANCRegisterEntryDTO withAddress(String paramString)
+  {
+<span class="nc" id="L120">    this.address = paramString;</span>
+<span class="nc" id="L121">    return this;</span>
+  }
+  
+  public ANCRegisterEntryDTO withBPLCardNumber(String paramString)
+  {
+<span class="nc" id="L126">    this.bplCardNumber = paramString;</span>
+<span class="nc" id="L127">    return this;</span>
+  }
+  
+  public ANCRegisterEntryDTO withBloodGroup(String paramString)
+  {
+<span class="nc" id="L132">    this.bloodGroup = paramString;</span>
+<span class="nc" id="L133">    return this;</span>
+  }
+  
+  public ANCRegisterEntryDTO withCaste(String paramString)
+  {
+<span class="nc" id="L138">    this.caste = paramString;</span>
+<span class="nc" id="L139">    return this;</span>
+  }
+  
+  public ANCRegisterEntryDTO withECNumber(String paramString)
+  {
+<span class="nc" id="L144">    this.ecNumber = paramString;</span>
+<span class="nc" id="L145">    return this;</span>
+  }
+  
+  public ANCRegisterEntryDTO withEDD(String paramString)
+  {
+<span class="nc" id="L150">    this.edd = paramString;</span>
+<span class="nc" id="L151">    return this;</span>
+  }
+  
+  public ANCRegisterEntryDTO withEconomicStatus(String paramString)
+  {
+<span class="nc" id="L156">    this.economicStatus = paramString;</span>
+<span class="nc" id="L157">    return this;</span>
+  }
+  
+  public ANCRegisterEntryDTO withGravida(String paramString)
+  {
+<span class="nc" id="L162">    this.gravida = paramString;</span>
+<span class="nc" id="L163">    return this;</span>
+  }
+  
+  public ANCRegisterEntryDTO withHBTests(List&lt;Map&lt;String, String&gt;&gt; paramList)
+  {
+<span class="nc" id="L168">    this.hbTests = paramList;</span>
+<span class="nc" id="L169">    return this;</span>
+  }
+  
+  public ANCRegisterEntryDTO withHeight(String paramString)
+  {
+<span class="nc" id="L174">    this.height = paramString;</span>
+<span class="nc" id="L175">    return this;</span>
+  }
+  
+  public ANCRegisterEntryDTO withHusbandEducationLevel(String paramString)
+  {
+<span class="nc" id="L180">    this.husbandEducationLevel = paramString;</span>
+<span class="nc" id="L181">    return this;</span>
+  }
+  
+  public ANCRegisterEntryDTO withHusbandName(String paramString)
+  {
+<span class="nc" id="L186">    this.husbandName = paramString;</span>
+<span class="nc" id="L187">    return this;</span>
+  }
+  
+  public ANCRegisterEntryDTO withIFATablets(List&lt;Map&lt;String, String&gt;&gt; paramList)
+  {
+<span class="nc" id="L192">    this.ifaTablets = paramList;</span>
+<span class="nc" id="L193">    return this;</span>
+  }
+  
+  public ANCRegisterEntryDTO withIsHRP(String paramString)
+  {
+<span class="nc" id="L198">    this.isHRP = paramString;</span>
+<span class="nc" id="L199">    return this;</span>
+  }
+  
+  public ANCRegisterEntryDTO withJSYBeneficiary(String paramString)
+  {
+<span class="nc" id="L204">    this.jsyBeneficiary = paramString;</span>
+<span class="nc" id="L205">    return this;</span>
+  }
+  
+  public ANCRegisterEntryDTO withLMP(String paramString)
+  {
+<span class="nc" id="L210">    this.lmp = paramString;</span>
+<span class="nc" id="L211">    return this;</span>
+  }
+  
+  public ANCRegisterEntryDTO withNumberOfAbortions(String paramString)
+  {
+<span class="nc" id="L216">    this.numberOfAbortions = paramString;</span>
+<span class="nc" id="L217">    return this;</span>
+  }
+  
+  public ANCRegisterEntryDTO withNumberOfLivingChildren(String paramString)
+  {
+<span class="nc" id="L222">    this.numberOfLivingChildren = paramString;</span>
+<span class="nc" id="L223">    return this;</span>
+  }
+  
+  public ANCRegisterEntryDTO withNumberOfStillBirths(String paramString)
+  {
+<span class="nc" id="L228">    this.numberOfStillBirths = paramString;</span>
+<span class="nc" id="L229">    return this;</span>
+  }
+  
+  public ANCRegisterEntryDTO withParity(String paramString)
+  {
+<span class="nc" id="L234">    this.parity = paramString;</span>
+<span class="nc" id="L235">    return this;</span>
+  }
+  
+  public ANCRegisterEntryDTO withPhoneNumber(String paramString)
+  {
+<span class="nc" id="L240">    this.phoneNumber = paramString;</span>
+<span class="nc" id="L241">    return this;</span>
+  }
+  
+  public ANCRegisterEntryDTO withRegistrationDate(String paramString)
+  {
+<span class="nc" id="L246">    this.registrationDate = paramString;</span>
+<span class="nc" id="L247">    return this;</span>
+  }
+  
+  public ANCRegisterEntryDTO withReligion(String paramString)
+  {
+<span class="nc" id="L252">    this.religion = paramString;</span>
+<span class="nc" id="L253">    return this;</span>
+  }
+  
+  public ANCRegisterEntryDTO withTTDoses(List&lt;Map&lt;String, String&gt;&gt; paramList)
+  {
+<span class="nc" id="L258">    this.ttDoses = paramList;</span>
+<span class="nc" id="L259">    return this;</span>
+  }
+  
+  public ANCRegisterEntryDTO withThayiCardNumber(String paramString)
+  {
+<span class="nc" id="L264">    this.thayiCardNumber = paramString;</span>
+<span class="nc" id="L265">    return this;</span>
+  }
+  
+  public ANCRegisterEntryDTO withWifeDOB(String paramString)
+  {
+<span class="nc" id="L270">    this.wifeDOB = paramString;</span>
+<span class="nc" id="L271">    return this;</span>
+  }
+  
+  public ANCRegisterEntryDTO withWifeEducationLevel(String paramString)
+  {
+<span class="nc" id="L276">    this.wifeEducationLevel = paramString;</span>
+<span class="nc" id="L277">    return this;</span>
+  }
+  
+  public ANCRegisterEntryDTO withWifeName(String paramString)
+  {
+<span class="nc" id="L282">    this.wifeName = paramString;</span>
+<span class="nc" id="L283">    return this;</span>
+  }
+  
+  public ANCRegisterEntryDTO withYoungestChildDOB(String paramString)
+  {
+<span class="nc" id="L288">    this.youngestChildDOB = paramString;</span>
+<span class="nc" id="L289">    return this;</span>
+  }
+}
+
+
+
+/* Location:           C:\Users\appaji.r\Downloads\classes-dex2.jar
+
+ * Qualified Name:     org.ei.drishti.dto.register.ANCRegisterEntryDTO
+
+ * JD-Core Version:    0.7.0.1
+
+ */
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.1.201405082137</span></div></body></html>

@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>FormData.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">org.ei.telemedicine.domain.form</a> &gt; <span class="el_source">FormData.java</span></div><h1>FormData.java</h1><pre class="source lang-java linenums">package org.ei.telemedicine.domain.form;
+
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+
+import java.text.MessageFormat;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+public class FormData {
+    private String bind_type;
+    private String default_bind_path;
+    private List&lt;FormField&gt; fields;
+    private List&lt;SubForm&gt; sub_forms;
+    private Map&lt;String, String&gt; mapOfFieldsByName;
+
+<span class="fc" id="L20">    public FormData(String bind_type, String default_bind_path, List&lt;FormField&gt; fields, List&lt;SubForm&gt; subForms) {</span>
+<span class="fc" id="L21">        this.bind_type = bind_type;</span>
+<span class="fc" id="L22">        this.default_bind_path = default_bind_path;</span>
+<span class="fc" id="L23">        this.fields = fields;</span>
+<span class="fc" id="L24">        this.sub_forms = subForms;</span>
+<span class="fc" id="L25">    }</span>
+
+    public List&lt;FormField&gt; fields() {
+<span class="nc" id="L28">        return fields;</span>
+    }
+
+    public String getFieldValue(String name) {
+<span class="fc bfc" id="L32" title="All 2 branches covered.">        if (mapOfFieldsByName == null) {</span>
+<span class="fc" id="L33">            createFieldMapByName();</span>
+        }
+<span class="fc" id="L35">        return mapOfFieldsByName.get(name);</span>
+    }
+
+    public SubForm getSubFormByName(String name) {
+<span class="pc bpc" id="L39" title="1 of 2 branches missed.">        for (SubForm sub_form : sub_forms) {</span>
+<span class="pc bpc" id="L40" title="1 of 2 branches missed.">            if (StringUtils.equalsIgnoreCase(name, sub_form.name()))</span>
+<span class="fc" id="L41">                return sub_form;</span>
+<span class="nc" id="L42">        }</span>
+<span class="nc" id="L43">        throw new RuntimeException(MessageFormat.format(&quot;No sub form with the given name: {0}, in formData: {1}&quot;, name, this));</span>
+    }
+
+    private void createFieldMapByName() {
+<span class="fc" id="L47">        mapOfFieldsByName = new HashMap&lt;String, String&gt;();</span>
+<span class="fc bfc" id="L48" title="All 2 branches covered.">        for (FormField field : fields) {</span>
+<span class="fc" id="L49">            mapOfFieldsByName.put(field.name(), field.value());</span>
+<span class="fc" id="L50">        }</span>
+<span class="fc" id="L51">    }</span>
+
+    @Override
+    public boolean equals(Object o) {
+<span class="nc" id="L55">        return EqualsBuilder.reflectionEquals(this, o);</span>
+    }
+
+    @Override
+    public int hashCode() {
+<span class="nc" id="L60">        return HashCodeBuilder.reflectionHashCode(this);</span>
+    }
+
+    @Override
+    public String toString() {
+<span class="nc" id="L65">        return ToStringBuilder.reflectionToString(this);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.1.201405082137</span></div></body></html>

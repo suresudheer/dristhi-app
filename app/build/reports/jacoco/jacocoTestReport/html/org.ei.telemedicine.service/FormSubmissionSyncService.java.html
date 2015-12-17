@@ -1,0 +1,274 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>FormSubmissionSyncService.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">org.ei.telemedicine.service</a> &gt; <span class="el_source">FormSubmissionSyncService.java</span></div><h1>FormSubmissionSyncService.java</h1><pre class="source lang-java linenums">package org.ei.telemedicine.service;
+
+import android.util.Base64;
+import android.util.Log;
+import android.widget.Toast;
+
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
+import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
+import org.ei.telemedicine.AllConstants;
+import org.ei.telemedicine.Context;
+import org.ei.telemedicine.DristhiConfiguration;
+import org.ei.telemedicine.doctor.DoctorData;
+import org.ei.telemedicine.doctor.DoctorFormDataConstants;
+import org.ei.telemedicine.doctor.PendingConsultantBaseAdapter;
+import org.ei.telemedicine.domain.ANM;
+import org.ei.telemedicine.domain.FetchStatus;
+import org.ei.telemedicine.domain.ProfileImage;
+import org.ei.telemedicine.domain.Response;
+import org.ei.telemedicine.domain.form.FormSubmission;
+import org.ei.telemedicine.dto.form.FormSubmissionDTO;
+import org.ei.telemedicine.repository.AllSettings;
+import org.ei.telemedicine.repository.AllSharedPreferences;
+import org.ei.telemedicine.repository.FormDataRepository;
+import org.ei.telemedicine.repository.ImageRepository;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.List;
+
+import static java.text.MessageFormat.format;
+import static org.ei.telemedicine.AllConstants.DOC_DATA_URL_PATH;
+import static org.ei.telemedicine.AllConstants.FormNames.ANC_VISIT;
+import static org.ei.telemedicine.AllConstants.FormNames.ANC_VISIT_EDIT;
+import static org.ei.telemedicine.AllConstants.FormNames.PNC_VISIT;
+import static org.ei.telemedicine.AllConstants.PSTETHOSCOPE_DATA;
+import static org.ei.telemedicine.convertor.FormSubmissionConvertor.toDomain;
+import static org.ei.telemedicine.doctor.DoctorFormDataConstants.age;
+import static org.ei.telemedicine.doctor.DoctorFormDataConstants.anc_entityId;
+import static org.ei.telemedicine.doctor.DoctorFormDataConstants.anc_number;
+import static org.ei.telemedicine.doctor.DoctorFormDataConstants.anc_visit_date;
+import static org.ei.telemedicine.doctor.DoctorFormDataConstants.anc_visit_number;
+import static org.ei.telemedicine.doctor.DoctorFormDataConstants.ancvisit;
+import static org.ei.telemedicine.doctor.DoctorFormDataConstants.anmId;
+import static org.ei.telemedicine.doctor.DoctorFormDataConstants.blood_glucose;
+import static org.ei.telemedicine.doctor.DoctorFormDataConstants.bp_dia;
+import static org.ei.telemedicine.doctor.DoctorFormDataConstants.bp_sys;
+import static org.ei.telemedicine.doctor.DoctorFormDataConstants.child_age;
+import static org.ei.telemedicine.doctor.DoctorFormDataConstants.child_dob;
+import static org.ei.telemedicine.doctor.DoctorFormDataConstants.child_entityId;
+import static org.ei.telemedicine.doctor.DoctorFormDataConstants.child_immediateReferral;
+import static org.ei.telemedicine.doctor.DoctorFormDataConstants.child_immediateReferral_reason;
+import static org.ei.telemedicine.doctor.DoctorFormDataConstants.child_info;
+import static org.ei.telemedicine.doctor.DoctorFormDataConstants.child_name;
+import static org.ei.telemedicine.doctor.DoctorFormDataConstants.child_no_of_osrs;
+import static org.ei.telemedicine.doctor.DoctorFormDataConstants.child_referral;
+import static org.ei.telemedicine.doctor.DoctorFormDataConstants.child_report_child_disease;
+import static org.ei.telemedicine.doctor.DoctorFormDataConstants.child_report_child_disease_date;
+import static org.ei.telemedicine.doctor.DoctorFormDataConstants.child_report_child_disease_other;
+import static org.ei.telemedicine.doctor.DoctorFormDataConstants.child_report_child_disease_place;
+import static org.ei.telemedicine.doctor.DoctorFormDataConstants.child_signs;
+import static org.ei.telemedicine.doctor.DoctorFormDataConstants.child_signs_other;
+import static org.ei.telemedicine.doctor.DoctorFormDataConstants.child_submission_date;
+import static org.ei.telemedicine.doctor.DoctorFormDataConstants.documentId;
+import static org.ei.telemedicine.doctor.DoctorFormDataConstants.edd;
+import static org.ei.telemedicine.doctor.DoctorFormDataConstants.entityId;
+import static org.ei.telemedicine.doctor.DoctorFormDataConstants.fetal_data;
+import static org.ei.telemedicine.doctor.DoctorFormDataConstants.husband_name;
+import static org.ei.telemedicine.doctor.DoctorFormDataConstants.id_no;
+import static org.ei.telemedicine.doctor.DoctorFormDataConstants.kopfeel_heat_or_chills;
+import static org.ei.telemedicine.doctor.DoctorFormDataConstants.lmp;
+import static org.ei.telemedicine.doctor.DoctorFormDataConstants.pncVisit;
+import static org.ei.telemedicine.doctor.DoctorFormDataConstants.pnc_abdominal_problems;
+import static org.ei.telemedicine.doctor.DoctorFormDataConstants.pnc_breast_problems;
+import static org.ei.telemedicine.doctor.DoctorFormDataConstants.pnc_difficulties;
+import static org.ei.telemedicine.doctor.DoctorFormDataConstants.pnc_entityId;
+import static org.ei.telemedicine.doctor.DoctorFormDataConstants.pnc_number;
+import static org.ei.telemedicine.doctor.DoctorFormDataConstants.pnc_urinating_problems;
+import static org.ei.telemedicine.doctor.DoctorFormDataConstants.pnc_vaginal_problems;
+import static org.ei.telemedicine.doctor.DoctorFormDataConstants.pnc_visit_date;
+import static org.ei.telemedicine.doctor.DoctorFormDataConstants.pnc_visit_place;
+import static org.ei.telemedicine.doctor.DoctorFormDataConstants.poc_pending;
+import static org.ei.telemedicine.doctor.DoctorFormDataConstants.risk_symptoms;
+import static org.ei.telemedicine.doctor.DoctorFormDataConstants.temp_data;
+import static org.ei.telemedicine.doctor.DoctorFormDataConstants.visit_type;
+import static org.ei.telemedicine.doctor.DoctorFormDataConstants.weight_data;
+import static org.ei.telemedicine.doctor.DoctorFormDataConstants.wife_name;
+import static org.ei.telemedicine.domain.FetchStatus.fetched;
+import static org.ei.telemedicine.domain.FetchStatus.fetchedFailed;
+import static org.ei.telemedicine.domain.FetchStatus.nothingFetched;
+import static org.ei.telemedicine.util.Log.logError;
+import static org.ei.telemedicine.util.Log.logInfo;
+
+public class FormSubmissionSyncService {
+    public static final String FORM_SUBMISSIONS_PATH = &quot;form-submissions&quot;;
+
+    private final HTTPAgent httpAgent;
+    private final FormDataRepository formDataRepository;
+    private AllSettings allSettings;
+    private AllSharedPreferences allSharedPreferences;
+    private FormSubmissionService formSubmissionService;
+    private DristhiConfiguration configuration;
+
+    public FormSubmissionSyncService(FormSubmissionService formSubmissionService, HTTPAgent httpAgent,
+                                     FormDataRepository formDataRepository, AllSettings allSettings,
+<span class="nc" id="L123">                                     AllSharedPreferences allSharedPreferences, DristhiConfiguration configuration) {</span>
+<span class="nc" id="L124">        this.formSubmissionService = formSubmissionService;</span>
+<span class="nc" id="L125">        this.httpAgent = httpAgent;</span>
+<span class="nc" id="L126">        this.formDataRepository = formDataRepository;</span>
+<span class="nc" id="L127">        this.allSettings = allSettings;</span>
+<span class="nc" id="L128">        this.allSharedPreferences = allSharedPreferences;</span>
+<span class="nc" id="L129">        this.configuration = configuration;</span>
+<span class="nc" id="L130">    }</span>
+
+    public FetchStatus sync(String villageName) {
+<span class="nc" id="L133">        pushToServer();</span>
+<span class="nc" id="L134">        new ImageUploadSyncService((ImageRepository) Context.getInstance().imageRepository());</span>
+<span class="nc" id="L135">        return pullFromServer(villageName);</span>
+    }
+
+
+    public void pushToServer() {
+<span class="nc" id="L140">        List&lt;FormSubmission&gt; pendingFormSubmissions = formDataRepository.getPendingFormSubmissions();</span>
+<span class="nc" id="L141">        String audiofilePath = &quot;&quot;;</span>
+<span class="nc bnc" id="L142" title="All 2 branches missed.">        if (pendingFormSubmissions.isEmpty()) {</span>
+<span class="nc" id="L143">            return;</span>
+        } else {
+<span class="nc bnc" id="L145" title="All 2 branches missed.">            for (int index = 0; index &lt; pendingFormSubmissions.size(); index++) {</span>
+<span class="nc" id="L146">                FormSubmission formSubmission = pendingFormSubmissions.get(index);</span>
+<span class="nc bnc" id="L147" title="All 6 branches missed.">                if (formSubmission.formName().equals(ANC_VISIT) || formSubmission.formName().equals(ANC_VISIT_EDIT) || formSubmission.formName().equals(PNC_VISIT)) {</span>
+                    try {
+<span class="nc" id="L149">                        String entityId = formSubmission.entityId();</span>
+<span class="nc" id="L150">                        String formData = formSubmission.instance();</span>
+<span class="nc" id="L151">                        JSONObject formInstanceJsonData = new JSONObject(formData);</span>
+<span class="nc" id="L152">                        Log.e(&quot;JsonD&quot;, formInstanceJsonData + &quot;&quot;);</span>
+<span class="nc" id="L153">                        JSONObject instanceData = formInstanceJsonData.getJSONObject(&quot;form&quot;);</span>
+<span class="nc" id="L154">                        JSONArray fieldsJsonArray = instanceData.getJSONArray(&quot;fields&quot;);</span>
+<span class="nc bnc" id="L155" title="All 2 branches missed.">                        for (int i = fieldsJsonArray.length() - 1; i &gt;= 0; i--) {</span>
+<span class="nc" id="L156">                            JSONObject jsonData = fieldsJsonArray.getJSONObject(i);</span>
+<span class="nc bnc" id="L157" title="All 2 branches missed.">                            if (jsonData.getString(&quot;name&quot;).equals(PSTETHOSCOPE_DATA)) {</span>
+<span class="nc bnc" id="L158" title="All 2 branches missed.">                                String fileLocation = jsonData.has(&quot;value&quot;) ? jsonData.getString(&quot;value&quot;) : &quot;&quot;;</span>
+<span class="nc bnc" id="L159" title="All 2 branches missed.">                                if (fileLocation.trim().length() != 0) {</span>
+<span class="nc" id="L160">                                    ProfileImage profileImage = new ProfileImage(&quot;&quot;, Context.getInstance().allSharedPreferences().fetchRegisteredANM(), entityId, &quot;audio/x-wav&quot;, fileLocation, &quot;&quot;);</span>
+<span class="nc" id="L161">                                    String response = Context.getInstance().getHttpAgent().httpImagePost(Context.getInstance().configuration().dristhiBaseURL() + &quot;/multimedia-file&quot;, profileImage);</span>
+<span class="nc bnc" id="L162" title="All 2 branches missed.">                                    if (response.trim().length() != 0) {</span>
+<span class="nc" id="L163">                                        jsonData.put(&quot;value&quot;, response);</span>
+<span class="nc" id="L164">                                        fieldsJsonArray.put(i, jsonData);</span>
+                                    }
+                                }
+                            }
+                        }
+<span class="nc" id="L169">                        instanceData.put(&quot;fields&quot;, fieldsJsonArray);</span>
+<span class="nc" id="L170">                        formInstanceJsonData.put(&quot;form&quot;, instanceData);</span>
+<span class="nc" id="L171">                        FormSubmission updateFormSubmission = new FormSubmission(formSubmission.instanceId(), formSubmission.entityId(), formSubmission.formName(), formInstanceJsonData.toString(), formSubmission.version(), formSubmission.syncStatus(), formSubmission.formDataDefinitionVersion());</span>
+<span class="nc" id="L172">                        pendingFormSubmissions.set(index, updateFormSubmission);</span>
+
+<span class="nc" id="L174">                    } catch (JSONException e) {</span>
+<span class="nc" id="L175">                        e.printStackTrace();</span>
+<span class="nc" id="L176">                    }</span>
+                }
+            }
+        }
+
+<span class="nc" id="L181">        String jsonPayload = mapToFormSubmissionDTO(pendingFormSubmissions);</span>
+<span class="nc" id="L182">        logError(&quot;Json Data &quot; + jsonPayload);</span>
+<span class="nc" id="L183">        Response&lt;String&gt; response = httpAgent.post(</span>
+                format(&quot;{0}/{1}&quot;,
+                        configuration.dristhiBaseURL(),
+                        FORM_SUBMISSIONS_PATH),
+                jsonPayload);
+<span class="nc bnc" id="L188" title="All 2 branches missed.">        if (response.isFailure()) {</span>
+<span class="nc" id="L189">            logError(format(&quot;Form submissions sync failed. Submissions:  {0}&quot;, pendingFormSubmissions));</span>
+<span class="nc" id="L190">            return;</span>
+        }
+<span class="nc" id="L192">        formDataRepository.markFormSubmissionsAsSynced(pendingFormSubmissions);</span>
+<span class="nc" id="L193">        logInfo(format(&quot;Form submissions sync successfully. Submissions:  {0}&quot;, pendingFormSubmissions));</span>
+<span class="nc" id="L194">    }</span>
+
+    public FetchStatus pullFromServer(String villageName) {
+<span class="nc" id="L197">        FetchStatus dataStatus = nothingFetched;</span>
+<span class="nc" id="L198">        String userId = allSharedPreferences.fetchRegisteredANM();</span>
+
+<span class="nc bnc" id="L200" title="All 2 branches missed.">        if (allSharedPreferences.getUserRole().equals(AllConstants.DOCTOR_ROLE)) {</span>
+            //For Doctor Module
+<span class="nc" id="L202">            String baseDocURL = configuration.dristhiDjangoBaseURL();</span>
+
+<span class="nc" id="L204">            String uri = format(&quot;{0}/{1}?docname={2}&amp;pwd={3}&quot;,</span>
+                    baseDocURL,
+                    DOC_DATA_URL_PATH,
+                    userId,
+                    allSharedPreferences.getPwd()
+            );
+<span class="nc" id="L210">            logError(&quot;url= &quot; + uri);</span>
+<span class="nc" id="L211">            Response&lt;String&gt; response = httpAgent.fetch(uri);</span>
+<span class="nc bnc" id="L212" title="All 2 branches missed.">            if (response.isFailure()) {</span>
+<span class="nc" id="L213">                logError(format(&quot;Fetching doctor records failed.&quot;));</span>
+<span class="nc" id="L214">                return fetchedFailed;</span>
+            }
+
+<span class="nc bnc" id="L217" title="All 2 branches missed.">            if (response == null) {</span>
+<span class="nc" id="L218">                return dataStatus;</span>
+            } else {
+<span class="nc" id="L220">                formSubmissionService.processDoctorRecords(response.payload());</span>
+<span class="nc" id="L221">                dataStatus = fetched;</span>
+            }
+
+<span class="nc" id="L224">        } else {</span>
+<span class="nc" id="L225">            int downloadBatchSize = configuration.syncDownloadBatchSize();</span>
+<span class="nc" id="L226">            String baseURL = configuration.dristhiBaseURL();</span>
+<span class="nc" id="L227">            Log.e(&quot;Base Url&quot;, baseURL);</span>
+//            ArrayList&lt;String&gt; villagesList = new ArrayList&lt;String&gt;();
+//            villagesList.add(&quot;Gazi Pur&quot;);
+//            villagesList.add(&quot;Kotla&quot;);
+//            villagesList.add(&quot;Dalu Pura&quot;);
+//            for (String villageName : villagesList) {
+            while (true) {
+<span class="nc" id="L234">                String uri = format(&quot;{0}/{1}?anm-id={2}&amp;timestamp={3}&amp;batch-size={4}&amp;village={5}&quot;,</span>
+                        baseURL,
+                        FORM_SUBMISSIONS_PATH,
+                        userId,
+                        formDataRepository.getLastFormIndex(villageName),
+                        downloadBatchSize, villageName.replace(&quot; &quot;, &quot;%20&quot;));
+<span class="nc" id="L240">                logError(&quot;url= &quot; + uri);</span>
+<span class="nc" id="L241">                Response&lt;String&gt; response = httpAgent.fetch(uri);</span>
+<span class="nc bnc" id="L242" title="All 2 branches missed.">                if (response.isFailure()) {</span>
+<span class="nc" id="L243">                    logError(format(&quot;Form submissions pull failed.&quot;));</span>
+<span class="nc" id="L244">                    return fetchedFailed;</span>
+                }
+<span class="nc" id="L246">                List&lt;FormSubmissionDTO&gt; formSubmissions = new Gson().fromJson(response.payload(),</span>
+<span class="nc" id="L247">                        new TypeToken&lt;List&lt;FormSubmissionDTO&gt;&gt;() {</span>
+                        }.getType());
+<span class="nc bnc" id="L249" title="All 2 branches missed.">                if (formSubmissions.isEmpty()) {</span>
+<span class="nc" id="L250">                    return dataStatus;</span>
+                } else {
+<span class="nc" id="L252">                    List&lt;FormSubmission&gt; submissions = toDomain(formSubmissions);</span>
+<span class="nc" id="L253">                    formSubmissionService.processSubmissions(submissions, villageName);</span>
+<span class="nc" id="L254">                    dataStatus = fetched;</span>
+                }
+<span class="nc" id="L256">            }</span>
+//            }
+        }
+<span class="nc" id="L259">        return dataStatus;</span>
+    }
+
+    private String mapToFormSubmissionDTO(List&lt;FormSubmission&gt; pendingFormSubmissions) {
+<span class="nc" id="L263">        List&lt;org.ei.telemedicine.dto.form.FormSubmissionDTO&gt; formSubmissions = new ArrayList&lt;org.ei.telemedicine.dto.form.FormSubmissionDTO&gt;();</span>
+<span class="nc bnc" id="L264" title="All 2 branches missed.">        for (FormSubmission pendingFormSubmission : pendingFormSubmissions) {</span>
+<span class="nc" id="L265">            formSubmissions.add(new org.ei.telemedicine.dto.form.FormSubmissionDTO(allSharedPreferences.fetchRegisteredANM(), pendingFormSubmission.instanceId(),</span>
+                    pendingFormSubmission.entityId(), pendingFormSubmission.formName(), pendingFormSubmission.instance(), pendingFormSubmission.version(),
+                    pendingFormSubmission.formDataDefinitionVersion()));
+<span class="nc" id="L268">        }</span>
+<span class="nc" id="L269">        return new Gson().toJson(formSubmissions);</span>
+    }
+
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.1.201405082137</span></div></body></html>
