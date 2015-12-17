@@ -32,3 +32,5 @@ script:
   # so we'll just if the project compiles 
   #- ./gradlew connectedAndroidTest
   - ./gradlew clean assembleDebug
+after_success:
+  - ./gradlew jacocoTestReport coveralls
